@@ -3,7 +3,7 @@
 import sys, time, argparse, subprocess, os.path, struct
 
 Description = """
-Tool to convert a matrix written in text format (one line per row)
+Tool to convert a matrix written in text csv format (one line per row)
 into binary form, ie rows x cols doubles 
 """
 
