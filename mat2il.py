@@ -25,8 +25,8 @@ def main():
   
   with open(args.input,"rt") as f:
     # outname = args.input + ".%dx%d.il" %(args.rows,args.cols) 
-    outname = args.input + ".il" %(args.rows,args.cols) 
-    outname_val = args.input + ".%s" % ("int" if args.i else "flt")
+    outname = args.input + ".il"
+    outname_val = args.input + ".val"    
     with open(outname,"wb") as g:
       with open(outname_val,"wb") as g_val:
         nonz = 0
@@ -63,7 +63,7 @@ def main():
               assert x in values
               # create code combining value id and column number
               code = values[x]*args.cols + i 
-              code += args.rows   # shift by args.rows to alklow code for endrow
+              code += args.rows   # shift by args.rows to allow code for endrow
               if code>= 2**30:
                 printf("Code", code, "larger than 2**30. We are in trouble")
                 sys.exit(1)
