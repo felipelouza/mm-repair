@@ -12,7 +12,13 @@
 #include <unistd.h>
 #include <limits.h>
 
-typedef int matval;  // type representing a matrix entry   
+#ifdef FLOAT_VALS 
+typedef float   matval;  // type representing a matrix entry   
+typedef double xmatval;  // type representing a matrix entry with larger precision   
+#else
+typedef int matval;     // type representing a matrix entry   
+typedef int xmatval;    // type representing a matrix entry with larger precision   
+#endif
 
 
 // some orrible global variables
@@ -62,13 +68,13 @@ static matval *read_vals(FILE *f, int *n)
 }
 
 // decode a terminal representing a matrix entry
-// the matrix values is multiplied by the corresponding X entry 
-matval decode(int p)
+// the matrix value is multiplied by the corresponding X entry 
+xmatval decode_entry(int p)
 {
   int pcol = p % cols;
   int pval = p/cols;
   if(pval>=Mnum) die("Illegal value reference found in terminal");
-  return Xval[pcol]*Mval[pval];
+  return ((xmatval) Xval[pcol])*Mval[pval];
 }  
 
 static void fill_NTval(FILE *f) 
@@ -77,7 +83,7 @@ static void fill_NTval(FILE *f)
   for(int i=0; i<NTnum;i++) {  // i is number of NT computed so far
     int e = fread(pair,sizeof(int),2,f);
     if(e<2) die("Error reading rule file");
-    matval sum = 0;
+    xmatval sum = 0;
     if(Debug) fprintf(stderr,"%d -- ", i); //!!!!!!!!!!
     for(int j=0;j<2;j++) {
       int p = pair[j];
@@ -92,12 +98,20 @@ static void fill_NTval(FILE *f)
           if(Debug) fprintf(stderr,"sep: %d  ",p);//!!!!!!!!
           die("Unique row separator found in rule");
         }
-        sum += decode(p-rows);
+        sum += decode_entry(p-rows);
+        #ifdef FLOAT_VALS
+        if(Debug) fprintf(stderr,"t: col:%d val:%f ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
+        #else
         if(Debug) fprintf(stderr,"t: col:%d val:%d ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
+        #endif
       }
     }
     NTval[i]=sum;
-    if(Debug) fprintf(stderr,"\n"); //!!!!!!!!!
+    #ifdef FLOAT_VALS
+    if(Debug) fprintf(stderr,"NT[%d]: %f\n",i,sum); //!!!!!!!!!
+    #else 
+    if(Debug) fprintf(stderr,"NT[%d]: %d\n",i,sum); //!!!!!!!!!
+    #endif
   }
   if(fread(pair,sizeof(int),2,f)>0) die("Unexpect trailing rule");
 }
@@ -172,7 +186,7 @@ int main (int argc, char **argv) {
    if (f == NULL) die("Cannot open output vector file");
    // --- compute output 
    int ywritten = 0;
-   matval sum=0;
+   xmatval sum=0;
    while(ywritten<rows) {
      e = fread(&i,sizeof(int),1,Cf);
      if(e!=1) die("Error reading C file");
@@ -181,16 +195,18 @@ int main (int argc, char **argv) {
        sum += NTval[i];
      }
      else if(i>=rows) {// terminal representing a matrix entry
-       sum += decode(i-rows);
+       sum += decode_entry(i-rows);
      }
      else { // row completed
        if(i!=ywritten) die("Incorrect end of row separator");
-       e = fwrite(&sum,sizeof(matval),1,f);
+       matval tmp=sum; sum=0;
+       e = fwrite(&tmp,sizeof(matval),1,f);
        if(e!=1) die("Error writing to the output file");
        if(++ywritten>=rows) break;
      }
   }
   assert(ywritten==rows);
+  assert(sum==0);
   if(fclose(f)!=0) die("Cannot close output file");
   if(fread(&i,sizeof(int),1,Cf)>0) die("Unexpected trailing symbols in C");
   if(fclose(Cf)!=0) die("Cannot close C file");
