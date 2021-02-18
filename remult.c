@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <limits.h>
 
 typedef int matval;  // type representing a matrix entry   
 
@@ -27,7 +28,7 @@ matval *Xval;    // input vector
 int Mnum;        // number of distincy non zero matrix values
 matval *Mval;    // set of distinct nonzero matrix values
 
-
+int Debug=0;
 
 
 
@@ -72,32 +73,39 @@ matval decode(int p)
 
 static void fill_NTval(FILE *f) 
 {
-  int pair[2]; // rule right had size 
-  for(int i=0; i<NTnum;i++) {  // i is number of NT compute sofar
+  int pair[2]; // rule right hand size 
+  for(int i=0; i<NTnum;i++) {  // i is number of NT computed so far
     int e = fread(pair,sizeof(int),2,f);
-    if(e<2) die("Error reading rule files");
+    if(e<2) die("Error reading rule file");
     matval sum = 0;
+    if(Debug) fprintf(stderr,"%d -- ", i); //!!!!!!!!!!
     for(int j=0;j<2;j++) {
       int p = pair[j];
       if(p>=Alpha) { // non terminal
         p -= Alpha;
         if(p>=i) die("Fatal Error: Forward rule");
         sum += NTval[p];
+        if(Debug) fprintf(stderr,"nt:%d  ",p);//!!!!!!!!!!!!
       }
       else { // terminal symbol
-        if(p<rows) die("Unique row separator found in rule");
+        if(p<rows) {
+          if(Debug) fprintf(stderr,"sep: %d  ",p);//!!!!!!!!
+          die("Unique row separator found in rule");
+        }
         sum += decode(p-rows);
+        if(Debug) fprintf(stderr,"t: col:%d val:%d ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
       }
     }
     NTval[i]=sum;
+    if(Debug) fprintf(stderr,"\n"); //!!!!!!!!!
   }
-  if(!feof(f)) die("Unexpect rule");
+  if(fread(pair,sizeof(int),2,f)>0) die("Unexpect trailing rule");
 }
 
 
 
 int main (int argc, char **argv) { 
-   char fname[1024];
+   char fname[PATH_MAX];
    FILE *f,*Rf,*Cf;
    int i,len,e;
    struct stat s;
@@ -120,7 +128,7 @@ int main (int argc, char **argv) {
    f = fopen(argv[4],"rb");
    if(f==NULL) die("Cannot open input vector file");
    Xval = read_vals(f,&i);
-   if(i!=cols) die("Input vector size should be equalto # of columns");
+   if(i!=cols) die("Input vector size should be equal to # of columns");
    fclose(f);
    // ------------ read matrix values 
    strcpy(fname,argv[1]);
@@ -176,7 +184,7 @@ int main (int argc, char **argv) {
        sum += decode(i-rows);
      }
      else { // row completed
-       if(i!=ywritten) die("Unexpected end of row separator");
+       if(i!=ywritten) die("Incorrect end of row separator");
        e = fwrite(&sum,sizeof(matval),1,f);
        if(e!=1) die("Error writing to the output file");
        if(++ywritten>=rows) break;
@@ -184,7 +192,7 @@ int main (int argc, char **argv) {
   }
   assert(ywritten==rows);
   if(fclose(f)!=0) die("Cannot close output file");
-  if(!feof(Cf)) die("Unecpected symbols in C");
+  if(fread(&i,sizeof(int),1,Cf)>0) die("Unexpected trailing symbols in C");
   if(fclose(Cf)!=0) die("Cannot close C file");
   exit(0);
 }
