@@ -31,7 +31,7 @@ matval *NTval;  // values associated to non-terminals
 matval *Xval;    // input vector
 //matval *Yval;    // output vector 
 
-int Mnum;        // number of distincy non zero matrix values
+int Mnum;        // number of distinct non zero matrix values
 matval *Mval;    // set of distinct nonzero matrix values
 
 int Debug=0;
