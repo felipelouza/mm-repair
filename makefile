@@ -1,6 +1,8 @@
 # compilation flags
 CFLAGS=-g -Wall -std=gnu99
 CC=gcc 
+# comment out definition to get rid of malloc_count 
+MALLOC_FLAGS=mallocc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
 EXECS=remult remultf remm
@@ -15,7 +17,7 @@ all: $(EXECS) brepair
 	gcc $(CFLAGS) -o $@ $< 
 
 remm: remm.c rematrix.h
-	gcc $(CFLAGS) -o $@ $< 
+	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
 
 # special rule for remultf 
 remultf: remult.c

@@ -4,6 +4,9 @@
  * operations on repair compressed matrices
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include "rematrix.h"
+#ifdef MALLOC_COUNT
+  #include "mallocc/malloc_count.h"
+#endif
 
 
 
@@ -28,28 +31,32 @@ int main (int argc, char **argv) {
   // ------------ read input vector
   f = fopen(argv[4],"rb");
   if(f==NULL) die("Cannot open input vector file");
-  vector x = vector_create();
-  x.v = read_vals(f,&x.size);
-  if(x.size!=cols) die("Input vector size should be equal to # of columns");
+  vector *x = vector_create();
+  x->v = read_vals(f,&x->size);
+  if(x->size!=cols) die("Input vector size should be equal to # of columns");
   fclose(f);
   // ------------ read matrix
-  rematrix m = remat_create(rows,cols,argv[1]); 
+  rematrix *m = remat_create(rows,cols,argv[1]); 
   
   // compute product
-  vector y = vector_create();
-  remat_mult(&m,&x,&y);
+  vector *y = vector_create();
+  remat_mult(m,x,y);
   
   // --- open output vector file 
   f = fopen (argv[5],"w");
   if (f == NULL) die("Cannot open output vector file");
-  size_t e = fwrite(y.v,sizeof(matval),y.size,f);
-  if(e!=y.size) die("Cannot write to output file");
+  size_t e = fwrite(y->v,sizeof(matval),y->size,f);
+  if(e!=y->size) die("Cannot write to output file");
   if(fclose(f)!=0) die("Cannot close output file");
   
   // destroy 
-  vector_destroy(&y);
-  vector_destroy(&x);
-  remat_destroy(&m);
-  exit(0);
+  vector_destroy(y);
+  vector_destroy(x);
+  remat_destroy(m);
+  #ifdef MALLOC_COUNT
+    printf("Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
+           malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
+  #endif
+  return 0;
 }
 

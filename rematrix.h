@@ -2,6 +2,7 @@
  * ReMatrix
  * 
  * operations on repair compressed matrices
+ * Copyright  Giovanni Manzini 2021-
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdbool.h>
@@ -49,53 +50,56 @@ typedef struct {
 
 
 
-
-
+// main prototypes
+rematrix *remat_create(int r, int c, char *basename);
+void remat_destroy(rematrix *v);
+vector *vector_create();
+void vector_destroy(vector *v);
+void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
 xmatval decode_entry(int p, rematrix *m, vector *x);
-vector vector_create();
-void vector_destroy(vector *v);
 
-
+// local functions 
 static void die(const char *s);
 static void fill_NTval(rematrix *m, vector *x, bool share);
 
 
-rematrix remat_create(int r, int c, char *basename)
+rematrix *remat_create(int r, int c, char *basename)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
-  rematrix m;
+  rematrix *m=malloc(sizeof(rematrix));
+  if(m==NULL) die("Cannot alloc matrix");
   
-  m.rows=r; m.cols=c;
+  m->rows=r; m->cols=c;
 
   // ------------ read rules
   strcpy(fname,basename);
   strcat(fname,".il.R");
   if (stat (fname,&s) != 0)die("Cannot stat rules (.il.R) file");
   off_t len = s.st_size;
-  m.Rf = fopen (fname,"rb");
-  if (m.Rf == NULL) die("Cannot open rules (.il.R) file"); 
+  m->Rf = fopen (fname,"rb");
+  if (m->Rf == NULL) die("Cannot open rules (.il.R) file"); 
 
   // read alphabet size for the original input string 
-  if (fread(&m.Alpha,sizeof(int),1,m.Rf) != 1)  
+  if (fread(&m->Alpha,sizeof(int),1,m->Rf) != 1)  
    die("Cannot read rules (.il.R) file (1)"); 
-  m.NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
-  m.NTrules = (int *) malloc(m.NTnum*2*sizeof(int));
-  if(m.NTrules==NULL) die("Cannot allocate R array");
-  if(fread(m.NTrules,2*sizeof(int),m.NTnum,m.Rf)!=m.NTnum)
+  m->NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
+  m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
+  if(m->NTrules==NULL) die("Cannot allocate R array");
+  if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
     die("Cannot read rules (.il.R) file (2)");  
-  m.NTval = NULL;
+  m->NTval = NULL;
   
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,".il.C");
   if (stat (fname,&s) != 0) die("Cannot stat .il.C file");
-  m.Cf = fopen (fname,"r");
-  if (m.Cf == NULL) die("Cannot open .il.C file");
-  m.Clen = (s.st_size)/sizeof(int);
-  m.Cseq = (int *) malloc(m.Clen*sizeof(int));
-  if(fread(m.Cseq,sizeof(int),m.Clen,m.Cf)!=m.Clen)
+  m->Cf = fopen (fname,"r");
+  if (m->Cf == NULL) die("Cannot open .il.C file");
+  m->Clen = (s.st_size)/sizeof(int);
+  m->Cseq = (int *) malloc(m->Clen*sizeof(int));
+  if(fread(m->Cseq,sizeof(int),m->Clen,m->Cf)!=m->Clen)
    die("Cannot read .il.C files");
   
   // ------------ read matrix values 
@@ -103,7 +107,7 @@ rematrix remat_create(int r, int c, char *basename)
   strcat(fname,".val");
   f = fopen(fname,"rb");
   if(f==NULL) die("Cannot open matrix values (.val) file");
-  m.Mval = read_vals(f,&m.Mnum);
+  m->Mval = read_vals(f,&m->Mnum);
   if(fclose(f)!=0) die("Error closing values (.val) file");
 
   return m;
@@ -147,7 +151,6 @@ void remat_destroy(rematrix *m)
   if(m->NTval) {free(m->NTval); m->NTval=NULL;}
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
   
-  
   if(m->Rf!=NULL) { 
     if(fclose(m->Rf)) die("Error closing .il.R file");
     m->Rf=NULL;
@@ -156,6 +159,7 @@ void remat_destroy(rematrix *m)
     if(fclose(m->Cf)) die("Error closing .il.C file");
     m->Cf=NULL;
   }
+  free(m);
 }
 
 
@@ -170,17 +174,18 @@ xmatval decode_entry(int p, rematrix *m, vector *x)
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
 
-vector vector_create()
+vector *vector_create()
 {
-  vector w;
-  w.v = NULL;
-  w.size=0;
+  vector *w = malloc(sizeof(vector));
+  w->v = NULL;
+  w->size=0;
   return w;
 }
 
 void vector_destroy(vector *v)
 {
   if(v->v!=NULL) free(v->v);
+  free(v);
 }
 
 

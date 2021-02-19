@@ -2,6 +2,8 @@
  * ReMult
  * 
  * matrix multiplication using a repair compressed matrix
+ * first very primitive prototype
+ * Copyright  Giovanni Manzini 2021-
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdlib.h>
