@@ -79,11 +79,12 @@ rematrix remat_create(int r, int c, char *basename)
 
   // read alphabet size for the original input string 
   if (fread(&m.Alpha,sizeof(int),1,m.Rf) != 1)  
-   die("Cannot read rules (.il.R) file"); 
+   die("Cannot read rules (.il.R) file (1)"); 
   m.NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
   m.NTrules = (int *) malloc(m.NTnum*2*sizeof(int));
-  if(fread(&m.NTrules,2*sizeof(int),m.NTnum,m.Rf)!=m.NTnum)
-    die("Cannot read rules (.il.R) file");  
+  if(m.NTrules==NULL) die("Cannot allocate R array");
+  if(fread(m.NTrules,2*sizeof(int),m.NTnum,m.Rf)!=m.NTnum)
+    die("Cannot read rules (.il.R) file (2)");  
   m.NTval = NULL;
   
   // --- open and read C file
@@ -94,7 +95,7 @@ rematrix remat_create(int r, int c, char *basename)
   if (m.Cf == NULL) die("Cannot open .il.C file");
   m.Clen = (s.st_size)/sizeof(int);
   m.Cseq = (int *) malloc(m.Clen*sizeof(int));
-  if(fread(&m.Cseq,sizeof(int),m.Clen,m.Cf)!=m.Clen)
+  if(fread(m.Cseq,sizeof(int),m.Clen,m.Cf)!=m.Clen)
    die("Cannot read .il.C files");
   
   // ------------ read matrix values 
@@ -147,8 +148,14 @@ void remat_destroy(rematrix *m)
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
   
   
-  if(fclose(m->Rf)) die("Cannot open .il.R file");
-  if(fclose(m->Cf)) die("Cannot open .il.C file");
+  if(m->Rf!=NULL) { 
+    if(fclose(m->Rf)) die("Error closing .il.R file");
+    m->Rf=NULL;
+  }
+  if(m->Cf!=NULL) {
+    if(fclose(m->Cf)) die("Error closing .il.C file");
+    m->Cf=NULL;
+  }
 }
 
 
@@ -159,7 +166,7 @@ xmatval decode_entry(int p, rematrix *m, vector *x)
   size_t pcol = p % m->cols;
   size_t pval = p/m->cols;
   if(pval>=m->Mnum) die("Illegal value reference found in terminal");
-  assert(x->size<pcol);
+  assert(pcol<x->size);
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
 
@@ -174,7 +181,6 @@ vector vector_create()
 void vector_destroy(vector *v)
 {
   if(v->v!=NULL) free(v->v);
-  free(v);
 }
 
 
