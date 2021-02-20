@@ -3,7 +3,7 @@
 import sys, time, argparse, math, os.path, struct
 
 Description = """
-Count the number of occurrences of a set of values in a binaty file 
+Count the number of occurrences of a set of values in a binary file 
 """
 
 
