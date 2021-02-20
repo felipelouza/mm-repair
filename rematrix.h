@@ -2,7 +2,8 @@
  * ReMatrix
  * 
  * operations on repair compressed matrices
- * Copyright  Giovanni Manzini 2021-
+ * 
+ * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdbool.h>
@@ -18,7 +19,7 @@
 #define DEBUG 0
 
 
-#ifdef FLOAT_VALS 
+#ifndef INT_VALS 
 typedef float   matval;  // type representing a matrix entry   
 typedef double xmatval;  // type representing a matrix entry with larger precision   
 #else
@@ -88,7 +89,8 @@ rematrix *remat_create(int r, int c, char *basename)
   m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
   if(m->NTrules==NULL) die("Cannot allocate R array");
   if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
-    die("Cannot read rules (.il.R) file (2)");  
+    die("Cannot read rules (.il.R) file (2)");
+  // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
   
   // --- open and read C file
@@ -146,11 +148,13 @@ void remat_mult(rematrix *m, vector *x, vector *y)
 
 void remat_destroy(rematrix *m)
 {  
-  free(m->Cseq);
   free(m->Mval);
-  if(m->NTval) {free(m->NTval); m->NTval=NULL;}
+  // these are usually accessed seuqntially, so one could keep them on file
+  if(m->Cseq) {free(m->Cseq); m->Cseq=NULL;}
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
-  
+  if(m->NTval) {free(m->NTval); m->NTval=NULL;}
+
+  // the files were left open in case their data have to be reloaded or read form file
   if(m->Rf!=NULL) { 
     if(fclose(m->Rf)) die("Error closing .il.R file");
     m->Rf=NULL;
@@ -215,6 +219,7 @@ matval *read_vals(FILE *f, size_t *n)
 
 // compute the value associated to each non-terminal
 // possibly overwriting the rules array
+// Note: currently we are always using share=false
 static void fill_NTval(rematrix *m, vector *x, bool share) 
 {
   if(m->NTrules==NULL) die("Invalid call to fill_NTval");
@@ -223,7 +228,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
     // make sure the overwriting is possible 
     assert(sizeof(matval)<=2*sizeof(int));
     // share the same memory space 
-    m->NTval = m->NTrules;
+    m->NTval = (matval *) m->NTrules;
   }
   else {
     if(m->NTval==NULL) {
@@ -250,7 +255,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
           die("Unique row separator found in rule");
         }
         sum += decode_entry(p-m->rows,m,x);
-        #ifdef FLOAT_VALS
+        #ifndef INT_VALS 
         if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!111
         #else
         if(DEBUG) printf("%d-t: col:%d val:%d ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!111
@@ -259,7 +264,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
     }
     pair += 2;   // advance to next rule
     m->NTval[i]=sum;
-    #ifdef FLOAT_VALS
+    #ifndef INT_VALS 
     if(DEBUG) printf("  NT[%d]: %f\n",i,sum); //!!!!!!!!!
     #else 
     if(DEBUG) printf("  NT[%d]: %d\n",i,sum); //!!!!!!!!!

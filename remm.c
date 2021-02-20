@@ -5,7 +5,7 @@
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include "rematrix.h"
 #ifdef MALLOC_COUNT
-  #include "mallocc/malloc_count.h"
+#include "mc/malloc_count.h"
 #endif
 
 

@@ -1,28 +1,41 @@
 # compilation flags
 CFLAGS=-g -Wall -std=gnu99
 CC=gcc 
-# comment out definition to get rid of malloc_count 
-MALLOC_FLAGS=mallocc/malloc_count.c -DMALLOC_COUNT -ldl
+# comment out this definition to get rid of malloc_count 
+MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=remult remultf remm
+EXECS=remult iremult remm
+
+# malloc_count dedendencies for 
+ifdef MALLOC_FLAGS
+MALLOC_FILES=mc/malloc_count.c mc/malloc_count.h
+endif
 
 # targets not producing a file declared phony
 .PHONY: all brepair clean
 
+# main target
 all: $(EXECS) brepair
 
 # general rule for the targets in this directory
 %: %.c
 	gcc $(CFLAGS) -o $@ $< 
 
-remm: remm.c rematrix.h
+
+
+# single matrix vector multiplication, float entries
+remm: remm.c rematrix.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
 
-# special rule for remultf 
-remultf: remult.c
-	gcc $(CFLAGS) -o $@ $< -DFLOAT_VALS
 
+# remult was a first, unstructured, prototype is creted by the general rule above 
+# sample rule for creating the version using integers instead of float
+# if necessary the flag INT_VALS can be used also for the other tools 
+iremult: remult.c
+	gcc $(CFLAGS) -o $@ $< -DINT_VALS
+
+# directory containing the (balanced) irepar/idespair tools 
 brepair:
 	make -C brepair
 

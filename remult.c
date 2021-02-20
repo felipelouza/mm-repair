@@ -3,7 +3,8 @@
  * 
  * matrix multiplication using a repair compressed matrix
  * first very primitive prototype
- * Copyright  Giovanni Manzini 2021-
+ * 
+ * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdlib.h>
@@ -14,7 +15,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#ifdef FLOAT_VALS 
+#ifndef INT_VALS 
 typedef float   matval;  // type representing a matrix entry   
 typedef double xmatval;  // type representing a matrix entry with larger precision   
 #else
@@ -101,7 +102,7 @@ static void fill_NTval(FILE *f)
           die("Unique row separator found in rule");
         }
         sum += decode_entry(p-rows);
-        #ifdef FLOAT_VALS
+        #ifndef INT_VALS 
         if(Debug) fprintf(stderr,"t: col:%d val:%f ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
         #else
         if(Debug) fprintf(stderr,"t: col:%d val:%d ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
@@ -109,7 +110,7 @@ static void fill_NTval(FILE *f)
       }
     }
     NTval[i]=sum;
-    #ifdef FLOAT_VALS
+    #ifndef INT_VALS 
     if(Debug) fprintf(stderr,"NT[%d]: %f\n",i,sum); //!!!!!!!!!
     #else 
     if(Debug) fprintf(stderr,"NT[%d]: %d\n",i,sum); //!!!!!!!!!
