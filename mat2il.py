@@ -16,11 +16,11 @@ def main():
   parser.add_argument('cols', help='number of columns', type=int)
   parser.add_argument('-c', help='initial columns to skip (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
-  parser.add_argument('-i', help='matrix values are integers',action='store_true')
-  parser.add_argument('--sum', help='compute output file shasum',action='store_true')
+  parser.add_argument('-i', help='store matrix entries as 32-bit integers',action='store_true')
+  #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
   #parser.add_argument('-v',  help='verbose',action='store_true')
   args = parser.parse_args()
-  start0 = start = time.time()
+  start = time.time()
 
   
   with open(args.input,"rt") as f:
@@ -74,6 +74,7 @@ def main():
           wr += 1
   if wr!=args.rows:
     print("Warning! Written", wr, "rows instead of", args.rows)
+  print("Elapsed time: {0:.4f} secs".format(time.time()-start));
   print("Number of nonzeros:",nonz," Nonzero ratio: %.4f" % (nonz/(wr*args.cols)))  
   print(len(values), "distinct nonzeros values")
   print("Largest codeword:", maxcode, " bits:", math.ceil(math.log(1+maxcode,2)))

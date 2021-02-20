@@ -5,7 +5,7 @@ import sys, time, argparse, math, os.path, struct
 Description = """
 Tool to create a vector and write it to a file in binary format
 
-The default binary format is 32 bit floats; use -i to write 32 bit integers 
+The default format is 32 bit floats; use -i to write 32 bit integers 
 """
 
 
