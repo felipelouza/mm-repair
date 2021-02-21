@@ -24,8 +24,8 @@ def main():
 
   
   with open(args.input,"rt") as f:
-    # outname = args.input + ".%dx%d.il" %(args.rows,args.cols) 
-    outname = args.input + ".il"
+    # outname = args.input + ".%dx%d.vc" %(args.rows,args.cols) 
+    outname = args.input + ".vc"
     outname_val = args.input + ".val"    
     with open(outname,"wb") as g:
       with open(outname_val,"wb") as g_val:

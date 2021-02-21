@@ -55,6 +55,7 @@ typedef struct {
 rematrix *remat_create(int r, int c, char *basename);
 void remat_destroy(rematrix *v);
 vector *vector_create();
+void vector_normalize(vector *v);
 void vector_destroy(vector *v);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
@@ -76,33 +77,33 @@ rematrix *remat_create(int r, int c, char *basename)
 
   // ------------ read rules
   strcpy(fname,basename);
-  strcat(fname,".il.R");
-  if (stat (fname,&s) != 0)die("Cannot stat rules (.il.R) file");
+  strcat(fname,".vc.R");
+  if (stat (fname,&s) != 0)die("Cannot stat rules (.vc.R) file");
   off_t len = s.st_size;
   m->Rf = fopen (fname,"rb");
-  if (m->Rf == NULL) die("Cannot open rules (.il.R) file"); 
+  if (m->Rf == NULL) die("Cannot open rules (.vc.R) file"); 
 
   // read alphabet size for the original input string 
   if (fread(&m->Alpha,sizeof(int),1,m->Rf) != 1)  
-   die("Cannot read rules (.il.R) file (1)"); 
+   die("Cannot read rules (.vc.R) file (1)"); 
   m->NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
   m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
   if(m->NTrules==NULL) die("Cannot allocate R array");
   if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
-    die("Cannot read rules (.il.R) file (2)");
+    die("Cannot read rules (.vc.R) file (2)");
   // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
   
   // --- open and read C file
   strcpy(fname,basename);
-  strcat(fname,".il.C");
-  if (stat (fname,&s) != 0) die("Cannot stat .il.C file");
+  strcat(fname,".vc.C");
+  if (stat (fname,&s) != 0) die("Cannot stat .vc.C file");
   m->Cf = fopen (fname,"r");
-  if (m->Cf == NULL) die("Cannot open .il.C file");
+  if (m->Cf == NULL) die("Cannot open .vc.C file");
   m->Clen = (s.st_size)/sizeof(int);
   m->Cseq = (int *) malloc(m->Clen*sizeof(int));
   if(fread(m->Cseq,sizeof(int),m->Clen,m->Cf)!=m->Clen)
-   die("Cannot read .il.C files");
+   die("Cannot read .vc.C files");
   
   // ------------ read matrix values 
   strcpy(fname,basename);
@@ -156,11 +157,11 @@ void remat_destroy(rematrix *m)
 
   // the files were left open in case their data have to be reloaded or read form file
   if(m->Rf!=NULL) { 
-    if(fclose(m->Rf)) die("Error closing .il.R file");
+    if(fclose(m->Rf)) die("Error closing .vc.R file");
     m->Rf=NULL;
   }
   if(m->Cf!=NULL) {
-    if(fclose(m->Cf)) die("Error closing .il.C file");
+    if(fclose(m->Cf)) die("Error closing .vc.C file");
     m->Cf=NULL;
   }
   free(m);
@@ -185,6 +186,21 @@ vector *vector_create()
   w->size=0;
   return w;
 }
+
+// infinity norm normalization
+void vector_normalize(vector *w)
+{
+  matval norm = 0;
+  for(int i=0;i<w->size;i++) {
+    matval t = w->v[i]>0 ? w->v[i] : -w->v[i];
+    if(t>norm) norm=t;
+  }
+  assert(norm>=0);
+  if(norm>0) 
+    for(int i=0;i<w->size;i++)
+      w->v[i] = w->v[i]/norm;
+}  
+
 
 void vector_destroy(vector *v)
 {
