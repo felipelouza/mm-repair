@@ -7,13 +7,13 @@ Clone/download then `make`. There are no external dependencies.
 
 ## Sample computation
 
-Given the `covtype` matrix in csv format (581012 rows, 54 columns) we compress it with the commands:
+Given the `covtype` matrix in csv format (581012 rows, 54 columns) we compress it with the command:
+```
+matrepair covtype 581012 54
+```
+that creates the three files `covtype.val`, `covtype.vc.R` and `covtype.vc.C` representing the original matrix. 
 
-```
-mat2vc.py covtype 581012 54
-brepair/irepair covtype.vc 20000
-```
-(the second argument to irepair is the available memory in MBs). Then we create a vector containig 54 entries equal to 1.0 and store it to the file `x54.float`:
+Next, we create a vector containig 54 entries equal to 1.0 and store it to the file `x54.float`:
 ```
 makevec.py x54.float 54 1
 ```
@@ -39,7 +39,10 @@ od -An -t f4 y.float | head
 
 ## Tools
 
-### mat2ivc.py
+### matrepair
+Tool to compute a grammar compressed matrix multiplication friendly version of a matrix given in `.csv` format. Calls the tools `mat2vc` and `irepair` (below) and, with option `-r`, shows a nice report detailing running times and compression ratio
+
+### mat2vc.py
 Tool to preprocess a matrix in csv format; creates a `.vc` and `.val` files containing a value-column representation of the matrix nonzero elements. 
 Each nonzero element *a = A[i][j]* is represented by an integer encoding a pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value $a$. 
 
