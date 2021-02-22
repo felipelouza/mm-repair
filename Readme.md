@@ -17,11 +17,11 @@ Next, we create a vector containig 54 entries equal to 1.0 and store it to the f
 ```
 makevec.py x54.dbl 54 1
 ```
-Now we can compute the matrix vector product with the command:
+Now we can compute the matrix vector products $$y=Mx$$ and $$z^T = y^T M$$ with the command:
 ```
-remm covtype 581012 54 x54.dbl y.dbl
+remm covtype 581012 54 x54.dbl y.dbl z.dbl
 ```
-The output vector `y.dbl` has size 581012 and contains the sum of the entries of each row:
+The output vector `y.dbl` has length 581012 and contains the sum of the entries of each row:
 ```
 od -An -t f8 y.dbl | head
            10300           10077           13195           13219
@@ -34,6 +34,20 @@ od -An -t f8 y.dbl | head
            13116           12910           12772            9515
             9532            9490            9519           13058
            12793            9619           12848           12952
+```
+The output vector `z.dbl` has length 54 and contains the sum of the entries of each column of $$A^T A$$:
+```
+od -An -t f8 z.dbl | head
+           14549643830975             757939056719
+              65655800755            1372019643035
+             227139887795           13332507438427
+            1032604199658            1089965982517
+             697072520994           11059033547178
+               2526285260                225296661
+               1924930316                178077606
+                 12992451                 43226269
+                 24825698                 78839086
+                  7002929                 33807845
 ```
 
 

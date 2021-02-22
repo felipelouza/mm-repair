@@ -1,7 +1,8 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  * ReMatrix
  * 
- * operations on repair compressed matrices
+ * multiplication on repair compressed matrices
+ * Given a matrix M and a vector x computes y=Mx and z^T = y^T M
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include "rematrix.h"
 #ifdef MALLOC_COUNT
@@ -10,7 +11,7 @@
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t %s [-n mul] <matrix> rows cols <invector> <outvector> \n",name);
+    fprintf(stderr,"Usage:\n\t %s [-n mul] <matrix> rows cols <xvector> <yvector> <zvector>\n",name);
     fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n\n");
     exit(1);
 }
@@ -46,7 +47,7 @@ int main (int argc, char **argv) {
   }  
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 6) usage_and_exit(argv[0]); 
+  if (argc-optind != 7) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
   // ----------- read and check # rows and cols 
@@ -76,13 +77,14 @@ int main (int argc, char **argv) {
     remat_left_mult(y,m,z);
   }
   
-  // --- open output vector file 
+  // --- open output y vector file 
   f = fopen (argv[5],"w");
   if (f == NULL) die("Cannot open output vector file");
   size_t e = fwrite(y->v,sizeof(matval),y->size,f);
   if(e!=y->size) die("Cannot write to output file");
   if(fclose(f)!=0) die("Cannot close output file");
-  f = fopen ("z.dbl","w");
+  // --- open output z vector file 
+  f = fopen (argv[6],"w");
   if (f == NULL) die("Cannot open output vector file 2");
   e = fwrite(z->v,sizeof(matval),z->size,f);
   if(e!=z->size) die("Cannot write to output file 2");

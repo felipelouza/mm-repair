@@ -70,6 +70,7 @@ void decode_terminal(int p, rematrix *m, matval *a, size_t *c);
 static void die(const char *s);
 static void fill_NTval(rematrix *m, vector *x, bool share);
 static void clear_NTval(rematrix *m);
+static void propagate_NTval(rematrix *m, vector *x);
 
 
 rematrix *remat_create(int r, int c, char *basename)
@@ -153,8 +154,9 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   assert(sum==0);
 }
 
+
 // left multiply the (rows x cols) matrix m by the
-// vector y^T of size (1 x rows), obtaining x^T of size (1 x cols)  
+// vector y^T of size (1 x rows), obtaining x^T of size (1 x cols)
 void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure the rules are available and dimensions agree
@@ -191,31 +193,8 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
     }
   }
   assert(ycur==y->size);
-
-  // scan rules in reverse order
-  int *pair = m->NTrules;
-  for(ssize_t i=m->NTnum-1;i>=0;i--) {
-    xmatval s = m->NTval[i];
-    for(int j=0;j<2;j++) {      
-      int p = pair[j];
-      if(p>=m->Alpha) { // non terminal
-        p -= m->Alpha;
-        if(p>=i) die("Fatal Error: Forward rule");
-        m->NTval[p] += s;
-      }
-      else { // terminal symbol
-        if(p<m->rows) die("Unique row separator found in rule (left-mult)");
-        decode_terminal(p,m,&a,&col);
-        assert(col<x->size);
-        x->v[col] += a * s;
-      }
-    }
-    pair += 2;   // advance to next rule
-  }
+  propagate_NTval(m,x);
 }
-
-
-
 
 
 void remat_destroy(rematrix *m)
@@ -326,10 +305,40 @@ static void clear_NTval(rematrix *m)
   for(size_t i=0;i<m->NTnum;i++) m->NTval[i] = 0;
 }
 
+// propagate NTvalues up to the terminals and the x array
+// used in left multiplication 
+static void propagate_NTval(rematrix *m, vector *x) 
+{
+  // variables used by decode_terminal 
+  matval a; size_t col;   
+  // scan rules in reverse order
+  int *pair = m->NTrules + 2*m->NTnum;  // pointer beyond the last rule 
+  for(ssize_t i=m->NTnum-1;i>=0;i--) {
+    xmatval s = m->NTval[i]; // value associated to rule i
+    pair -= 2;               // go back one rule in m->NTrules
+    for(int j=0;j<2;j++) {   // propagate s to rule i right-hand-size   
+      int p = pair[j];
+      if(p>=m->Alpha) { // non terminal
+        p -= m->Alpha;
+        if(p>=i) die("Fatal Error: Forward rule (propagate_NTval)");
+        m->NTval[p] += s;    // add s to value of p-th non-terminal
+      }
+      else { // terminal symbol
+        if(p<m->rows) die("Unique row separator found in rule (propagate_NTval)");
+        decode_terminal(p,m,&a,&col);
+        assert(col<x->size);
+        x->v[col] += a * s;
+      }
+    }
+  }
+  assert(pair==m->NTrules);
+}
 
 // compute the value associated to each non-terminal
-// possibly overwriting the rules array
-// Note: currently we are always using share=false
+// possibly overwriting the rule array if share==true
+// used by right multiplcation 
+// Note: currently we are always using share=false since the rule
+// array will be needed in any additional operation  
 static void fill_NTval(rematrix *m, vector *x, bool share) 
 {
   if(m->NTrules==NULL) die("Invalid call to fill_NTval");
@@ -355,7 +364,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
       int p = pair[j];
       if(p>=m->Alpha) { // non terminal
         p -= m->Alpha;
-        if(p>=i) die("Fatal Error: Forward rule");
+        if(p>=i) die("Fatal Error: Forward rule (fill_NTval)");
         sum += m->NTval[p];
         if(DEBUG) printf("%d-nt:%d  ",j,p);//!!!!!!!!!!!!
       }
@@ -380,7 +389,6 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
     if(DEBUG) printf("  NT[%d]: %d\n",i,sum); //!!!!!!!!!
     #endif
   }
-  
   // make NTrules[] invalid
   if(share) m->NTrules = NULL;
   return;  
