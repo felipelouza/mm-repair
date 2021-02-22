@@ -19,8 +19,13 @@
 #define DEBUG 0
 
 
+// the use of float's has not been fully tested 
 #ifndef INT_VALS 
-typedef float   matval;  // type representing a matrix entry   
+  #ifndef FLOAT_VALS
+  typedef double matval;  // type representing a matrix/vector entry
+  #else
+  typedef float  matval;  // type representing a matrix/vector entry
+  #endif     
 typedef double xmatval;  // type representing a matrix entry with larger precision   
 #else
 typedef int matval;     // type representing a matrix entry   
@@ -33,12 +38,12 @@ typedef int xmatval;    // type representing a matrix entry with larger precisio
 typedef struct {
   int rows,cols;  // # rows and columns of input matrix 
   int Alpha;      // alphabet size of input matrix representation/smallest non terminal symbol 
-  size_t NTnum;      // number of non terminals 
+  size_t NTnum;   // number of non terminals 
   int *NTrules;   // right hand side of non-terminal 
   matval *NTval;  // values associated to non-terminals (memory shared with NTrules)
   int *Cseq;      // array C of repair grammar
-  size_t Clen;       // len of C array
-  size_t Mnum;       // number of distinct non zero matrix values
+  size_t Clen;    // len of C array
+  size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
   FILE *Cf;       // C file 
   FILE *Rf;       // R file  
@@ -48,7 +53,6 @@ typedef struct {
   matval *v;
   size_t size;
 } vector;
-
 
 
 // main prototypes
@@ -174,7 +178,7 @@ xmatval decode_entry(int p, rematrix *m, vector *x)
 {
   size_t pcol = p % m->cols;
   size_t pval = p/m->cols;
-  if(pval>=m->Mnum) die("Illegal value reference found in terminal");
+  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol");
   assert(pcol<x->size);
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
@@ -272,9 +276,9 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
         }
         sum += decode_entry(p-m->rows,m,x);
         #ifndef INT_VALS 
-        if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!111
+        if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!
         #else
-        if(DEBUG) printf("%d-t: col:%d val:%d ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!111
+        if(DEBUG) printf("%d-t: col:%d val:%d ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!
         #endif
       }
     }

@@ -4,7 +4,7 @@ import sys, time, argparse, math, os.path, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into a sort of inverted list, suitable for grammar compression 
+in a the value-column representation, generating a .vc and a .val file 
 """
 
 shasum_exe = "sha256sum"
@@ -16,13 +16,16 @@ def main():
   parser.add_argument('cols', help='number of columns', type=int)
   parser.add_argument('-c', help='initial columns to skip (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
+  parser.add_argument('-f', help='store matrix entries as 32-bit integers',action='store_true')
   parser.add_argument('-i', help='store matrix entries as 32-bit integers',action='store_true')
   #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
   #parser.add_argument('-v',  help='verbose',action='store_true')
   args = parser.parse_args()
-  start = time.time()
-
+  if args.i and args.f:
+    print("Error: Options -f and -i are mutually exclusive");
+    return 
   
+  start = time.time()
   with open(args.input,"rt") as f:
     # outname = args.input + ".%dx%d.vc" %(args.rows,args.cols) 
     outname = args.input + ".vc"
@@ -58,8 +61,9 @@ def main():
               if x not in values:
                 newid = len(values)
                 values[x] = newid
-                if args.i: g_val.write(struct.pack("<i", x))
-                else:      g_val.write(struct.pack("<f", x))
+                if   args.i: g_val.write(struct.pack("<i", x)) # 32-bit int
+                elif args.f: g_val.write(struct.pack("<f", x)) # 32-bit float
+                else:        g_val.write(struct.pack("<d", x)) # 64-bit double 
               assert x in values
               # create code combining value id and column number
               code = values[x]*args.cols + i 

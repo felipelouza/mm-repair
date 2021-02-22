@@ -21,7 +21,6 @@ int main (int argc, char **argv) {
   extern int optind, opterr, optopt;
   FILE *f;
   int rows,cols,c,iter=1;
-  
   // ----------- check input
   fputs("==== Command line:\n",stderr);
   for(int i=0;i<argc;i++)
