@@ -112,7 +112,7 @@ def compression_report(args,tconv,trepair,ttot):
   print(" >> conversion time: {0:.2f}".format(tconv))
   print(" >> repair time: {0:.2f}".format(trepair))
   print(" >> total time: {0:.2f}".format(ttot))  
-  isize = 4*args.rows*args.cols
+  isize = 8*args.rows*args.cols
   print(" >> matrix dense size:",isize, "bytes")
   psize = os.path.getsize(args.input)
   print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
@@ -123,6 +123,7 @@ def compression_report(args,tconv,trepair,ttot):
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
   print(" >> compressed size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
 
 
 def show_command_line(f):

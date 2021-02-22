@@ -64,10 +64,12 @@ void vector_destroy(vector *v);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
 xmatval decode_entry(int p, rematrix *m, vector *x);
+void decode_terminal(int p, rematrix *m, matval *a, size_t *c);
 
 // local functions 
 static void die(const char *s);
 static void fill_NTval(rematrix *m, vector *x, bool share);
+static void clear_NTval(rematrix *m);
 
 
 rematrix *remat_create(int r, int c, char *basename)
@@ -122,42 +124,107 @@ rematrix *remat_create(int r, int c, char *basename)
 
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
+  if(m->cols!=x->size) die("Dimension mismatch (mult)");   
   // compute NT values according to x
   fill_NTval(m,x,false);
   // create y
   y->size = m->rows;
   y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
-   // --- compute output 
-   int ywritten = 0;
-   xmatval sum=0;
-   for(size_t j=0; j < m->Clen; j++) {
-     int i = m->Cseq[j];
-     if(i>=m->Alpha) { // non terminal 
-       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
-       sum += m->NTval[i];
-     }
-     else if(i>=m->rows) {// terminal representing a matrix entry
-       sum += decode_entry(i-m->rows,m,x);
-     }
-     else { // row completed
-       if(i!=ywritten) die("Incorrect end of row separator");
-       y->v[ywritten] = (matval) sum;
-       sum = 0;
-       if(++ywritten==m->rows) assert(j+1==m->Clen);
-     }
+  // --- compute output 
+  int ycur = 0;
+  xmatval sum=0;
+  for(size_t j=0; j < m->Clen; j++) {
+    int i = m->Cseq[j];
+    if(i>=m->Alpha) { // non terminal 
+     if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
+     sum += m->NTval[i];
+    }
+    else if(i>=m->rows) {// terminal representing a matrix entry
+     sum += decode_entry(i-m->rows,m,x);
+    }
+    else { // row completed
+     if(i!=ycur) die("Incorrect end of row separator");
+     y->v[ycur] = (matval) sum;
+     sum = 0;
+     if(++ycur==y->size) assert(j+1==m->Clen);
+    }
   }
-  assert(ywritten==m->rows);
+  assert(ycur==y->size);
   assert(sum==0);
 }
+
+// left multiply the (rows x cols) matrix m by the
+// vector y^T of size (1 x rows), obtaining x^T of size (1 x cols)  
+void remat_left_mult(vector *y, rematrix *m, vector *x)
+{
+  // make sure the rules are available and dimensions agree
+  if(m->NTrules==NULL) die("Rules array missing");
+  if(m->rows!=y->size) die("Dimension mismatch (left-mult)");   
+  // clean NT values
+  clear_NTval(m);
+  // create x and clean it 
+  x->size = m->cols;
+  x->v = (matval *) realloc(x->v,x->size*sizeof(matval));
+  for(size_t i=0;i<x->size;i++) x->v[i]=0;
+
+  // propagate y-values down the tree  
+  // variables used by decode_terminal 
+  matval a; size_t col;   
+  // start scanning C
+  int ycur=0;
+  for(size_t j=0; j<m->Clen;j++) {  
+    int i = m->Cseq[j];
+    if(i>=m->Alpha) { // non terminal 
+      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
+      assert(ycur < y->size);
+      assert(i<m->NTnum);
+      m->NTval[i] += y->v[ycur];
+    }
+    else if(i>=m->rows) {// terminal representing a matrix entry
+      decode_terminal(i,m,&a,&col);
+      assert(col<x->size);
+      x->v[col] += a * y->v[ycur];
+    }
+    else { // row completed
+      if(i!=ycur) die("Incorrect end of row separator (left-mul)");
+      if(++ycur==y->size) assert(j+1==m->Clen);
+    }
+  }
+  assert(ycur==y->size);
+
+  // scan rules in reverse order
+  int *pair = m->NTrules;
+  for(ssize_t i=m->NTnum-1;i>=0;i--) {
+    xmatval s = m->NTval[i];
+    for(int j=0;j<2;j++) {      
+      int p = pair[j];
+      if(p>=m->Alpha) { // non terminal
+        p -= m->Alpha;
+        if(p>=i) die("Fatal Error: Forward rule");
+        m->NTval[p] += s;
+      }
+      else { // terminal symbol
+        if(p<m->rows) die("Unique row separator found in rule (left-mult)");
+        decode_terminal(p,m,&a,&col);
+        assert(col<x->size);
+        x->v[col] += a * s;
+      }
+    }
+    pair += 2;   // advance to next rule
+  }
+}
+
+
+
 
 
 void remat_destroy(rematrix *m)
 {  
   free(m->Mval);
-  // these are usually accessed seuqntially, so one could keep them on file
-  if(m->Cseq) {free(m->Cseq); m->Cseq=NULL;}
+  // these are usually accessed sequentially, so one could keep them on file
+  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
-  if(m->NTval) {free(m->NTval); m->NTval=NULL;}
+  if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
 
   // the files were left open in case their data have to be reloaded or read form file
   if(m->Rf!=NULL) { 
@@ -169,6 +236,18 @@ void remat_destroy(rematrix *m)
     m->Cf=NULL;
   }
   free(m);
+}
+
+
+// get value and column from terminal symbol (not end-of-row)
+void decode_terminal(int p, rematrix *m, matval *a, size_t *c)
+{
+  assert(p>=m->rows);
+  p -= m->rows;
+  *c = p % m->cols;
+  size_t pval = p/m->cols;
+  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol");
+  *a = m->Mval[pval];  
 }
 
 
@@ -235,6 +314,17 @@ matval *read_vals(FILE *f, size_t *n)
   return a;
 }
 
+// init to zero all entries of NTval
+// possibly allocate the array, but otherwise just clean it 
+// loosing the original content 
+static void clear_NTval(rematrix *m)
+{
+  if(m->NTval==NULL) {
+    m->NTval = (matval *) malloc(m->NTnum*sizeof(matval));
+    if(m->NTval==NULL) die("Cannot allocate NTval (clear)");
+  }
+  for(size_t i=0;i<m->NTnum;i++) m->NTval[i] = 0;
+}
 
 
 // compute the value associated to each non-terminal
@@ -253,7 +343,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
   else {
     if(m->NTval==NULL) {
       m->NTval = (matval *) malloc(m->NTnum*sizeof(matval));
-      if(m->NTval==NULL) die("Cannot allocate NTval");
+      if(m->NTval==NULL) die("Cannot allocate NTval (fill)");
     }
   } 
   

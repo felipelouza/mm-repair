@@ -64,13 +64,16 @@ int main (int argc, char **argv) {
   // ------------ read matrix
   rematrix *m = remat_create(rows,cols,argv[1]); 
   
-  // compute product
+  // compute products
   vector *y = vector_create();
+  vector *z = vector_create();
   remat_mult(m,x,y);
+  remat_left_mult(y,m,z);
   for(int i=1;i<iter;i++) {
     memcpy(x->v,y->v,sizeof(matval)*(rows<cols?rows:cols));
     vector_normalize(x); 
     remat_mult(m,x,y);
+    remat_left_mult(y,m,z);
   }
   
   // --- open output vector file 
@@ -79,8 +82,14 @@ int main (int argc, char **argv) {
   size_t e = fwrite(y->v,sizeof(matval),y->size,f);
   if(e!=y->size) die("Cannot write to output file");
   if(fclose(f)!=0) die("Cannot close output file");
+  f = fopen ("z.dbl","w");
+  if (f == NULL) die("Cannot open output vector file 2");
+  e = fwrite(z->v,sizeof(matval),z->size,f);
+  if(e!=z->size) die("Cannot write to output file 2");
+  if(fclose(f)!=0) die("Cannot close output file 2");
   
   // destroy 
+  vector_destroy(z);
   vector_destroy(y);
   vector_destroy(x);
   remat_destroy(m);
