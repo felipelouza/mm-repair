@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, time, argparse, subprocess, os.path, tempfile
+import sys, time, argparse, subprocess, os.path, struct
 from psutil import virtual_memory
 
 Description = """
@@ -122,8 +122,9 @@ def compression_report(args,tconv,trepair,ttot):
   csize = os.path.getsize(args.input+".vc.C") 
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
-  print(" >> compressed size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
+  print(" >> Uncompressed size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  # print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
+  estimate_space_usage(args.input)
 
 
 def show_command_line(f):
@@ -158,6 +159,34 @@ def execute_command(command,logfile,outfile=None):
     return False
   return True
 
+# number of bits to represent integers fro 0 up to n-1
+def bits(n):
+  assert n>0
+  b = maxv = 1
+  while(maxv<n-1):
+    b +=1
+    maxv = 1+2*maxv
+  return b
+
+# estimate space usage of RePAir outpit using the minimum number of bits 
+# for symbol, no other complex econding
+# include also the .val file  
+def estimate_space_usage(basename):
+  rsize = os.path.getsize(basename+".vc.R")
+  assert (rsize-4)%8 == 0, "Invalid .R file format" 
+  nnonterm = (rsize-4)//8   # number of non terminals 
+  with open(basename + ".vc.R","rb") as f:
+    s = f.read(4)
+    nterm = struct.unpack('I',s)[0] # read # of terminals in first 32 bit uint
+  totbits = bits(nterm+nnonterm)
+  print(">> Terminals:",nterm," Non-terminals:", nnonterm, " Total:", nterm+nnonterm, \
+        " Bits x symbol:", totbits)
+  numc = os.path.getsize(basename+".vc.C")//4   # symbols in C string 
+  tot = ((numc+2*nnonterm)*totbits+7)// 8       # bytes to represent C+R
+  tot += 4 + os.path.getsize(basename+".val")   # 1 extra byte in R and val file 
+  print(">> Compressed representation size (bytes):",tot)
+
+  
 
 if __name__ == '__main__':
   main()
