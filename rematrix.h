@@ -63,8 +63,8 @@ void vector_normalize(vector *v);
 void vector_destroy(vector *v);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
-xmatval decode_entry(int p, rematrix *m, vector *x);
-void decode_terminal(int p, rematrix *m, matval *a, size_t *c);
+xmatval decode_mult_entry(int p, rematrix *m, vector *x);
+xmatval decode_entry(int p, rematrix *m, size_t *c);
 
 // local functions 
 static void die(const char *s);
@@ -140,11 +140,10 @@ void remat_mult(rematrix *m, vector *x, vector *y)
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
     }
-    else if(i>=m->rows) {// terminal representing a matrix entry
-     sum += decode_entry(i-m->rows,m,x);
+    else if(i>0) {// terminal representing a matrix entry
+     sum += decode_mult_entry(i-1,m,x);
     }
-    else { // row completed
-     if(i!=ycur) die("Incorrect end of row separator");
+    else { // i==0 row completed
      y->v[ycur] = (matval) sum;
      sum = 0;
      if(++ycur==y->size) assert(j+1==m->Clen);
@@ -170,9 +169,9 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
   // propagate y-values down the tree  
-  // variables used by decode_terminal 
-  matval a; size_t col;   
-  // start scanning C
+  // variables used by decode_entry 
+  xmatval a; size_t col;   
+  // propagates y=values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
     int i = m->Cseq[j];
@@ -182,17 +181,17 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
       assert(i<m->NTnum);
       m->NTval[i] += y->v[ycur];
     }
-    else if(i>=m->rows) {// terminal representing a matrix entry
-      decode_terminal(i,m,&a,&col);
+    else if(i>0) {// terminal representing a matrix entry
+      a = decode_entry(i-1,m,&col);
       assert(col<x->size);
       x->v[col] += a * y->v[ycur];
     }
-    else { // row completed
-      if(i!=ycur) die("Incorrect end of row separator (left-mul)");
+    else { // i==0 row completed
       if(++ycur==y->size) assert(j+1==m->Clen);
     }
   }
   assert(ycur==y->size);
+  // propagate y-values to x through the set of rules rules 
   propagate_NTval(m,x);
 }
 
@@ -218,25 +217,24 @@ void remat_destroy(rematrix *m)
 }
 
 
-// get value and column from terminal symbol (not end-of-row)
-void decode_terminal(int p, rematrix *m, matval *a, size_t *c)
+// get value and column from terminal representing a matrix entry
+xmatval decode_entry(int p, rematrix *m, size_t *c)
 {
-  assert(p>=m->rows);
-  p -= m->rows;
   *c = p % m->cols;
   size_t pval = p/m->cols;
-  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol");
-  *a = m->Mval[pval];  
+  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_terminal)");
+  return m->Mval[pval];  
 }
 
 
 // decode a terminal representing a matrix entry
-// the matrix value is multiplied by the corresponding X entry 
-xmatval decode_entry(int p, rematrix *m, vector *x)
+// do not return the column index, instead the matrix
+// value is multiplied by the corresponding X entry 
+xmatval decode_mult_entry(int p, rematrix *m, vector *x)
 {
   size_t pcol = p % m->cols;
   size_t pval = p/m->cols;
-  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol");
+  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_mult_entry)");
   assert(pcol<x->size);
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
@@ -309,8 +307,8 @@ static void clear_NTval(rematrix *m)
 // used in left multiplication 
 static void propagate_NTval(rematrix *m, vector *x) 
 {
-  // variables used by decode_terminal 
-  matval a; size_t col;   
+  // variables used by decode_entry 
+  xmatval a; size_t col;   
   // scan rules in reverse order
   int *pair = m->NTrules + 2*m->NTnum;  // pointer beyond the last rule 
   for(ssize_t i=m->NTnum-1;i>=0;i--) {
@@ -324,8 +322,8 @@ static void propagate_NTval(rematrix *m, vector *x)
         m->NTval[p] += s;    // add s to value of p-th non-terminal
       }
       else { // terminal symbol
-        if(p<m->rows) die("Unique row separator found in rule (propagate_NTval)");
-        decode_terminal(p,m,&a,&col);
+        if(p==0) die("Unique row separator found in rule (propagate_NTval)");
+        a = decode_entry(p-1,m,&col);
         assert(col<x->size);
         x->v[col] += a * s;
       }
@@ -369,11 +367,11 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
         if(DEBUG) printf("%d-nt:%d  ",j,p);//!!!!!!!!!!!!
       }
       else { // terminal symbol
-        if(p<m->rows) {
+        if(p==0) {
           if(DEBUG) printf("%d-sep: %d  ",j,p);//!!!!!!!!
           die("Unique row separator found in rule");
         }
-        sum += decode_entry(p-m->rows,m,x);
+        sum += decode_mult_entry(p-1,m,x);
         #ifndef INT_VALS 
         if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!
         #else

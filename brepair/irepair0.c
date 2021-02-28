@@ -81,8 +81,9 @@ int MB;
 
 int did0 = 0; // did prepare0 or not
 
-// return treu if this pairs of symbols sould never appeat
+// return true if this pairs of symbols sould never appeat
 // as the left-hand side of a rule
+// Only for the case left==0 or right==0
 int forbidden_pair(int left, int right)
 {
   return (left==0) || (right==0);
@@ -405,7 +406,7 @@ relong repair (FILE *R) {
           }
           // create occ of ae
           pair.right = n;
-          if(!forbidden_pair(pair.left,pair.right)) {
+          if(forbidden_pair(pair.left,pair.right)) {
             L[ant].prev = NullFreq; L[ant].next = -1;
           }
           else {
