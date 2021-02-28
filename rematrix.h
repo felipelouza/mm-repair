@@ -227,8 +227,8 @@ xmatval decode_entry(int p, rematrix *m, size_t *c)
 }
 
 
-// decode a terminal representing a matrix entry
-// do not return the column index, instead the matrix
+// decodes a terminal representing a matrix entry
+// does not return the column index, instead the matrix
 // value is multiplied by the corresponding X entry 
 xmatval decode_mult_entry(int p, rematrix *m, vector *x)
 {
@@ -239,6 +239,7 @@ xmatval decode_mult_entry(int p, rematrix *m, vector *x)
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
 
+// return a pointer to an empty vector object
 vector *vector_create()
 {
   vector *w = malloc(sizeof(vector));

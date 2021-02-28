@@ -17,7 +17,7 @@ Column-value representation + Repair compression
 
 # path of the auxiliary tools
 # irepair with memory constraint (symbols are integers) 
-irepair_exe = "brepair/irepair"
+irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
 # tool to compute the calue-colum representation of a csv matrix
@@ -151,7 +151,7 @@ def execute_command(command,logfile,outfile=None):
     #subprocess.run(command.split(),stdout=logfile,stderr=logfile,check=True,env=env)
     if not outfile:
       outfile = logfile
-    subprocess.check_call(command.split(),stdout=outfile,stderr=logfile)
+    subprocess.check_call(command.split(),stdout=logfile,stderr=logfile)
   except subprocess.CalledProcessError:
     print("Error executing command line:")
     print("\t"+ command)
@@ -179,12 +179,12 @@ def estimate_space_usage(basename):
     s = f.read(4)
     nterm = struct.unpack('I',s)[0] # read # of terminals in first 32 bit uint
   totbits = bits(nterm+nnonterm)
-  print(">> Terminals:",nterm," Non-terminals:", nnonterm, " Total:", nterm+nnonterm, \
+  print(" >> Terminals:",nterm," Non-terminals:", nnonterm, " Total:", nterm+nnonterm, \
         " Bits x symbol:", totbits)
   numc = os.path.getsize(basename+".vc.C")//4   # symbols in C string 
   tot = ((numc+2*nnonterm)*totbits+7)// 8       # bytes to represent C+R
   tot += 4 + os.path.getsize(basename+".val")   # 1 extra byte in R and val file 
-  print(">> Compressed representation size (bytes):",tot)
+  print(" >> Compressed representation size (bytes):",tot)
 
   
 

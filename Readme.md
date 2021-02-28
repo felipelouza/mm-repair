@@ -17,7 +17,7 @@ Next, we create a vector containig 54 entries equal to 1.0 and store it to the f
 ```
 makevec.py x54.dbl 54 1
 ```
-Now we can compute the matrix vector products $$y=Mx$$ and $$z^T = y^T M$$ with the command:
+Now we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ with the command:
 ```
 remm covtype 581012 54 x54.dbl y.dbl z.dbl
 ```
@@ -35,7 +35,7 @@ od -An -t f8 y.dbl | head
             9532            9490            9519           13058
            12793            9619           12848           12952
 ```
-The output vector `z.dbl` has length 54 and contains the sum of the entries of each column of $$A^T A$$:
+The output vector `z.dbl` has length 54 and contains the sum of the entries of each column of $`A^T A`$:
 ```
 od -An -t f8 z.dbl | head
            14549643830975             757939056719
@@ -54,13 +54,13 @@ od -An -t f8 z.dbl | head
 ## Tools
 
 ### matrepair
-Tool to compute a grammar compressed matrix multiplication friendly version of a matrix given in `.csv` format. Calls the tools `mat2vc` and `irepair` (below) and, with option `-r`, shows a nice report detailing running times and compression ratio
+Tool to compute a grammar compressed matrix multiplication friendly version of a matrix given in `.csv` format. Calls the tools `mat2vc` and `irepair0` (below) and, with option `-r`, shows a nice report detailing running times and compression ratio
 
 ### mat2vc.py
 Tool to preprocess a matrix in csv format; creates a `.vc` and `.val` files containing a value-column representation of the matrix nonzero elements. 
 Each nonzero element *a = A[i][j]* is represented by an integer encoding a pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. 
 
-### brepair/irepair
+### brepair/irepair0
 Tool to compute an integer based repair of the `.vc` file. Produces a `.vc.R` (rules) and `.vc.C` (sequence) files.
 
 ### makevec.py

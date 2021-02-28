@@ -22,7 +22,7 @@ def main():
   #parser.add_argument('-v',  help='verbose',action='store_true')
   args = parser.parse_args()
   if args.i and args.f:
-    print("Error: Options -f and -i are mutually exclusive");
+    print("Error: Options -f and -i are mutually exclusive",file=sys.stderr);
     return 
   
   start = time.time()
@@ -40,14 +40,14 @@ def main():
         for line in f:
           r += 1
           if wr>=args.rows:
-            print("Warning: not all matrix rows have been processed")
+            print("Warning: not all matrix rows have been processed",file=sys.stderr)
             break 
           if r<=args.r: continue   # skip first args.r rows
           a = line.rstrip().split(",")
           a = a[args.c:] # remove initial arg.c columns
           if len(a)!=args.cols:
             # row with wrong number of elements: print error msg and exit
-            print(a); print("row", r,"has", len(a), "elements")
+            print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
             sys.exit(1)
           ## convert to double or integer (if option -i was given)
           if args.i: b = [  int(s) for s in a]
@@ -69,7 +69,7 @@ def main():
               code = values[x]*args.cols + i 
               code += 1              # shift by 1 to allow code for endrowcode 0 
               if code>= 2**30:
-                printf("Code", code, "larger than 2**30. We are in trouble")
+                printf("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
                 sys.exit(1)
               if code>maxcode: maxcode=code
               g.write(struct.pack("<I", code))
@@ -77,12 +77,12 @@ def main():
           g.write(struct.pack("<I", 0)) # not-so-uninque EOR code (was wr  now is 0 for all rows)
           wr += 1
   if wr!=args.rows:
-    print("Warning! Written", wr, "rows instead of", args.rows)
-  print("Elapsed time: {0:.4f} secs".format(time.time()-start));
-  print("Number of nonzeros:",nonz," Nonzero ratio: %.4f" % (nonz/(wr*args.cols)))  
-  print(len(values), "distinct nonzeros values")
-  print("Largest codeword:", maxcode, " bits:", math.ceil(math.log(1+maxcode,2)))
-  print("==== Done")
+    print("Warning! Written", wr, "rows instead of", args.rows,file=sys.stderr)
+  print("Elapsed time: {0:.4f} secs".format(time.time()-start),file=sys.stderr);
+  print("Number of nonzeros:",nonz," Nonzero ratio: %.4f" % (nonz/(wr*args.cols)),file=sys.stderr)  
+  print(len(values), "distinct nonzeros values",file=sys.stderr)
+  print("Largest codeword:", maxcode, " bits:", math.ceil(math.log(1+maxcode,2)),file=sys.stderr)
+  print("==== Done",file=sys.stderr)
 
 
 # compute hash digest for a file 
