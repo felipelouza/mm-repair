@@ -38,10 +38,10 @@ def main():
   parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
   args = parser.parse_args()
-  # if no max RAM provided on command line uses 95% of total 
+  # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
-    args.m = max(100,int(0.95*mem/2**20)) # avoid accidental 0 since it triggers plain repair w/out memory constraints 
+    args.m = max(1000,int(0.90*mem/2**20)) # avoid accidental 0 in case virtual_memory misbehave
 
   logfile_name = args.input + ".log"
   # get absolute path to main matrepair directory 

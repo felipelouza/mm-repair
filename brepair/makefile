@@ -1,4 +1,4 @@
-EXECS = irepair idespair
+EXECS = irepair irepair0 idespair
 CFLAGS = -Wall -g -m64 -O3
 
 # these excutables are not used by BigRepair 
@@ -28,6 +28,13 @@ irepair: irepair.o array.o hash.o heap.o records.o basics.o makefile
 
 irepair.o: irepair.c array.h hash.h heap.h records.h basics.h makefile
 	gcc $(CFLAGS) -c irepair.c
+
+irepair0: irepair0.o array.o hash.o heap.o records.o basics.o makefile
+	gcc $(CFLAGS) -o irepair0 irepair0.o array.o hash.o heap.o records.o basics.o
+
+irepair0.o: irepair0.c array.h hash.h heap.h records.h basics.h makefile
+	gcc $(CFLAGS) -c irepair0.c
+
 
 idespair: idespair.o basics.o makefile
 	gcc $(CFLAGS) -o idespair idespair.o basics.o
