@@ -67,14 +67,15 @@ def main():
               assert x in values
               # create code combining value id and column number
               code = values[x]*args.cols + i 
-              code += args.rows   # shift by args.rows to allow code for endrow
+              ## code += args.rows   # shift by args.rows to allow code for endrow
+              code += 1              # shift by 1 to allow code for endrowcode 0 
               if code>= 2**30:
                 printf("Code", code, "larger than 2**30. We are in trouble")
                 sys.exit(1)
               if code>maxcode: maxcode=code
               g.write(struct.pack("<I", code))
           # row wr completed, write unique end of row wr code, and update wr
-          g.write(struct.pack("<I", wr)) 
+          g.write(struct.pack("<I", 0)) # unique EOR code
           wr += 1
   if wr!=args.rows:
     print("Warning! Written", wr, "rows instead of", args.rows)

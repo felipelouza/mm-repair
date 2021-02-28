@@ -137,11 +137,14 @@ void prepare (relong len)
     free (text);
     L = (void*)malloc(u*sizeof(Tlist));
     assocRecords (&Rec,&Hash,&Heap,L);
-    for (i=0;i<c-1;i++) 
-  { if(forbidden_pair(C[i],C[i+1])) continue;
-    pair.left = C[i]; pair.right = C[i+1];
-    id = searchHash (Hash,pair);
-        if (id == -1) // non existing => occurs only once, don't create
+    for (i=0;i<c-1;i++) { 
+      if(forbidden_pair(C[i],C[i+1])) {
+        L[i].prev = NullFreq; L[i].next = -1;
+        continue;
+      }
+      pair.left = C[i]; pair.right = C[i+1];
+      id = searchHash (Hash,pair);
+      if (id == -1) // non existing => occurs only once, don't create
        { if (did0) L[i].prev = NullFreq;
          else { id = insertRecord (&Rec,pair);
                 L[i].prev = -id-1; 
@@ -149,8 +152,7 @@ void prepare (relong len)
               } 
          L[i].next = -1;
        }
-    else 
-       { if (Rec.records[id].cpos == -1) // first time I see it this pass
+      else { if (Rec.records[id].cpos == -1) // first time I see it this pass
             { L[i].next = -1;
             }
          else
@@ -161,8 +163,8 @@ void prepare (relong len)
          L[i].prev = -id-1; 
          Rec.records[id].cpos = i;
        }
-if (PRNL && (i%1000000 == 0)) printf ("Processed %lli ints\n",i);
-  }
+      if (PRNL && (i%1000000 == 0)) printf ("Processed %lli ints\n",i);
+    }
     L[i].prev = NullFreq; L[i].next = -1;
     purgeHeap (&Heap);
   }
@@ -318,7 +320,7 @@ relong repair (FILE *R) {
     Tpair pair;
     if (PRNL) printf ("--- third stage, n=%lli\n",c);
     if (PRNC) prnC();
-    while (n+1 > 0) {  // I gues this is like while(True)
+    while (n+1 > 0) {  // I guess this is equiavalent while(True)
       if (PRNR) prnRec();
       oid = extractMax(&Heap);
       if (oid == -1) break; // the end!!
@@ -360,7 +362,10 @@ relong repair (FILE *R) {
               }
               // create occ of ed
               pair.left = n;
-              if(!forbidden_pair(pair.left,pair.right)) {
+              if(forbidden_pair(pair.left,pair.right)) {
+                L[cpos].prev = NullFreq; L[cpos].next = -1;
+              }
+              else {
                 id = searchHash(Hash,pair);
                 if (id == -1) {// new pair, insert
                   id = insertRecord (&Rec,pair);
@@ -401,6 +406,9 @@ relong repair (FILE *R) {
           // create occ of ae
           pair.right = n;
           if(!forbidden_pair(pair.left,pair.right)) {
+            L[ant].prev = NullFreq; L[ant].next = -1;
+          }
+          else {
             id = searchHash(Hash,pair);
             if (id == -1) // new pair, insert
                { id = insertRecord(&Rec,pair);
@@ -499,7 +507,7 @@ int main (int argc, char **argv)
   }
      fclose(Tf);
      strcpy(fname,argv[1]);
-     strcat(fname,".R0");
+     strcat(fname,".R");
      Rf = fopen (fname,"w");
      if (Rf == NULL)
   { fprintf (stderr,"Error: cannot open file %s for writing\n",fname);
@@ -521,7 +529,7 @@ int main (int argc, char **argv)
     exit(1);
   }
      strcpy(fname,argv[1]);
-     strcat(fname,".C0");
+     strcat(fname,".C");
      Cf = fopen (fname,"w");
      if (Cf == NULL)
   { fprintf (stderr,"Error: cannot open file %s for writing\n",fname);
