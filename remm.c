@@ -11,7 +11,7 @@
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t %s [-n mul] <matrix> rows cols <xvector> <yvector> <zvector>\n",name);
+    fprintf(stderr,"Usage:\n\t  %s [-n mul] matrix rows cols xvector yvector zvector\n",name);
     fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n\n");
     exit(1);
 }

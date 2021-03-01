@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, time, argparse, subprocess, os.path, struct
+import sys, time, argparse, subprocess, os.path, struct, datetime
 from psutil import virtual_memory
 
 Description = """
@@ -47,9 +47,9 @@ def main():
   # get absolute path to main matrepair directory 
   args.main_dir = os.path.dirname(os.path.abspath(__file__))
   print("Sending logging messages to file:", logfile_name)
-  with open(logfile_name,"a") as logfile:
+  with open(logfile_name,"a",1) as logfile: # 1 for line buffering: keeps the logs ordered
     start0 = start = time.time()
-        
+    show_command_line(logfile)    
     if(args.d or args.c): # decompress and check
       print(" *** not implemeted yet ***");
       return
@@ -117,18 +117,20 @@ def compression_report(args,tconv,trepair,ttot):
   psize = os.path.getsize(args.input)
   print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   valsize = os.path.getsize(args.input+".val")
+  print(" >> number of distinct nonzero: {0} bytes".format(valsize/8))
   psize = valsize+os.path.getsize(args.input+".vc") 
-  print(" >> value-col representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
+  print(" >> value-col representation size (vc+val): {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   csize = os.path.getsize(args.input+".vc.C") 
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
-  print(" >> Uncompressed size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> Uncompressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   # print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
-  estimate_space_usage(args.input)
+  estimate_compressed_grammar_size(args.input)
 
 
 def show_command_line(f):
-  f.write("Command line: ") 
+  f.write("#### " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+  f.write(" Command line: ") 
   for x in sys.argv:
      f.write(x+" ")
   f.write("\n")   
@@ -168,10 +170,10 @@ def bits(n):
     maxv = 1+2*maxv
   return b
 
-# estimate space usage of RePAir outpit using the minimum number of bits 
+# estimate space usage of RePAir output using the minimum number of bits 
 # for symbol, no other complex econding
 # include also the .val file  
-def estimate_space_usage(basename):
+def estimate_compressed_grammar_size(basename):
   rsize = os.path.getsize(basename+".vc.R")
   assert (rsize-4)%8 == 0, "Invalid .R file format" 
   nnonterm = (rsize-4)//8   # number of non terminals 
@@ -179,12 +181,12 @@ def estimate_space_usage(basename):
     s = f.read(4)
     nterm = struct.unpack('I',s)[0] # read # of terminals in first 32 bit uint
   totbits = bits(nterm+nnonterm)
-  print(" >> Terminals:",nterm," Non-terminals:", nnonterm, " Total:", nterm+nnonterm, \
-        " Bits x symbol:", totbits)
+  print(" >> Terminals:",nterm,"Non-terms:", nnonterm, "Total:", nterm+nnonterm, \
+        "Bits x symbol:", totbits)
   numc = os.path.getsize(basename+".vc.C")//4   # symbols in C string 
   tot = ((numc+2*nnonterm)*totbits+7)// 8       # bytes to represent C+R
   tot += 4 + os.path.getsize(basename+".val")   # 1 extra byte in R and val file 
-  print(" >> Compressed representation size (bytes):",tot)
+  print(" >> Compressed grammar+val representation size (bytes):",tot)
 
   
 

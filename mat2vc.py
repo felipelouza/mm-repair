@@ -10,6 +10,7 @@ in a the value-column representation, generating a .vc and a .val file
 shasum_exe = "sha256sum"
 
 def main():
+  show_command_line(sys.stderr)  
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('input', help='input file name', type=str)
   parser.add_argument('rows', help='number of rows', type=int)
@@ -84,6 +85,12 @@ def main():
   print("Largest codeword:", maxcode, " bits:", math.ceil(math.log(1+maxcode,2)),file=sys.stderr)
   print("==== Done",file=sys.stderr)
 
+
+def show_command_line(f):
+  f.write("==== Command line:\n  ") 
+  for x in sys.argv:
+     f.write(x+" ")
+  f.write("\n")   
 
 # compute hash digest for a file 
 def file_digest(name):

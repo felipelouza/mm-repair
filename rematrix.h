@@ -26,10 +26,10 @@
   #else
   typedef float  matval;  // type representing a matrix/vector entry
   #endif     
-typedef double xmatval;  // type representing a matrix entry with larger precision   
+typedef double xmatval;   // type representing a matrix entry with larger precision   
 #else
-typedef int matval;     // type representing a matrix entry   
-typedef int xmatval;    // type representing a matrix entry with larger precision   
+typedef int matval;       // type representing a matrix entry   
+typedef int xmatval;      // type representing a matrix entry with larger precision   
 #endif
 
 
@@ -374,9 +374,9 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
         }
         sum += decode_mult_entry(p-1,m,x);
         #ifndef INT_VALS 
-        if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!
+        if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-1)%m->cols,m->Mval[(p-1)/m->cols]);//!!!!!!!
         #else
-        if(DEBUG) printf("%d-t: col:%d val:%d ",j,(p-m->rows)%m->cols,m->Mval[(p-m->rows)/m->cols]);//!!!!!!!
+        if(DEBUG) printf("%d-t: col:%d val:%d ",j,(p-1)%m->cols,m->Mval[(p-1)/m->cols]);//!!!!!!!
         #endif
       }
     }

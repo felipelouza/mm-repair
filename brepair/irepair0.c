@@ -556,6 +556,7 @@ int main (int argc, char **argv)
      fprintf (stderr,"   Final sequence length: %lli\n",c);
      fprintf (stderr,"   Estimated output size (bytes): %ld\n",est_size);
      fprintf (stderr,"   Compression ratio: %0.2f%%\n", (100.0* est_size)/(olen*blog(alph-1)/8));
+     fprintf (stderr,"==== Done\n");
      exit(0);
    }
 

@@ -3,6 +3,7 @@
  * 
  * matrix multiplication using a repair compressed matrix
  * first very primitive prototype
+ * No longer tested or maintained do not use!
  * 
  * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
@@ -97,15 +98,15 @@ static void fill_NTval(FILE *f)
         if(Debug) fprintf(stderr,"nt:%d  ",p);//!!!!!!!!!!!!
       }
       else { // terminal symbol
-        if(p<rows) {
+        if(p<1) {
           if(Debug) fprintf(stderr,"sep: %d  ",p);//!!!!!!!!
           die("Unique row separator found in rule");
         }
-        sum += decode_entry(p-rows);
+        sum += decode_entry(p-1);
         #ifndef INT_VALS 
-        if(Debug) fprintf(stderr,"t: col:%d val:%f ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
+        if(Debug) fprintf(stderr,"t: col:%d val:%f ",(p-1)%cols,Mval[(p-1)/cols]);//!!!!!!!111
         #else
-        if(Debug) fprintf(stderr,"t: col:%d val:%d ",(p-rows)%cols,Mval[(p-rows)/cols]);//!!!!!!!111
+        if(Debug) fprintf(stderr,"t: col:%d val:%d ",(p-1)%cols,Mval[(p-1)/cols]);//!!!!!!!111
         #endif
       }
     }
@@ -133,7 +134,7 @@ int main (int argc, char **argv) {
      fprintf(stderr," %s",argv[i]);
    fputs("\n",stderr);     
    if (argc != 6) { 
-     fprintf (stderr,"Usage:\n\t %s <matrix> rows cols <invector> <outvector> \n",argv[0]);
+     fprintf (stderr,"Usage:\n\t %s matrix rows cols invector outvector \n",argv[0]);
      exit(1);
    }
    // ----------- read and check # rows and cols 
@@ -197,11 +198,11 @@ int main (int argc, char **argv) {
        if( (i = i-Alpha)>= NTnum ) die("Illegal non terminal in C file");
        sum += NTval[i];
      }
-     else if(i>=rows) {// terminal representing a matrix entry
-       sum += decode_entry(i-rows);
+     else if(i>0) {// terminal representing a matrix entry
+       sum += decode_entry(i-1);
      }
      else { // row completed
-       if(i!=ywritten) die("Incorrect end of row separator");
+       // if(i!=ywritten) die("Incorrect end of row separator");
        matval tmp=sum; sum=0;
        e = fwrite(&tmp,sizeof(matval),1,f);
        if(e!=1) die("Error writing to the output file");
