@@ -20,7 +20,7 @@ Column-value representation + Repair compression
 irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
-# tool to compute the calue-colum representation of a csv matrix
+# tool to compute the value-colum representation of a csv matrix
 mat2vc_exe = "mat2vc.py"
 
 
@@ -41,7 +41,7 @@ def main():
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
-    args.m = max(1000,int(0.90*mem/2**20)) # avoid accidental 0 in case virtual_memory misbehave
+    args.m = max(1000,int(0.90*mem/2**20)) # assume at least 1GB in case virtual_memory() misbehaves
 
   logfile_name = args.input + ".log"
   # get absolute path to main matrepair directory 
@@ -129,8 +129,8 @@ def compression_report(args,tconv,trepair,ttot):
 
 
 def show_command_line(f):
-  f.write("#### " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-  f.write(" Command line: ") 
+  f.write("\n#### " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+  f.write("\n Command line: ") 
   for x in sys.argv:
      f.write(x+" ")
   f.write("\n")   
@@ -170,7 +170,7 @@ def bits(n):
     maxv = 1+2*maxv
   return b
 
-# estimate space usage of RePAir output using the minimum number of bits 
+# estimate space usage of RePair output using the minimum number of bits 
 # for symbol, no other complex econding
 # include also the .val file  
 def estimate_compressed_grammar_size(basename):

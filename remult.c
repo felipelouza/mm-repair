@@ -3,7 +3,7 @@
  * 
  * matrix multiplication using a repair compressed matrix
  * first very primitive prototype
- * No longer tested or maintained do not use!
+ * No longer tested or maintained DO NOT USE!
  * 
  * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */

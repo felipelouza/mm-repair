@@ -71,7 +71,7 @@ int main (int argc, char **argv) {
   remat_mult(m,x,y);
   remat_left_mult(y,m,z);
   for(int i=1;i<iter;i++) {
-    memcpy(x->v,y->v,sizeof(matval)*(rows<cols?rows:cols));
+    memcpy(x->v,z->v,sizeof(matval)*cols);
     vector_normalize(x); 
     remat_mult(m,x,y);
     remat_left_mult(y,m,z);

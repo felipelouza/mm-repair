@@ -33,14 +33,14 @@ typedef int xmatval;      // type representing a matrix entry with larger precis
 #endif
 
 
-// matrix represented as a re-pair grammat
+// matrix represented as a re-pair grammar
 
 typedef struct {
   int rows,cols;  // # rows and columns of input matrix 
-  int Alpha;      // alphabet size of input matrix representation/smallest non terminal symbol 
+  int Alpha;      // alphabet size of input matrix coincides with smallest non terminal symbol 
   size_t NTnum;   // number of non terminals 
   int *NTrules;   // right hand side of non-terminal 
-  matval *NTval;  // values associated to non-terminals (memory shared with NTrules)
+  matval *NTval;  // values associated to non-terminals (possibly shared with NTrules)
   int *Cseq;      // array C of repair grammar
   size_t Clen;    // len of C array
   size_t Mnum;    // number of distinct non zero matrix values
@@ -49,6 +49,7 @@ typedef struct {
   FILE *Rf;       // R file  
 } rematrix;  
 
+// one dimensional uncompressed vector 
 typedef struct {
   matval *v;
   size_t size;
@@ -123,6 +124,7 @@ rematrix *remat_create(int r, int c, char *basename)
   return m;
 }
 
+// right multiplication 
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
   if(m->cols!=x->size) die("Dimension mismatch (mult)");   
@@ -171,7 +173,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   // propagate y-values down the tree  
   // variables used by decode_entry 
   xmatval a; size_t col;   
-  // propagates y=values to symbols in C
+  // propagate y-values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
     int i = m->Cseq[j];
@@ -191,7 +193,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
     }
   }
   assert(ycur==y->size);
-  // propagate y-values to x through the set of rules rules 
+  // propagate y-values to x through the set of rules
   propagate_NTval(m,x);
 }
 
@@ -335,7 +337,7 @@ static void propagate_NTval(rematrix *m, vector *x)
 
 // compute the value associated to each non-terminal
 // possibly overwriting the rule array if share==true
-// used by right multiplcation 
+// used by right multiplication 
 // Note: currently we are always using share=false since the rule
 // array will be needed in any additional operation  
 static void fill_NTval(rematrix *m, vector *x, bool share) 
