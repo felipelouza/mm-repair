@@ -17,7 +17,7 @@ def main():
   parser.add_argument('cols', help='number of columns', type=int)
   parser.add_argument('-c', help='initial columns to skip (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
-  parser.add_argument('-f', help='store matrix entries as 32-bit integers',action='store_true')
+  parser.add_argument('-f', help='store matrix entries as 32-bit floats',action='store_true')
   parser.add_argument('-i', help='store matrix entries as 32-bit integers',action='store_true')
   #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
   #parser.add_argument('-v',  help='verbose',action='store_true')
@@ -50,7 +50,7 @@ def main():
             # row with wrong number of elements: print error msg and exit
             print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
             sys.exit(1)
-          ## convert to double or integer (if option -i was given)
+          ## convert to double or integer (the latter if option -i was given)
           if args.i: b = [  int(s) for s in a]
           else:      b = [float(s) for s in a]
           assert len(b)==args.cols
@@ -68,7 +68,7 @@ def main():
               assert x in values
               # create code combining value id and column number
               code = values[x]*args.cols + i 
-              code += 1              # shift by 1 to allow code for endrowcode 0 
+              code += 1              # shift by 1 to allow code for endrow code 0 
               if code>= 2**30:
                 printf("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
                 sys.exit(1)

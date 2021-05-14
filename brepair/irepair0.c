@@ -4,8 +4,8 @@
  * generates a rule with the symbol 0 in the right-hand size
  * This is done using the function forbidden_pair()
  * so that the program can by easily generalized 
+ * (Giovanni Manzini)
  * 
- * Modification by Giovanni Manzini
  * */
 
 /*
