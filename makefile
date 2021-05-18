@@ -1,11 +1,11 @@
 # compilation flags
-CFLAGS=-g -Wall -std=gnu99
+CFLAGS=-g -Wall -std=c99
 CC=gcc 
 # comment out this definition to get rid of malloc_count 
 MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=remm
+EXECS=remm recg
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
@@ -28,7 +28,13 @@ all: $(EXECS) brepair
 remm: remm.c rematrix.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
 
-# remult was a first, unstructured, prototype using float entries thath 
+# single matrix vector multiplication, double entries
+# one could create versions for float and int defining FLOAT_VAL or INT_VALS 
+recg: recg.c rematrix.h $(MALLOC_FILES)
+	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
+
+
+# remult was a first, unstructured, prototype using float entries that 
 # can be created by the general rule above with target remult 
 # the following rule creates the version using integers instead of floats
 # if necessary the flag INT_VALS can be used also for the other tools 
