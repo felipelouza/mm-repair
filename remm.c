@@ -4,6 +4,7 @@
  * multiplication on repair compressed matrices
  * Given a matrix M and a vector x computes y=Mx and z^T = y^T M
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+#define _GNU_SOURCE
 #include "rematrix.h"
 #ifdef MALLOC_COUNT
 #include "mc/malloc_count.h"

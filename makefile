@@ -31,7 +31,7 @@ remm: remm.c rematrix.h $(MALLOC_FILES)
 # single matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
 recg: recg.c rematrix.h $(MALLOC_FILES)
-	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
+	gcc $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
 
 
 # remult was a first, unstructured, prototype using float entries that 

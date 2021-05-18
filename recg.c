@@ -14,6 +14,7 @@
 #ifdef MALLOC_COUNT
 #include "mc/malloc_count.h"
 #endif
+#include <math.h>
 
 static void usage_and_exit(char *name)
 {
@@ -66,7 +67,7 @@ int main (int argc, char **argv) {
   if(f==NULL) die("Cannot open input vector file");
   vector *y = vector_create();
   y->v = read_vals(f,&y->size);
-  if(y->size!=cols) die("Input vector size should be equal to # of columns");
+  if(y->size!=rows) die("Input vector size should be equal to # of columns");
   fclose(f);
   // ------------ read matrix
   rematrix *m = remat_create(rows,cols,argv[1]); 
@@ -79,21 +80,22 @@ int main (int argc, char **argv) {
   vector *q = vector_create();
   vector *z = vector_create();
   
-  vector_set_zero(w,rows); // w=0
-  vector_set_zero(p,rows); // p=0
+  vector_set_zero(w,cols); // w=0
+  vector_set_zero(p,cols); // p=0
     
   remat_left_mult(y,m,r);         // note: y is no longer used
   vector_scalar_update(r,-1);     // r = - (y^t m)
   xmatval n2 = vector_norm2sq(r); // |r|_2^2
   vector_update(p,-1,r);          // p = -r  
   
-  for(int i=1;i<iter;i++) {
+  for(int i=0;i<iter;i++) {
     // compute conjugate gradient 
     remat_mult(m,p,y);      // y = m p 
     remat_left_mult(y,m,q); // q = m^t m p
     vector_update(q,lambda,p); // q = q + lambda p
     // compute step size
-    xmatval alpha = n2 / vector_scalar_prod(p,q);
+    xmatval alpha = sqrt(n2) / sqrt(vector_scalar_prod(p,q));
+    printf("(%lf %lf) %lf %lf %lf\n",n2,vector_scalar_prod(p,q),w->v[0],w->v[4],w->v[20]);
     // update model and residual
     vector_update(w,alpha,p);
     vector_update(r,alpha,q);
@@ -101,18 +103,20 @@ int main (int argc, char **argv) {
     n2 = vector_norm2sq(r);
     vector_scalar_update(p,n2/old_n2);
     vector_update(p,-1,r);
+    printf("%lf -> %lf\n",old_n2,n2);
+    printf("(%lf %lf) %lf %lf %lf\n",n2,alpha,w->v[0],w->v[4],w->v[20]);
   }
   
   // display residual and write solution to file
   printf("Residual after %d iterations: %lf\n",iter,(double) n2);
-  char **fnam=NULL;
-  asprintf(fnam,"%s.%d.sol",argv[4],iter);
-  f= fopen(*fnam,"wb");  
+  char *fnam;
+  asprintf(&fnam,"%s.%d.sol",argv[4],iter);
+  f= fopen(fnam,"wb");  
   if (f == NULL) die("Cannot open output vector file");
   size_t e = fwrite(w->v,sizeof(matval),w->size,f);
   if(e!=w->size) die("Cannot write to output file");
   if(fclose(f)!=0) die("Cannot close output file");
-  free(*fnam);
+  free(fnam);
   
   // destroy 
   vector_destroy(z);
