@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 
-import sys, time, argparse, math, os.path, struct
+import sys, time, argparse, math, os.path, struct, array
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-in a the value-column representation, generating a .vc and a .val file 
+in a the value-column representation, generating a .vc and a .val file
+
+If the input file ends with "dbl_extension" then it is assumed to 
+contain the input in binary with 8 byte for each entry stored in a double
 """
 
-shasum_exe = "sha256sum"
+# input file extension indicating a binary input matrix of 8 byte double per entry
+# useful for dense matrices of floats with many decimals    
+dbl_extension = ".double"
+
 
 def main():
   show_command_line(sys.stderr)  
@@ -25,34 +31,57 @@ def main():
   if args.i and args.f:
     print("Error: Options -f and -i are mutually exclusive",file=sys.stderr);
     return 
+  # establish if the input is csv or binary   
+  if args.input.endswith(dbl_extension):
+    read_mode = "rb"
+    print("Input file format is binary",file=sys.stderr)
+    csv = False
+  else:
+    read_mode = "rt"
+    print("Input file format is csv",file=sys.stderr)
+    csv = True
   
   start = time.time()
-  with open(args.input,"rt") as f:
-    # outname = args.input + ".%dx%d.vc" %(args.rows,args.cols) 
+  with open(args.input,read_mode) as f:
     outname = args.input + ".vc"
     outname_val = args.input + ".val"    
     with open(outname,"wb") as g:
       with open(outname_val,"wb") as g_val:
         nonz = 0
-        r = 0 # number of read rows
-        wr = 0 # number of written rows
+        r = 0   # number of read rows
+        wr = 0  # number of written rows
         values  = {}
         maxcode = 0
-        for line in f:
+        # read one line at a time from f
+        while True:
+          # read a text or binary matrix row 
+          if csv:
+            line = f.readline()
+            if not line:
+              break
+          else:
+            b = array.array('d')   # create empty array
+            try:
+              b.fromfile(f,args.cols)
+            except EOFError as e:
+              break
+          # check row 
           r += 1
           if wr>=args.rows:
             print("Warning: not all matrix rows have been processed",file=sys.stderr)
             break 
           if r<=args.r: continue   # skip first args.r rows
-          a = line.rstrip().split(",")
-          a = a[args.c:] # remove initial arg.c columns
-          if len(a)!=args.cols:
-            # row with wrong number of elements: print error msg and exit
-            print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
-            sys.exit(1)
-          ## convert to double or integer (the latter if option -i was given)
-          if args.i: b = [  int(s) for s in a]
-          else:      b = [float(s) for s in a]
+          # convert text numerical values
+          if csv:
+            a = line.rstrip().split(",")
+            a = a[args.c:] # remove initial arg.c columns
+            if len(a)!=args.cols:
+              # row with wrong number of elements: print error msg and exit
+              print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
+              sys.exit(1)
+            ## convert to double or integer (the latter if option -i was given)
+            if args.i: b = [  int(s) for s in a]
+            else:      b = [float(s) for s in a]
           assert len(b)==args.cols
           for i in range(len(b)):
             # get (or create) integer id associated to value x=b[i]
@@ -70,7 +99,7 @@ def main():
               code = values[x]*args.cols + i 
               code += 1              # shift by 1 to allow code for endrow code 0 
               if code>= 2**30:
-                printf("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
+                print("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
                 sys.exit(1)
               if code>maxcode: maxcode=code
               g.write(struct.pack("<I", code))

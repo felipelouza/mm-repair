@@ -4,7 +4,10 @@ import sys, time, argparse, subprocess, os.path, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into binary form, ie rows x cols floats of doubles (with option -d) 
+into binary form, ie rows x cols floats of doubles (with option -d)
+
+The option --strip instead of converting to binary form one can
+simply strips, trailing or leading columns, or trailing rows. 
 """
 
 shasum_exe = "sha256sum"

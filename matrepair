@@ -37,6 +37,7 @@ def main():
   parser.add_argument('-m', help='force repair to use at most M MBs (def. 95%% of available RAM)',default=-1, type=int)
   parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
+  parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
@@ -51,7 +52,7 @@ def main():
     start0 = start = time.time()
     show_command_line(logfile)    
     if(args.d or args.c): # decompress and check
-      print(" *** not implemeted yet ***");
+      print(" *** not implemented yet ***");
       return
       # to be fixed
       exe = integer_despair_exe
@@ -80,7 +81,10 @@ def main():
         return
       vc_time = time.time()-start
       print("Conversion time: {0:.4f}".format(vc_time))
-  
+      if args.norepair:
+        print("==== Stopping after the conversion phase as requested")      
+        return
+
       # ---- apply irepair to the .vc file modified dictionary
       start = time.time()
       command = "{exe} {csvfile}.vc {mb}".format(mb=args.m,
