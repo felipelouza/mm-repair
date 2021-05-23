@@ -33,7 +33,7 @@ def main():
     
   # take start time 
   start0 = start = time.time()
-  outmode = "wb"  # fedualt ouptu file is binary
+  outmode = "wb"  # by default ouput file is binary
   with open(args.input,"rt") as f:
     if args.strip: 
       outname = args.input + ".%dx%d" %(args.rows,args.cols)

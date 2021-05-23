@@ -94,8 +94,8 @@ int main (int argc, char **argv) {
     remat_left_mult(y,m,q); // q = m^t m p
     vector_update(q,lambda,p); // q = q + lambda p
     // compute step size
-    xmatval alpha = sqrt(n2) / sqrt(vector_scalar_prod(p,q));
-    printf("(%lf %lf) %lf %lf %lf\n",n2,vector_scalar_prod(p,q),w->v[0],w->v[4],w->v[20]);
+    xmatval alpha = (n2) / (vector_scalar_prod(p,q));
+    //printf("(%lf %lf) %lf %lf %lf\n",n2,vector_scalar_prod(p,q),w->v[0],w->v[4],w->v[20]);
     // update model and residual
     vector_update(w,alpha,p);
     vector_update(r,alpha,q);
@@ -103,8 +103,8 @@ int main (int argc, char **argv) {
     n2 = vector_norm2sq(r);
     vector_scalar_update(p,n2/old_n2);
     vector_update(p,-1,r);
-    printf("%lf -> %lf\n",old_n2,n2);
-    printf("(%lf %lf) %lf %lf %lf\n",n2,alpha,w->v[0],w->v[4],w->v[20]);
+    printf("%lg -> %lg\n",old_n2,n2);
+    printf("(n2=%lg alpha=%lg) %lg %lg %lg\n",n2,alpha,w->v[0],w->v[4],w->v[20]);
   }
   
   // display residual and write solution to file

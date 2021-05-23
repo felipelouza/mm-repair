@@ -10,7 +10,8 @@ If the input file ends with "dbl_extension" then it is assumed to
 contain the input in binary with 8 byte for each entry stored in a double
 """
 
-# input file extension indicating a binary input matrix of 8 byte double per entry
+# input file extension indicating that the input matrix is in binary 
+# with an 8-byte double per entry
 # useful for dense matrices of floats with many decimals    
 dbl_extension = ".double"
 
