@@ -256,18 +256,19 @@ vector *vector_create()
 }
 
 
-// infinity norm normalization
-void vector_normalize(vector *w)
+// infinity norm normalization, return the norm befor normalization
+xmatval vector_normalize(vector *w)
 {
-  matval norm = 0;
+  xmatval norm = 0;
   for(int i=0;i<w->size;i++) {
-    matval t = w->v[i]>0 ? w->v[i] : -w->v[i];
+    xmatval t = w->v[i]>0 ? w->v[i] : -w->v[i];
     if(t>norm) norm=t;
   }
   assert(norm>=0);
   if(norm>0) 
     for(int i=0;i<w->size;i++)
       w->v[i] = w->v[i]/norm;
+  return norm;
 }  
 
 // set v = v + t w

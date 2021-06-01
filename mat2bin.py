@@ -6,8 +6,11 @@ Description = """
 Tool to convert a matrix written in text csv format (one line per row)
 into binary form, ie rows x cols floats of doubles (with option -d)
 
-The option --strip instead of converting to binary form one can
-simply strips, trailing or leading columns, or trailing rows. 
+The option --strip instead of converting to binary form
+simply strips trailing or leading columns, or leading rows
+maintinaing the csv format. This is done at the textual level so
+non-stripped values are not modified in this operation (eg integers
+remain integres, they are not converted to floa with a 0 fractional part). 
 """
 
 shasum_exe = "sha256sum"

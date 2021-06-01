@@ -1,7 +1,7 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  * ReMatrix
  * 
- * multiplication on repair compressed matrices
+ * test multiplication on repair compressed matrices
  * Given a matrix M and a vector x computes y=Mx and z^T = y^T M
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #define _GNU_SOURCE
@@ -69,10 +69,10 @@ int main (int argc, char **argv) {
   // compute products
   vector *y = vector_create();
   vector *z = vector_create();
-  remat_mult(m,x,y);
-  remat_left_mult(y,m,z);
+  remat_mult(m,x,y);    // y = Mx
+  remat_left_mult(y,m,z);   // z = y^t M
   for(int i=1;i<iter;i++) {
-    memcpy(x->v,z->v,sizeof(matval)*cols);
+    memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
     vector_normalize(x); 
     remat_mult(m,x,y);
     remat_left_mult(y,m,z);
