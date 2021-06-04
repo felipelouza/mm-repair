@@ -5,7 +5,11 @@
  * Given a matrix M and a vector x computes y=Mx and z^T = y^T M
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #define _GNU_SOURCE
+#ifdef CSR_MATRIX
+#include "csrmatrix.h"
+#else
 #include "rematrix.h"
+#endif
 #ifdef MALLOC_COUNT
 #include "mc/malloc_count.h"
 #endif

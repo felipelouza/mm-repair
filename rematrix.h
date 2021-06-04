@@ -35,9 +35,15 @@
 typedef double  matval;    // type representing a matrix/vector entry
 typedef double xmatval;   // type representing a matrix entry with larger precision   
 
+// report error message and terminates
+static void die(const char *s);
+
+// include definitions for vectors dense uncompressed vectors 
+#include "vector.h"
+
+
 
 // matrix represented as a re-pair grammar
-
 typedef struct {
   int rows,cols;  // # rows and columns of input matrix 
   int Alpha;      // alphabet size of input matrix coincides with smallest non terminal symbol 
@@ -52,26 +58,17 @@ typedef struct {
   FILE *Rf;       // R file  
 } rematrix;  
 
-// one dimensional uncompressed vector 
-typedef struct {
-  matval *v;
-  size_t size;
-} vector;
 
 
 // main prototypes
 rematrix *remat_create(int r, int c, char *basename);
 void remat_destroy(rematrix *v);
-vector *vector_create();
-void vector_normalize(vector *v);
-void vector_destroy(vector *v);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
 xmatval decode_mult_entry(int p, rematrix *m, vector *x);
 xmatval decode_entry(int p, rematrix *m, size_t *c);
 
 // local functions 
-static void die(const char *s);
 static void fill_NTval(rematrix *m, vector *x, bool share);
 static void clear_NTval(rematrix *m);
 static void propagate_NTval(rematrix *m, vector *x);
@@ -87,6 +84,7 @@ rematrix *remat_create(int r, int c, char *basename)
   m->rows=r; m->cols=c;
 
   // ------------ read rules
+  if(strlen(basename)+10>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
   strcat(fname,".vc.R");
   if (stat (fname,&s) != 0)die("Cannot stat rules (.vc.R) file");
@@ -114,7 +112,7 @@ rematrix *remat_create(int r, int c, char *basename)
   m->Clen = (s.st_size)/sizeof(int);
   m->Cseq = (int *) malloc(m->Clen*sizeof(int));
   if(fread(m->Cseq,sizeof(int),m->Clen,m->Cf)!=m->Clen)
-   die("Cannot read .vc.C files");
+   die("Cannot read .vc.C file");
   
   // ------------ read matrix values 
   strcpy(fname,basename);
@@ -227,7 +225,7 @@ xmatval decode_entry(int p, rematrix *m, size_t *c)
 {
   *c = p % m->cols;
   size_t pval = p/m->cols;
-  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_terminal)");
+  if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_entry)");
   return m->Mval[pval];  
 }
 
@@ -243,85 +241,6 @@ xmatval decode_mult_entry(int p, rematrix *m, vector *x)
   assert(pcol<x->size);
   return ((xmatval) x->v[pcol])*m->Mval[pval];
 }  
-
-// ---------- vectors -----------------
-
-// return a pointer to an empty vector object
-vector *vector_create()
-{
-  vector *w = malloc(sizeof(vector));
-  w->v = NULL;
-  w->size=0;
-  return w;
-}
-
-
-// infinity norm normalization, return the norm befor normalization
-xmatval vector_normalize(vector *w)
-{
-  xmatval norm = 0;
-  for(int i=0;i<w->size;i++) {
-    xmatval t = w->v[i]>0 ? w->v[i] : -w->v[i];
-    if(t>norm) norm=t;
-  }
-  assert(norm>=0);
-  if(norm>0) 
-    for(int i=0;i<w->size;i++)
-      w->v[i] = w->v[i]/norm;
-  return norm;
-}  
-
-// set v = v + t w
-void vector_update(vector *v, xmatval t, vector *w)
-{
-  assert(v->v!=NULL && w->v!=NULL);
-  assert(v->size==w->size);
-  for(int i=0;i<v->size;i++)
-    v->v[i] += t*w->v[i];
-}
-
-// set v = tv + tw
-void vector_scalar_update(vector *v, xmatval t)
-{
-  assert(v->v!=NULL);
-  for(int i=0;i<v->size;i++)
-    v->v[i] *= t;
-}
-
-// norm2 squared computation
-xmatval vector_norm2sq(vector *w)
-{
-  xmatval norm = 0;
-  for(int i=0;i<w->size;i++) {
-    norm +=   w->v[i] * w->v[i];
-  }
-  return norm;  
-}
-
-// scalar product of two vectors 
-xmatval vector_scalar_prod(vector *v, vector *w)
-{
-  assert(v->size==w->size);
-  xmatval sp = 0;
-  for(int i=0;i<w->size;i++) {
-    sp +=   w->v[i] * w->v[i];
-  }
-  return sp;  
-}
-// set an existing vector to 0
-void vector_set_zero(vector *v, int dim)
-{
-  v->size = dim;
-  v->v = realloc(v->v,dim*sizeof(matval));
-  if(v->v==NULL) die("Realloc failed");
-  for(int i=0;i<v->size;i++) v->v[i]=0;  
-}
-
-void vector_destroy(vector *v)
-{
-  if(v->v!=NULL) free(v->v);
-  free(v);
-}
 
 // read a set of matval values from file f
 // return number of items in *n and pointer to array with values

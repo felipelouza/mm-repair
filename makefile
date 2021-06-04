@@ -5,7 +5,7 @@ CC=gcc
 MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=remm recg
+EXECS=remm recg csrmm
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
@@ -25,12 +25,15 @@ all: $(EXECS) brepair
 
 # single matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
-remm: remm.c rematrix.h $(MALLOC_FILES)
+remm: remm.c rematrix.h vector.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
+
+csrmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
+	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
 # single matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
-recg: recg.c rematrix.h $(MALLOC_FILES)
+recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
 
 
