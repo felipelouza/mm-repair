@@ -20,7 +20,7 @@
 
 
 // the use of float's has not been fully tested 
-/*#ifndef INT_VALS 
+#ifndef INT_VALS 
   #ifndef FLOAT_VALS
   typedef double matval;  // type representing a matrix/vector entry
   #else
@@ -30,7 +30,7 @@
 #else
   typedef int matval;       // type representing a matrix entry   
   typedef int xmatval;      // type representing a matrix entry with larger precision   
-#endif*/
+#endif
 
 typedef double  matval;    // type representing a matrix/vector entry
 typedef double xmatval;   // type representing a matrix entry with larger precision   

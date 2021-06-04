@@ -10,7 +10,11 @@
  * input vector y must be in binary format
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #define _GNU_SOURCE
+#ifdef CSR_MATRIX
+#include "csrmatrix.h"
+#else
 #include "rematrix.h"
+#endif
 #ifdef MALLOC_COUNT
 #include "mc/malloc_count.h"
 #endif
@@ -73,7 +77,7 @@ int main (int argc, char **argv) {
   rematrix *m = remat_create(rows,cols,argv[1]); 
   
   // init CG
-  double lambda = 0.001;
+  double lambda = 0; // in the CLA paper 0.001 is used 
   vector *r = vector_create();
   vector *p = vector_create();
   vector *w = vector_create();
@@ -104,7 +108,7 @@ int main (int argc, char **argv) {
     vector_scalar_update(p,n2/old_n2);
     vector_update(p,-1,r);
     printf("%lg -> %lg\n",old_n2,n2);
-    printf("(n2=%lg alpha=%lg) %lg %lg %lg\n",n2,alpha,w->v[0],w->v[4],w->v[20]);
+    printf("(norm2=%lg alpha=%lg)   w[0]=%lg\n",n2,alpha,w->v[0]);
   }
   
   // display residual and write solution to file

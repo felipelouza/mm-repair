@@ -27,6 +27,7 @@ int main (int argc, char **argv) {
   extern int optind, opterr, optopt;
   FILE *f;
   int rows,cols,c,iter=1;
+  xmatval lambda;
   // ----------- check input
   fputs("==== Command line:\n",stderr);
   for(int i=0;i<argc;i++)
@@ -77,11 +78,12 @@ int main (int argc, char **argv) {
   remat_left_mult(y,m,z);   // z = y^t M
   for(int i=1;i<iter;i++) {
     memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
-    vector_normalize(x); 
+    lambda = vector_normalize(x); 
     remat_mult(m,x,y);
     remat_left_mult(y,m,z);
   }
-  
+  // last eigenvalue approximation
+  printf("Eigenvalue approximation after %d iterations: %lf\n",iter,(double) lambda); 
   // --- open output y vector file 
   f = fopen (argv[5],"w");
   if (f == NULL) die("Cannot open output vector file");
