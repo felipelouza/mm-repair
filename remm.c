@@ -13,6 +13,7 @@
 #ifdef MALLOC_COUNT
 #include "mc/malloc_count.h"
 #endif
+#include <time.h>
 
 static void usage_and_exit(char *name)
 {
@@ -25,26 +26,34 @@ static void usage_and_exit(char *name)
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
+  int verbose=0;
   FILE *f;
   int rows,cols,c,iter=1;
   xmatval lambda;
-  // ----------- check input
-  fputs("==== Command line:\n",stderr);
-  for(int i=0;i<argc;i++)
-   fprintf(stderr," %s",argv[i]);
-  fputs("\n",stderr);  
+  char *ein_filename= NULL;
+  time_t start_wc = time(NULL);
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "n:")) != -1) {
+  while ((c=getopt(argc, argv, "e:n:v")) != -1) {
     switch (c) 
       {
+      case 'v':
+        verbose++; break;
       case 'n':
         iter=atoi(optarg); break;
+      case 'e':
+        ein_filename=optarg; break;
       case '?':
         fprintf(stderr,"Unknown option: %c\n", optopt);
         exit(1);
       }
+  }
+  if(verbose>0) {
+    fputs("==== Command line:\n",stderr);
+    for(int i=0;i<argc;i++)
+     fprintf(stderr," %s",argv[i]);
+    fputs("\n",stderr);  
   }
   // check command line
   if(iter<1) {
@@ -83,7 +92,15 @@ int main (int argc, char **argv) {
     remat_left_mult(y,m,z);
   }
   // last eigenvalue approximation
-  printf("Eigenvalue approximation after %d iterations: %lf\n",iter,(double) lambda); 
+  if(verbose)
+    fprintf(stderr, "Eigenvalue approximation after %d iterations: %lf\n",iter,(double) lambda);
+  if(ein_filename!=NULL) {
+    FILE *f = fopen(ein_filename,"wb");
+    double ein = (double) lambda;
+    if(fwrite(&ein,sizeof(double),1,f)!=1)
+      die("Eigenvalue write error");
+    fclose(f);
+  }
   // --- open output y vector file 
   f = fopen (argv[5],"w");
   if (f == NULL) die("Cannot open output vector file");
@@ -103,9 +120,10 @@ int main (int argc, char **argv) {
   vector_destroy(x);
   remat_destroy(m);
   #ifdef MALLOC_COUNT
-    printf("Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
+    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
            malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
   #endif
+  printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }
 
