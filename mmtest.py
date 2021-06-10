@@ -64,9 +64,9 @@ def time_test(n=1):
   return table
 
 def makerow(f, a):
-  s = "{name:9.8}".format(name=f)
+  s = "{name:9.8}&{col:<4}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "&{:.2} {:6.2f} & {:6.2f} {:8.3g}".format(p[0][:2],p[1],p[2]/1000000,p[3])
+    s += "& {:.2} {:6.2f} & {:6.2f} {:8.3g}".format(p[0][:2],p[1],p[2]/1000000,p[3])
   s += "\\\\\n"
   return s
 
@@ -74,45 +74,21 @@ def makerow(f, a):
 def main():
   # show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('files', help='test files separated by colons', type=str)
-  parser.add_argument('-w', '--window_sizes', help='sizes of sliding window separated by colons (def 4:8)', default='4:8', type=str)  
-  parser.add_argument('-b', '--block_sizes', help='sizes of block separated by colons (def 32:64)', default='32:64', type=str)  
-  parser.add_argument('-d', '--base_dir', help='base directory (def .)', default='.', type=str)
-  parser.add_argument('-e', '--encs', help='encoders separated by colons (def lsk)', default='lsk', type=str)
-  parser.add_argument('-c', '--check', help='check decompression (def No)',action='store_true')
-  parser.add_argument('-p', '--pythondec', help='use python slow decompressor (def No)',action='store_true')
-  parser.add_argument('-s', '--strict', help='use strict mode for (de)compression (def No)',action='store_true')
+  parser.add_argument('op', help='operation to test: mm', type=str)
+  parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   args = parser.parse_args()
+  if args.op!='mm':
+    print("Unknown operation! Must be mm",file=sys.stderr)
+    exit(1)
   # run the algorithm   
   s1 = time.time()
-  ifiles = args.files.split(":")
-  wsizes = args.window_sizes.split(":")
-  bsizes = args.block_sizes.split(":")
-  encoders = args.encs.split(":")  
-  check_files(ifiles,args.base_dir)
-  check_encoders(encoders)
-  table = ""
-  for b in bsizes:
-    for w in wsizes:
-      if len(encoders)>1:
-        r = mydelta_test(w,b,ifiles,args.base_dir,encoders,args.check,args.pythondec,args.strict)
-      else:
-        r = myalgo_test(w,b,ifiles,args.base_dir,encoders[0],args.check,args.pythondec,args.strict)
-      table += r
-  # the model row is the first row up to the "\\" sequence    
-  model_row = table.split("\n")[0].split("\\\\")[0]
-  # create row with name of the test files
-  names = make_names(model_row, ifiles)
-  # add rows for gzip and xz
-  table = names + table + make_zip(model_row,ifiles,args.base_dir) 
+  table = time_test(args.n)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  print(table)
+  for s in table:
+    print(s,end="")
   exit(0)
 
   
 if __name__ == '__main__':
-  table = time_test(4)
-  for s in table:
-    print(s,end="")
- 
+  main()
