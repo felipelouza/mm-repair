@@ -17,8 +17,11 @@
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t  %s [-n mul] matrix rows cols xvector yvector zvector\n",name);
-    fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n\n");
+    fprintf(stderr,"Usage:\n\t  %s [-n mul] -y yvector -z zvector matrix rows cols xvector \n",name);
+    fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n");
+    fprintf(stderr,"\t\t-e einfile     store computed eigenvalue in this file, def. 1\n");
+    fprintf(stderr,"\t\t-y yvector     store y-vector in this file\n");
+    fprintf(stderr,"\t\t-z zvector     store z-vector in this file\n\n");
     exit(1);
 }
 
@@ -31,11 +34,12 @@ int main (int argc, char **argv) {
   int rows,cols,c,iter=1;
   xmatval lambda;
   char *ein_filename= NULL;
+  char *yvec=NULL, *zvec=NULL;
   time_t start_wc = time(NULL);
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "e:n:v")) != -1) {
+  while ((c=getopt(argc, argv, "e:n:y:z:v")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -44,6 +48,10 @@ int main (int argc, char **argv) {
         iter=atoi(optarg); break;
       case 'e':
         ein_filename=optarg; break;
+      case 'y':
+        yvec=optarg; break;
+      case 'z':
+        zvec=optarg; break;
       case '?':
         fprintf(stderr,"Unknown option: %c\n", optopt);
         exit(1);
@@ -62,7 +70,7 @@ int main (int argc, char **argv) {
   }  
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 7) usage_and_exit(argv[0]); 
+  if (argc-optind != 5) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
   // ----------- read and check # rows and cols 
@@ -101,18 +109,22 @@ int main (int argc, char **argv) {
       die("Eigenvalue write error");
     fclose(f);
   }
-  // --- open output y vector file 
-  f = fopen (argv[5],"w");
-  if (f == NULL) die("Cannot open output vector file");
-  size_t e = fwrite(y->v,sizeof(matval),y->size,f);
-  if(e!=y->size) die("Cannot write to output file");
-  if(fclose(f)!=0) die("Cannot close output file");
-  // --- open output z vector file 
-  f = fopen (argv[6],"w");
-  if (f == NULL) die("Cannot open output vector file 2");
-  e = fwrite(z->v,sizeof(matval),z->size,f);
-  if(e!=z->size) die("Cannot write to output file 2");
-  if(fclose(f)!=0) die("Cannot close output file 2");
+  // --- open output y vector file
+  if(yvec!=NULL) { 
+    f = fopen (yvec,"w");
+    if (f == NULL) die("Cannot open y output vector file");
+    size_t e = fwrite(y->v,sizeof(matval),y->size,f);
+    if(e!=y->size) die("Cannot write to y output file");
+    if(fclose(f)!=0) die("Cannot close y output file");
+  }
+  // --- open output z vector file
+  if(zvec!=NULL) { 
+    f = fopen (zvec,"w");
+    if (f == NULL) die("Cannot open z output vector file");
+    size_t e = fwrite(z->v,sizeof(matval),z->size,f);
+    if(e!=z->size) die("Cannot write to z output file");
+    if(fclose(f)!=0) die("Cannot close z output file");
+  }
   
   // destroy 
   vector_destroy(z);
