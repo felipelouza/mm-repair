@@ -22,12 +22,31 @@ Zvname = "z.dbl"
 Evname = "ein.dbl"
 Timelimit = 18000
 
+
+# check that the test files exist and sizes are defined
+def check_testfiles():
+  ok = True
+  for f in Files:
+    path = Files_prefix + f
+    if not os.path.exists(path):
+      print("  Test file", path, "missing",file=sys.stderr)
+      ok = False
+    if f not in Sizes:
+      print("  Size for test file", f, "missing",file=sys.stderr)
+      ok = False
+  if not ok:
+    print("Check variables Files, Files_prefix and Sizes!",file=sys.stderr)
+    sys.exit(1)
+
+
+# write to file a vector cointaining cols copies of value
 def createx(cols,value=1):
   with open(Xvname,"wb") as f:
     for i in range(cols):
       f.write(struct.pack("<d", float(value)))
 
 
+# test running times and spasce for matrix multiplication 
 def time_test(n=1):
   table = []   # latex table containing the results 
   for f in Files:
@@ -64,17 +83,17 @@ def time_test(n=1):
   return table
 
 def makerow(f, a):
-  s = "{name:9.8}&{col:<4}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.8}&{col:<4}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "& {:.2} {:6.2f} & {:6.2f} {:8.3g}".format(p[0][:2],p[1],p[2]/1000000,p[3])
+    s += "&{:6.2f} &{:6.0f}  {:8.3g}".format(p[1],p[2]/1000000,p[3])
   s += "\\\\\n"
   return s
 
-# not used!
+
 def main():
   # show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('op', help='operation to test: mm', type=str)
+  parser.add_argument('op', help='operation to test: mm|mc', type=str)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   args = parser.parse_args()
   if args.op!='mm':
@@ -91,4 +110,5 @@ def main():
 
   
 if __name__ == '__main__':
+  check_testfiles()
   main()
