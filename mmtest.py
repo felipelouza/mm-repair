@@ -24,16 +24,17 @@ Timelimit = 18000
 
 
 # check that the test files exist and sizes are defined
-def check_testfiles():
+def check_testfiles(sufxs):
   ok = True
   for f in Files:
-    path = Files_prefix + f
-    if not os.path.exists(path):
-      print("  Test file", path, "missing",file=sys.stderr)
-      ok = False
     if f not in Sizes:
       print("  Size for test file", f, "missing",file=sys.stderr)
       ok = False
+    for sx in sufxs:
+      path = Files_prefix + f + sx
+      if not os.path.exists(path):
+        print("  Test file", path, "missing",file=sys.stderr)
+        ok = False
   if not ok:
     print("Check variables Files, Files_prefix and Sizes!",file=sys.stderr)
     sys.exit(1)
@@ -99,6 +100,7 @@ def main():
   if args.op!='mm':
     print("Unknown operation! Must be mm",file=sys.stderr)
     exit(1)
+  check_testfiles([".vc",".val",".vc.R",".vc.C"])
   # run the algorithm   
   s1 = time.time()
   table = time_test(args.n)
@@ -110,5 +112,4 @@ def main():
 
   
 if __name__ == '__main__':
-  check_testfiles()
   main()
