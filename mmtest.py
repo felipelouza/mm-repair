@@ -38,7 +38,7 @@ def check_testfiles(sufxs):
         print("  Test file", path, "missing",file=sys.stderr)
         ok = False
   if not ok:
-    print("Check variables Files, Files_prefix and Sizes!",file=sys.stderr)
+    print("Check variables: Files, Files_prefix, Sizes",file=sys.stderr)
     sys.exit(1)
 
 
@@ -58,8 +58,9 @@ def time_test(n,logfile):
     createx(cols)  # create file containing x vector
     tablerow = []  # row of the results table
     for a in Algo:
-      command = "./{exe} -n {num} -e {ename} {name} {r} {c} {x}".format(ename=Evname,
-                exe = a, num=n, name=name, r=rows, c=cols, x=Xvname, y=Yvname, z=Zvname)
+      # only save the eigenvalue
+      command = "./{exe} -n {num} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
+                exe = a, num=n, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
       try:
         ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,timeout=Timelimit,check=True)
@@ -69,6 +70,7 @@ def time_test(n,logfile):
         continue
       except subprocess.CalledProcessError as ex:
         print(" Test failed: non-zero exit code ", ex.returncode)
+        # write stdout/stderr to a separate logfile
         print("## Error executing:", command,file=logfile);
         print("## stdout:\n", ex.stdout ,file=logfile);
         print("## stderr:\n", ex.stderr ,file=logfile);
@@ -76,8 +78,6 @@ def time_test(n,logfile):
       except Exception as ex:
         print(" Test failed:", str(ex))
         continue
-      #print("Out-- ", ris.stdout)
-      #print("Err-- ", ris.stderr)
       elapsed = int(ris.stdout.split()[-2])
       peakmem = int(ris.stderr.split()[3])
       with open(Evname,"rb") as evf:
@@ -89,7 +89,7 @@ def time_test(n,logfile):
   return table
 
 def makerow(f, a):
-  s = "{name:10.8}&{col:<4}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
   for p in a:
     s += "&{:6.2f} &{:6.0f}  {:8.3g}".format(p[1],p[2]/1000000,p[3])
   s += "\\\\\n"

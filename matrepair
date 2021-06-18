@@ -10,7 +10,7 @@ Column-value representation + Repair compression
      {exe} file [options]
   creates compressed files file.val file.vc.C and file.vc.R
 
-  Decompression:
+  Decompression: (not yet implemented)
      {exe} -d file [options]
   decompresses file.val file.vc.C and file.vc.R to file.out          
 """
@@ -21,6 +21,8 @@ irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
 # tool to compute the value-colum representation of a csv matrix
+# note: if file names ends with .double then the matrix is assumed to be 
+# in dense binary format (see mat2vc.py help) 
 mat2vc_exe = "mat2vc.py"
 
 
@@ -76,7 +78,7 @@ def main():
       command = "{exe} {csvfile} {rows} {cols}".format(
         exe = os.path.join(args.main_dir,mat2vc_exe), csvfile=args.input,
         rows = args.rows, cols=args.cols);
-      print("==== Conversion csv->vc\nCommand:", command)
+      print("==== Conversion csv/bin->vc\nCommand:", command)
       if(execute_command(command,logfile)!=True):
         return
       vc_time = time.time()-start
@@ -121,8 +123,10 @@ def compression_report(args,tconv,trepair,ttot):
   psize = os.path.getsize(args.input)
   print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   valsize = os.path.getsize(args.input+".val")
+  vcsize = os.path.getsize(args.input+".vc") 
+  print(" >> total numer of nonzero: {0}".format(vcsize//4 - args.rows))
   print(" >> number of distinct nonzero: {0}".format(valsize//8))
-  psize = valsize+os.path.getsize(args.input+".vc") 
+  psize = valsize+vcsize
   print(" >> value-col representation size (vc+val): {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   csize = os.path.getsize(args.input+".vc.C") 
   rsize = os.path.getsize(args.input+".vc.R") 

@@ -14,6 +14,9 @@
 #include "mc/malloc_count.h"
 #endif
 #include <time.h>
+#ifdef DETAILED_TIMING
+#include <sys/times.h>
+#endif
 
 static void usage_and_exit(char *name)
 {
@@ -36,6 +39,11 @@ int main (int argc, char **argv) {
   char *ein_filename= NULL;
   char *yvec=NULL, *zvec=NULL;
   time_t start_wc = time(NULL);
+  #ifdef DETAILED_TIMING
+  struct tms ignored;
+  clock_t t1,t2,t3;
+  long m1=0,m2=0;
+  #endif
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
@@ -93,11 +101,25 @@ int main (int argc, char **argv) {
   vector *z = vector_create();
   remat_mult(m,x,y);    // y = Mx
   remat_left_mult(y,m,z);   // z = y^t M
+  #ifdef DETAILED_TIMING
+  t3 = times(&ignored);
+  #endif
   for(int i=1;i<iter;i++) {
+    #ifdef DETAILED_TIMING
+    t1 = t3;
+    #endif 
     memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
     lambda = vector_normalize(x); 
     remat_mult(m,x,y);
+    #ifdef DETAILED_TIMING
+    t2 = times(&ignored);
+    m1 += (t2-t1);
+    #endif
     remat_left_mult(y,m,z);
+    #ifdef DETAILED_TIMING
+    t3 = times(&ignored);
+    m2 += (t3-t2);
+    #endif
   }
   // last eigenvalue approximation
   if(verbose)
@@ -135,6 +157,9 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
            malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
   #endif
+  #ifdef DETAILED_TIMING
+  fprintf(stderr,"Average mult time (secs) Ax: %lf  xA: %lf\n", ((double)m1/iter)/sysconf(_SC_CLK_TCK), ((double)m2/iter)/sysconf(_SC_CLK_TCK));
+  #endif 
   printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }

@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-
 import sys, time, argparse, math, os.path, struct, array
+
+# input file extension indicating that the input matrix is in binary 
+dbl_extension = ".double"
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
 in a the value-column representation, generating a .vc and a .val file
 
-If the input file ends with "dbl_extension" then it is assumed to 
+If the input file ends with {ext} then it is assumed to 
 contain the input in binary with 8 byte for each entry stored in a double
-"""
+""".format(ext=dbl_extension)
 
-# input file extension indicating that the input matrix is in binary 
-# with an 8-byte double per entry
-# useful for dense matrices of floats with many decimals    
-dbl_extension = ".double"
 
 
 def main():

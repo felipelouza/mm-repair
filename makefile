@@ -1,5 +1,5 @@
 # compilation flags
-CFLAGS=-g -Wall -std=c99
+CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
 # comment out this definition to get rid of malloc_count 
 MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl

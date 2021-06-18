@@ -114,7 +114,8 @@ int main (int argc, char **argv) {
   // display residual and write solution to file
   printf("Residual after %d iterations: %lf\n",iter,(double) n2);
   char *fnam;
-  asprintf(&fnam,"%s.%d.sol",argv[4],iter);
+  c = asprintf(&fnam,"%s.%d.sol",argv[4],iter);
+  if(c<0) die("Cannot create .sol file name");
   f= fopen(fnam,"wb");  
   if (f == NULL) die("Cannot open output vector file");
   size_t e = fwrite(w->v,sizeof(matval),w->size,f);
