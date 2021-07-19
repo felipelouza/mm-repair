@@ -1,0 +1,101 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+#include <iostream>
+#include <vector>
+
+#include "cutil.hpp"
+#include "methods.hpp"
+#include "util.hpp"
+
+// #include <boost/filesystem.hpp>
+//#include <boost/program_options.hpp>
+//#include <boost/regex.hpp>
+
+//namespace po = boost::program_options;
+//namespace fs = boost::filesystem;
+
+const int NUM_RUNS = 1;
+
+
+template <class t_compressor>
+void run(std::vector<uint32_t>& input, std::string input_name)
+{
+    // (0) compute entropy
+    auto [input_entropy, sigma] = compute_entropy(input);
+
+    // (1) encode
+    std::vector<uint8_t> encoded_data(input.size() * 8);
+    std::vector<uint8_t> tmp_buf(input.size() * 8);
+
+    size_t encoded_bytes;
+    size_t encoding_time_ns_min = std::numeric_limits<size_t>::max();
+    for (int i = 0; i < NUM_RUNS; i++) {
+        auto start_encode = std::chrono::high_resolution_clock::now();
+        encoded_bytes = t_compressor::encode(input.data(), input.size(),
+            encoded_data.data(), encoded_data.size(), tmp_buf.data());
+        auto stop_encode = std::chrono::high_resolution_clock::now();
+        auto encoding_time_ns = stop_encode - start_encode;
+        encoding_time_ns_min
+            = std::min((size_t)encoding_time_ns.count(), encoding_time_ns_min);
+    }
+
+    double BPI = double(encoded_bytes * 8) / double(input.size());
+    double encode_IPS = compute_ips(input.size(), encoding_time_ns_min);
+    double enc_ns_per_int = double(encoding_time_ns_min) / double(input.size());
+
+    // (4) output stats
+    printf("(%s,%zd,%2.4f)\n", t_compressor::name().c_str(), encoded_bytes, BPI);
+    fflush(stdout);
+    
+    // save file
+    encoded_data.resize(encoded_bytes);
+    std:: string outfile = input_name + ".ansf";
+    auto fd = fopen_or_fail(outfile, "w");
+    fwrite(encoded_data.data(),1,encoded_bytes, fd);
+    fclose_or_fail(fd);
+}
+
+int main(int argc, char const* argv[])
+{
+    if(argc!=3 || argc!=2) {
+      std::cerr << "Usage:\n\t"<< argv[0] << " file_of_u32 [fidelity]\n";
+      exit(1);
+    }
+    
+    int fidelity = 1; 
+    if(argc==3) fidelity = atoi(argv[2]);
+    if(fidelity<1 || fidelity>8) {
+      std::cerr << "fidelity must be between 1 and 8\n";
+      exit(1);
+    }
+    // read file 
+    std::vector<uint32_t> input_u32s;
+    input_u32s = read_file_u32(argv[1]);
+    switch(fidelity) {
+      case 1:  run<ANSfold<1>>(input_u32s, argv[1]); break;
+      case 2:  run<ANSfold<2>>(input_u32s, argv[1]); break;
+      case 3:  run<ANSfold<3>>(input_u32s, argv[1]); break;
+      case 4:  run<ANSfold<4>>(input_u32s, argv[1]); break;
+      case 5:  run<ANSfold<5>>(input_u32s, argv[1]); break;
+      case 6:  run<ANSfold<6>>(input_u32s, argv[1]); break;
+      case 7:  run<ANSfold<7>>(input_u32s, argv[1]); break;
+      case 8:  run<ANSfold<8>>(input_u32s, argv[1]); break;
+      default: std::cerr<<"Invalid parameter: " << fidelity << std::endl; exit(3);
+    }
+    return EXIT_SUCCESS;
+}
