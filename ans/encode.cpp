@@ -64,22 +64,26 @@ void run(std::vector<uint32_t>& input, std::string input_name)
     
     // save file
     encoded_data.resize(encoded_bytes);
-    std:: string outfile = input_name + ".ansf";
+    std:: string outfile = input_name + ".ansf." + std::to_string(t_compressor::fold_fidelity);
     auto fd = fopen_or_fail(outfile, "w");
-    fwrite(encoded_data.data(),1,encoded_bytes, fd);
+    size_t e = fwrite(encoded_data.data(),1,encoded_bytes, fd); // write compressed data
+    if(e!=encoded_bytes) quit("Error writing compressed data");
+    uint64_t isize = input.size();  // write also input size 
+    e = fwrite(&isize,sizeof(isize),1,fd);
+    if(e!=1) quit("Error writing input file size");    
     fclose_or_fail(fd);
 }
 
 int main(int argc, char const* argv[])
 {
-    if(argc!=3 || argc!=2) {
+    if(argc!=3 && argc!=2) {
       std::cerr << "Usage:\n\t"<< argv[0] << " file_of_u32 [fidelity]\n";
       exit(1);
     }
     
     int fidelity = 1; 
     if(argc==3) fidelity = atoi(argv[2]);
-    if(fidelity<1 || fidelity>8) {
+    if(fidelity<1 || fidelity>5) {
       std::cerr << "fidelity must be between 1 and 8\n";
       exit(1);
     }
@@ -92,9 +96,6 @@ int main(int argc, char const* argv[])
       case 3:  run<ANSfold<3>>(input_u32s, argv[1]); break;
       case 4:  run<ANSfold<4>>(input_u32s, argv[1]); break;
       case 5:  run<ANSfold<5>>(input_u32s, argv[1]); break;
-      case 6:  run<ANSfold<6>>(input_u32s, argv[1]); break;
-      case 7:  run<ANSfold<7>>(input_u32s, argv[1]); break;
-      case 8:  run<ANSfold<8>>(input_u32s, argv[1]); break;
       default: std::cerr<<"Invalid parameter: " << fidelity << std::endl; exit(3);
     }
     return EXIT_SUCCESS;

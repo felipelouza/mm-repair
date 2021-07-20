@@ -286,7 +286,7 @@ void ans_fold_decompress(
 {
     auto in_u8 = reinterpret_cast<const uint8_t*>(cSrc);
     auto ans_frame = ans_fold_decode<fidelity>::load(in_u8);
-    in_u8 += cSrcSize;
+    in_u8 += cSrcSize; // go to the end and proceed backward
 
     std::array<uint64_t, 4> states;
     states[3] = ans_frame.init_state(in_u8);
@@ -297,14 +297,14 @@ void ans_fold_decompress(
     size_t cur_idx = 0;
     auto out_u32 = reinterpret_cast<uint32_t*>(dst);
     size_t fast_decode = to_decode - (to_decode % 4);
-    while (cur_idx != fast_decode) {
+    while (cur_idx != fast_decode) { // decode 4 ints per iteration 
         out_u32[cur_idx] = ans_frame.decode_sym(states[3], in_u8);
         out_u32[cur_idx + 1] = ans_frame.decode_sym(states[2], in_u8);
         out_u32[cur_idx + 2] = ans_frame.decode_sym(states[1], in_u8);
         out_u32[cur_idx + 3] = ans_frame.decode_sym(states[0], in_u8);
         cur_idx += 4;
     }
-    while (cur_idx != to_decode) {
+    while (cur_idx != to_decode) {  // last < 4 ints 
         out_u32[cur_idx] = ans_frame.decode_sym(states[0], in_u8);
         cur_idx++;
     }

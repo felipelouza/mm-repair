@@ -59,6 +59,8 @@ struct ANSmsb {
 };
 
 template <uint32_t fidelity> struct ANSfold {
+    static const uint32_t fold_fidelity = fidelity;
+  
     static std::string name()
     {
         return std::string("ANSfold-") + std::to_string(fidelity);
