@@ -17,6 +17,8 @@
 
 #include <iostream>
 #include <vector>
+#include <cassert>
+#include <algorithm> 
 
 #include "cutil.hpp"
 #include "methods.hpp"
@@ -24,6 +26,17 @@
 
 
 
+
+// decode a file produced by encode. create a file with extension .dec
+// fold parameter must match the one used for encoding (default is 1)
+
+// number of int32 decoded at each call of decode() 
+const size_t Buf_size = 100000;  // must be multiple of 4 
+
+
+
+// main decoding routines: functions init() and decode() 
+// together do the work of  ans_fold_decompress() in ans_fold.hpp
 template <uint32_t fidelity> struct ANSf_decoder {
     static const uint32_t fold_fidelity = fidelity;
 
@@ -31,66 +44,103 @@ template <uint32_t fidelity> struct ANSf_decoder {
     const uint8_t *in_u8;    
     size_t in_u8_size;
     std::array<uint64_t, 4> states;
-    size_t decoded, decodedMax; 
+    size_t cur_idx, to_decode; 
 
-    void init(const uint8_t* cSrc, size_t cSrcSize,size_t originalSize) {
+    void init(const uint8_t* cSrc, size_t cSrcSize, size_t original_size) {
       in_u8 = cSrc;
       in_u8_size = cSrcSize;
-      auto ans_frame = ans_fold_decode<fidelity>::load(in_u8);
+      ans_frame = ans_fold_decode<fidelity>::load(in_u8);
       in_u8 += cSrcSize; // go to the end and proceed backward
       states[3] = ans_frame.init_state(in_u8);
       states[2] = ans_frame.init_state(in_u8);
       states[1] = ans_frame.init_state(in_u8);
       states[0] = ans_frame.init_state(in_u8);
-      decoded = 0;   
-      decodedMax = originalSize;
+      cur_idx = 0;
+      to_decode = original_size;   
     }
     
-    int decode(uint32_t* dst, size_t to_decode) {
-      if(decoded+to_decode>decodedMax)
-        return 1;  // illegal
-        
-    } 
+    // decode up to size uint32_t writing them to dst
+    // return number of decoded uint32_t 
+    size_t decode(uint32_t* odst, size_t size) {
+      assert(size>0);   // don't waste time with empty requests
+      // size must be multiple of 4 unless at the end of data stream
+      assert(size%4==0 || size+cur_idx==to_decode);
+      if(size+cur_idx>to_decode) 
+        return 0; // illegal request forces illegal answer
+      
+      uint32_t *dst = odst;  
+      size_t decoded = 0;
+      size_t fast_decode = to_decode - (to_decode % 4);
+      while (cur_idx != fast_decode) { // decode 4 ints per iteration 
+        *dst++ = ans_frame.decode_sym(states[3], in_u8);
+        *dst++ = ans_frame.decode_sym(states[2], in_u8);
+        *dst++ = ans_frame.decode_sym(states[1], in_u8);
+        *dst++ = ans_frame.decode_sym(states[0], in_u8);
+        cur_idx += 4;
+        decoded += 4;
+        if(decoded>=size) {
+          assert(decoded == size); // because of previous assert
+          return decoded;
+        }
+      }
+      // because of previous assert the last <4 bytes are read in a single shot
+      assert(size-decoded == to_decode-cur_idx);
+      while (cur_idx != to_decode) {  // last < 4 ints 
+        *dst++ = ans_frame.decode_sym(states[0], in_u8);
+        cur_idx++;
+        decoded++;
+      }
+      if(decoded!=size) quit("Something is very wrong in decoding");
+      return decoded;
+    }
 };
 
 
 
-
-
-
 template <uint32_t fidelity>
-void run_ans(std::string input_name)
+void run_ansf(std::string input_name)
 {
 
     // read compressed data file 
-    std::vector<uint8_t> input_u8;    
+    std::vector<uint8_t> in_u8;    
     in_u8 = read_file_u8(input_name);
-    size_t cSrcSize = input_u8.size()-sizeof(uint64_t);
+    // size of compressed data
+    size_t cSrcSize = in_u8.size()-sizeof(size_t);
     // retrieve decompressed file size
-    uint64_t original_size = *((uint64_t *) (input_u8.data() + cSrcSize));
-    cerr << "Original file size: " << original_size;
+    size_t original_size = *((size_t *) in_u8.data() );
+    std::cerr << "# uint32_t in original file: " << original_size << std::endl;
     
-    // init decompression (from ans_fold_decompress)
-    auto ans_frame = ans_fold_decode<fidelity>::load(in_u8);
-    in_u8 += cSrcSize; // go to the end and proceed backward
-
-    std::array<uint64_t, 4> states;
-    states[3] = ans_frame.init_state(in_u8);
-    states[2] = ans_frame.init_state(in_u8);
-    states[1] = ans_frame.init_state(in_u8);
-    states[0] = ans_frame.init_state(in_u8);
+    // create decoder
+    auto ans_dec = ANSf_decoder<fidelity>();
+    ans_dec.init(in_u8.data()+sizeof(size_t), cSrcSize, original_size);
+    // decode and save to file
+    FILE *outfile = fopen_or_fail(input_name + ".dec", "w");
+    uint32_t *buf = new uint32_t[Buf_size];
+    size_t decoded = 0;
+    while(decoded < original_size) {
+      // std::cerr << decoded << std::endl;
+      size_t d =  ans_dec.decode(buf,std::min(Buf_size,original_size-decoded));
+      if(d==0) quit("Illegal decode result");
+      int e = fwrite(buf,sizeof(*buf),d,outfile);
+      if(e!=d) quit("Error writing to output file");
+      decoded += d;
+      assert(decoded <= original_size);
+    }
+    fclose_or_fail(outfile);
+    delete[] buf;
 }
+
 
 int main(int argc, char const* argv[])
 {
     if(argc!=3 && argc!=2) {
-      std::cerr << "Usage:\n\t"<< argv[0] << " infile bytes [fidelity]\n";
+      std::cerr << "Usage:\n\t"<< argv[0] << " infile [fidelity, def=1]\n";
       exit(1);
     }
     int fidelity = 1; 
     if(argc==3) fidelity = atoi(argv[2]);
     if(fidelity<1 || fidelity>5) {
-      std::cerr << "fidelity must be between 1 and 8\n";
+      std::cerr << "fidelity must be between 1 and 5\n";
       exit(1);
     }
     

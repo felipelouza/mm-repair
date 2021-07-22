@@ -15,19 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
+// encode a file of uint32_t using ans-fold k (default k=1)
+// create a file with extension ansf.k
+// the first 8 bytes of the outfile is the number of input uint32_t
+
+
+
 #include <iostream>
 #include <vector>
 
 #include "cutil.hpp"
 #include "methods.hpp"
 #include "util.hpp"
-
-// #include <boost/filesystem.hpp>
-//#include <boost/program_options.hpp>
-//#include <boost/regex.hpp>
-
-//namespace po = boost::program_options;
-//namespace fs = boost::filesystem;
 
 const int NUM_RUNS = 1;
 
@@ -59,32 +58,34 @@ void run(std::vector<uint32_t>& input, std::string input_name)
     double enc_ns_per_int = double(encoding_time_ns_min) / double(input.size());
 
     // (4) output stats
-    printf("(%s,%zd,%2.4f)\n", t_compressor::name().c_str(), encoded_bytes, BPI);
+    printf("(%s, obytes: %zd, BPI: %2.4f, iint32: %zd)\n", t_compressor::name().c_str(), encoded_bytes, BPI,input.size());
     fflush(stdout);
     
     // save file
     encoded_data.resize(encoded_bytes);
     std:: string outfile = input_name + ".ansf." + std::to_string(t_compressor::fold_fidelity);
     auto fd = fopen_or_fail(outfile, "w");
-    size_t e = fwrite(encoded_data.data(),1,encoded_bytes, fd); // write compressed data
-    if(e!=encoded_bytes) quit("Error writing compressed data");
-    uint64_t isize = input.size();  // write also input size 
-    e = fwrite(&isize,sizeof(isize),1,fd);
+    // write input size in sizeof(size_t) bytes  
+    size_t isize = input.size(); 
+    size_t e = fwrite(&isize,sizeof(isize),1,fd);
     if(e!=1) quit("Error writing input file size");    
+    // write compressed data
+    e = fwrite(encoded_data.data(),1,encoded_bytes, fd); 
+    if(e!=encoded_bytes) quit("Error writing compressed data");
     fclose_or_fail(fd);
 }
 
 int main(int argc, char const* argv[])
 {
     if(argc!=3 && argc!=2) {
-      std::cerr << "Usage:\n\t"<< argv[0] << " file_of_u32 [fidelity]\n";
+      std::cerr << "Usage:\n\t"<< argv[0] << " file_of_u32 [fidelity def=1] \n";
       exit(1);
     }
     
     int fidelity = 1; 
     if(argc==3) fidelity = atoi(argv[2]);
     if(fidelity<1 || fidelity>5) {
-      std::cerr << "fidelity must be between 1 and 8\n";
+      std::cerr << "fidelity must be between 1 and 5\n";
       exit(1);
     }
     // read file 

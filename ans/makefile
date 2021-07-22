@@ -4,7 +4,7 @@ CFLAGS=-O3 -Wall -std=c99 -g
 CC=gcc
 
 # main executables 
-EXECS=ansfold.x encode.x
+EXECS=ansfold.x encode.x decode.x
 
 # targets not producing a file declared phony
 .PHONY: all clean
@@ -17,6 +17,10 @@ ansfold.x: ansfold.cpp cutil.hpp util.hpp methods.hpp
 
 encode.x: encode.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< 
+
+decode.x: decode.cpp
+	$(CXX) $(CXX_FLAGS) -o $@ $< 
+
 
 
 %.o: %.c %.h
