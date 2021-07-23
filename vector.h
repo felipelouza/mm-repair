@@ -18,7 +18,7 @@ void vector_destroy(vector *v);
 // return a pointer to an empty vector object
 vector *vector_create()
 {
-  vector *w = malloc(sizeof(vector));
+  vector *w = (vector *) malloc(sizeof(vector));
   if(w==NULL) die("Realloc failed");
   w->v = NULL;
   w->size=0;
@@ -82,7 +82,7 @@ xmatval vector_scalar_prod(vector *v, vector *w)
 void vector_set_zero(vector *v, int dim)
 {
   v->size = dim;
-  v->v = realloc(v->v,dim*sizeof(matval));
+  v->v = (matval *) realloc(v->v,dim*sizeof(matval));
   if(v->v==NULL) die("Realloc failed");
   for(int i=0;i<v->size;i++) v->v[i]=0;  
 }

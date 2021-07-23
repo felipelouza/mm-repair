@@ -3,6 +3,7 @@ CXX_FLAGS=-std=c++17 -O3 -g
 CFLAGS=-O3 -Wall -std=c99 -g
 CC=gcc
 
+
 # main executables 
 EXECS=ansfold.x encode.x decode.x
 

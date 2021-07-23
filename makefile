@@ -1,11 +1,14 @@
 # compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
+CXX_FLAGS=-std=c++17 -O3 -g
+
+
 # comment out this definition to get rid of malloc_count 
 MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=remm recg csrmm csrcg
+EXECS=remm recg csrmm csrcg ansremm
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
@@ -31,6 +34,9 @@ remm: remm.c rematrix.h vector.h $(MALLOC_FILES)
 csrmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
+ansremm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ASN
+
 
 # conjugate gradient method
 recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
@@ -38,6 +44,8 @@ recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
 
 csrcg: recg.c csrmatrix.h vector.h $(MALLOC_FILES)
 	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
+
+
 
 
 # remult was a first, unstructured, prototype using float entries that 

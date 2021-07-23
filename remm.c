@@ -4,7 +4,9 @@
  * test multiplication on repair compressed matrices
  * Given a matrix M and a vector x computes y=Mx and z^T = y^T M
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #ifdef CSR_MATRIX
 #include "csrmatrix.h"
 #else
@@ -20,9 +22,10 @@
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t  %s [-n mul] -y yvector -z zvector matrix rows cols xvector \n",name);
+    fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols xvector\n",name);
+    fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n");
-    fprintf(stderr,"\t\t-e einfile     store computed eigenvalue in this file, def. 1\n");
+    fprintf(stderr,"\t\t-e einfile     store computed eigenvalue in this file\n");
     fprintf(stderr,"\t\t-y yvector     store y-vector in this file\n");
     fprintf(stderr,"\t\t-z zvector     store z-vector in this file\n\n");
     exit(1);

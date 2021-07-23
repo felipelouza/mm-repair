@@ -19,12 +19,23 @@
 #define DEBUG 0
 
 
+#ifdef USE_ANS
+  #define CFILE_EXT ".vc.C.ans.1"
+  #define BUF_LOG2 20                  // log size decompression buffer  
+  #define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
+  #include "ans/decode.hpp"
+#else 
+  #define CFILE_EXT ".vc.C"
+#endif
+#define RFILE_EXT ".vc.R"
+
+
 // the use of float's has not been fully tested 
 #ifndef INT_VALS 
   #ifndef FLOAT_VALS
-  typedef double matval;  // type representing a matrix/vector entry
+  typedef double matval;    // type representing a matrix/vector entry
   #else
-  typedef float  matval;  // type representing a matrix/vector entry
+  typedef float  matval;    // type representing a matrix/vector entry
   #endif     
   typedef double xmatval;   // type representing a matrix entry with larger precision   
 #else
@@ -32,8 +43,8 @@
   typedef int xmatval;      // type representing a matrix entry with larger precision   
 #endif
 
-typedef double  matval;    // type representing a matrix/vector entry
-typedef double xmatval;   // type representing a matrix entry with larger precision   
+typedef double  matval;     // type representing a matrix/vector entry
+typedef double xmatval;     // type representing a matrix entry with larger precision   
 
 // report error message and terminates
 static void die(const char *s);
@@ -52,6 +63,10 @@ typedef struct {
   matval *NTval;  // values associated to non-terminals (possibly shared with NTrules)
   int *Cseq;      // array C of repair grammar
   size_t Clen;    // len of C array
+#ifdef USE_ANS
+  uint8_t *Ccseq; // ans-compressed array C of repair grammar
+  size_t Cclen;   // lenght ans-compressed array
+#endif  
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
   FILE *Cf;       // C file 
@@ -73,46 +88,66 @@ static void fill_NTval(rematrix *m, vector *x, bool share);
 static void clear_NTval(rematrix *m);
 static void propagate_NTval(rematrix *m, vector *x);
 
-
+// load compressed matrix information from files
 rematrix *remat_create(int r, int c, char *basename)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
-  rematrix *m=malloc(sizeof(rematrix));
+  rematrix *m=(rematrix *) malloc(sizeof(rematrix));
   if(m==NULL) die("Cannot alloc matrix");
   
   m->rows=r; m->cols=c;
 
-  // ------------ read rules
+  // ------------ open and read rule file
   if(strlen(basename)+10>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
-  strcat(fname,".vc.R");
-  if (stat (fname,&s) != 0)die("Cannot stat rules (.vc.R) file");
+  strcat(fname,RFILE_EXT);
+  if (stat (fname,&s) != 0)die("Cannot stat rule (" RFILE_EXT ") file");
   off_t len = s.st_size;
   m->Rf = fopen (fname,"rb");
-  if (m->Rf == NULL) die("Cannot open rules (.vc.R) file"); 
+  if (m->Rf == NULL) die("Cannot open rules (" RFILE_EXT ") file"); 
 
   // read alphabet size for the original input string 
   if (fread(&m->Alpha,sizeof(int),1,m->Rf) != 1)  
-   die("Cannot read rules (.vc.R) file (1)"); 
+   die("Cannot read rules (" RFILE_EXT ") file (1)"); 
   m->NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
   m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
   if(m->NTrules==NULL) die("Cannot allocate R array");
   if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
-    die("Cannot read rules (.vc.R) file (2)");
+    die("Cannot read rules (" RFILE_EXT ") file (2)");
+  if(fclose(m->Rf)) die("Error closing rules (" RFILE_EXT ") file");
+    m->Rf=NULL;
   // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
   
   // --- open and read C file
   strcpy(fname,basename);
-  strcat(fname,".vc.C");
-  if (stat (fname,&s) != 0) die("Cannot stat .vc.C file");
+  strcat(fname,CFILE_EXT);
+  if (stat (fname,&s) != 0) die("Cannot stat " CFILE_EXT " file");
   m->Cf = fopen (fname,"r");
-  if (m->Cf == NULL) die("Cannot open .vc.C file");
+  if (m->Cf == NULL) die("Cannot open " CFILE_EXT " file");
+  #ifdef USE_ANS
+  m->Cclen = s.st_size;
+  m->Ccseq = new uint8_t[m->Cclen];
+  if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,m->Cf)!=m->Cclen)
+   die("Cannot read " CFILE_EXT " file");    
+  // extract decompressed length and remove it from compressed data 
+  m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
+  m->Ccseq += sizeof(size_t);
+  m->Cclen -= sizeof(size_t);  
+  // allocate decompressed buffer
+  m->Cseq = (int *) malloc((1<<BUF_LOG2)*sizeof(int));
+  if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
+  #else
   m->Clen = (s.st_size)/sizeof(int);
   m->Cseq = (int *) malloc(m->Clen*sizeof(int));
   if(fread(m->Cseq,sizeof(int),m->Clen,m->Cf)!=m->Clen)
-   die("Cannot read .vc.C file");
+   die("Cannot read " CFILE_EXT " file");   
+  #endif 
+  // close the file
+  if(fclose(m->Cf)!=0) die("Error closing values " CFILE_EXT " file"); 
+  m->Cf = NULL;
+  
   
   // ------------ read matrix values 
   strcpy(fname,basename);
@@ -135,10 +170,23 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   y->size = m->rows;
   y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
   // --- compute output 
+  #ifdef USE_ANS
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<fidelity>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   int ycur = 0;
   xmatval sum=0;
   for(size_t j=0; j < m->Clen; j++) {
+    #ifdef USE_ANS
+    if((j & BUF_MASK) ==0) {
+      size_t d = ans_dec.decode(m->Cseq,std::min((1<<BUF_LOG2), m->Clen -j);
+      if(d==0) die("Illegal decode call");
+    }
+    int i = m->Cseq[j&BUF_MASK];
+    #else
     int i = m->Cseq[j];
+    #endif
     if(i>=m->Alpha) { // non terminal 
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
@@ -171,13 +219,27 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   x->v = (matval *) realloc(x->v,x->size*sizeof(matval));
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
+
   // propagate y-values down the tree  
   // variables used by decode_entry 
+  #ifdef USE_ANS
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<fidelity>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
+    #ifdef USE_ANS
+    if((j & BUF_MASK) ==0) {
+      size_t d = ans_dec.decode(m->Cseq,std::min((1<<BUF_LOG2), m->Clen -j);
+      if(d==0) die("Illegal decode call");
+    }
+    int i = m->Cseq[j&BUF_MASK];
+    #else
     int i = m->Cseq[j];
+    #endif
     if(i>=m->Alpha) { // non terminal 
       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
       assert(ycur < y->size);
@@ -203,17 +265,25 @@ void remat_destroy(rematrix *m)
 {  
   free(m->Mval);
   // these are usually accessed sequentially, so one could keep them on file
-  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
+  // this feature is curenntly not used!
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
+  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
+  #ifdef USE_ANS
+  if(m->Ccseq!=NULL) {
+    delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
+    m->Ccseq = NULL;
+  } 
+  #endif
 
-  // the files were left open in case their data have to be reloaded or read form file
+  // if the files were left open in case their data have to be reloaded close them now
+  // currently we are not suing this and close the files immediately  
   if(m->Rf!=NULL) { 
-    if(fclose(m->Rf)) die("Error closing .vc.R file");
+    if(fclose(m->Rf)) die("Error closing rules (" RFILE_EXT ") file");
     m->Rf=NULL;
   }
   if(m->Cf!=NULL) {
-    if(fclose(m->Cf)) die("Error closing .vc.C file");
+    if(fclose(m->Cf)) die("Error closing " CFILE_EXT " file");
     m->Cf=NULL;
   }
   free(m);
