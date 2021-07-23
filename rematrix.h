@@ -15,12 +15,13 @@
 #include <unistd.h>
 #include <limits.h>
 
-// set to 1 to print a lot of debug information 
-#define DEBUG 0
-
 
 #ifdef USE_ANS
-  #define CFILE_EXT ".vc.C.ans.1"
+  #include <iostream>
+  #include <algorithm>
+  #include <cstdint>
+  #define ANSf 1
+  #define CFILE_EXT ".vc.C.ansf.1"
   #define BUF_LOG2 20                  // log size decompression buffer  
   #define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
   #include "ans/decode.hpp"
@@ -28,6 +29,10 @@
   #define CFILE_EXT ".vc.C"
 #endif
 #define RFILE_EXT ".vc.R"
+
+// set to 1 to print a lot of debug information 
+#define DEBUG 0
+
 
 
 // the use of float's has not been fully tested 
@@ -99,7 +104,7 @@ rematrix *remat_create(int r, int c, char *basename)
   m->rows=r; m->cols=c;
 
   // ------------ open and read rule file
-  if(strlen(basename)+10>PATH_MAX) die("Illegal base name");
+  if(strlen(basename)+20>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
   strcat(fname,RFILE_EXT);
   if (stat (fname,&s) != 0)die("Cannot stat rule (" RFILE_EXT ") file");
@@ -123,11 +128,12 @@ rematrix *remat_create(int r, int c, char *basename)
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
-  if (stat (fname,&s) != 0) die("Cannot stat " CFILE_EXT " file");
+  if (stat (fname,&s) != 0) die("Cannot stat C (" CFILE_EXT ") file");
   m->Cf = fopen (fname,"r");
-  if (m->Cf == NULL) die("Cannot open " CFILE_EXT " file");
+  if (m->Cf == NULL) die("Cannot open C (" CFILE_EXT ") file");
   #ifdef USE_ANS
   m->Cclen = s.st_size;
+  std::cerr << m->Cclen << std::endl; 
   m->Ccseq = new uint8_t[m->Cclen];
   if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,m->Cf)!=m->Cclen)
    die("Cannot read " CFILE_EXT " file");    
@@ -172,7 +178,7 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   // --- compute output 
   #ifdef USE_ANS
   // create and initialize decoder
-  auto ans_dec = ANSf_decoder<fidelity>();
+  auto ans_dec = ANSf_decoder<ANSf>();
   ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
   #endif
   int ycur = 0;
@@ -180,7 +186,7 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   for(size_t j=0; j < m->Clen; j++) {
     #ifdef USE_ANS
     if((j & BUF_MASK) ==0) {
-      size_t d = ans_dec.decode(m->Cseq,std::min((1<<BUF_LOG2), m->Clen -j);
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
       if(d==0) die("Illegal decode call");
     }
     int i = m->Cseq[j&BUF_MASK];
@@ -224,7 +230,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   // variables used by decode_entry 
   #ifdef USE_ANS
   // create and initialize decoder
-  auto ans_dec = ANSf_decoder<fidelity>();
+  auto ans_dec = ANSf_decoder<ANSf>();
   ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
   #endif
   xmatval a; size_t col;   
@@ -233,7 +239,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   for(size_t j=0; j<m->Clen;j++) {  
     #ifdef USE_ANS
     if((j & BUF_MASK) ==0) {
-      size_t d = ans_dec.decode(m->Cseq,std::min((1<<BUF_LOG2), m->Clen -j);
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq, std::min((size_t) (1<<BUF_LOG2), m->Clen -j));
       if(d==0) die("Illegal decode call");
     }
     int i = m->Cseq[j&BUF_MASK];

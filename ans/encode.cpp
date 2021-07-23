@@ -20,14 +20,17 @@
 // the first 8 bytes of the outfile is the number of input uint32_t
 
 
-
+#include <cassert>
 #include <iostream>
 #include <vector>
+#ifdef MALLOC_COUNT
+#include "../mc/malloc_count.h"
+#endif
 
-#include "cutil.hpp"
-#include "methods.hpp"
 #include "util.hpp"
+#include "methods.hpp"
 
+// number of times we compress (for computing average speed) 
 const int NUM_RUNS = 1;
 
 
@@ -99,5 +102,11 @@ int main(int argc, char const* argv[])
       case 5:  run<ANSfold<5>>(input_u32s, argv[1]); break;
       default: std::cerr<<"Invalid parameter: " << fidelity << std::endl; exit(3);
     }
+    
+    #ifdef MALLOC_COUNT
+    fprintf(stderr,"Peak memory allocation: %zu bytes, current: %zu bytes\n", 
+            malloc_count_peak(),malloc_count_current());
+    #endif
+    
     return EXIT_SUCCESS;
 }

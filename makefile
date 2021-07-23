@@ -23,27 +23,28 @@ all: $(EXECS) brepair
 
 # general rule for the targets in this directory
 %: %.c
-	gcc $(CFLAGS) -o $@ $< 
+	$(CC) $(CFLAGS) -o $@ $< 
 
 
 # left and right matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
 remm: remm.c rematrix.h vector.h $(MALLOC_FILES)
-	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
 
 csrmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
-	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
 ansremm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ASN
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS
+
 
 
 # conjugate gradient method
 recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
-	gcc $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
+	$(CC) $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
 
 csrcg: recg.c csrmatrix.h vector.h $(MALLOC_FILES)
-	gcc $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
 
 
@@ -53,7 +54,7 @@ csrcg: recg.c csrmatrix.h vector.h $(MALLOC_FILES)
 # the following rule creates the version using integers instead of floats
 # if necessary the flag INT_VALS can be used also for the other tools 
 iremult: remult.c
-	gcc $(CFLAGS) -o $@ $< -DINT_VALS
+	$(CC) $(CFLAGS) -o $@ $< -DINT_VALS
 
 # directory containing the (balanced) irepar/idespair tools 
 brepair:

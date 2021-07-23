@@ -14,16 +14,16 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+#include <cassert>
 #include <iostream>
 #include <vector>
-#include <cassert>
-//#include <algorithm> 
+#ifdef MALLOC_COUNT
+#include "../mc/malloc_count.h"
+#endif
 
-#include "cutil.hpp"
-#include "methods.hpp"
 #include "util.hpp"
 #include "decode.hpp"
+
 
 
 // decode a file produced by encode. create a file with extension .dec
@@ -88,5 +88,11 @@ int main(int argc, char const* argv[])
       case 5:  run_ansf<5>(argv[1]); break;
       default: std::cerr<<"Invalid parameter: " << fidelity << std::endl; exit(3);
     }
+    
+    #ifdef MALLOC_COUNT
+    fprintf(stderr,"Peak memory allocation: %zu bytes, current: %zu bytes\n", 
+            malloc_count_peak(),malloc_count_current());
+    #endif
+        
     return EXIT_SUCCESS;
 }

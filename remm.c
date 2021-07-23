@@ -159,6 +159,7 @@ int main (int argc, char **argv) {
   #ifdef MALLOC_COUNT
     fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
            malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
+    fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
   #endif
   #ifdef DETAILED_TIMING
   fprintf(stderr,"Average mult time (secs) Ax: %lf  xA: %lf\n", ((double)m1/iter)/sysconf(_SC_CLK_TCK), ((double)m2/iter)/sysconf(_SC_CLK_TCK));
