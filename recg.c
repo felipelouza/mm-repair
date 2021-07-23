@@ -3,7 +3,7 @@
  * 
  * coniugate gradient on repair compressed matrices
  * Given rxc matrix A and 1xc vector y computes rx1 vector x
- * that minimizes ||Ax-y||_2 be computing n steps 
+ * that minimizes ||Ax-y||_2 by computing n steps 
  * of CG descent algorithm from the CLA paper
  * 
  * input matrix A must be in repair compressed format

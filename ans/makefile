@@ -18,7 +18,7 @@ ansfold.x: ansfold.cpp cutil.hpp util.hpp methods.hpp
 encode.x: encode.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< 
 
-decode.x: decode.cpp
+decode.x: decode.cpp decode.hpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< 
 
 

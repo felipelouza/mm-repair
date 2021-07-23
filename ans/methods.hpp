@@ -20,43 +20,13 @@
 
 #include "ans_byte.hpp"
 #include "ans_fold.hpp"
-#include "ans_int.hpp"
-#include "ans_msb.hpp"
+//~ #include "ans_int.hpp"
+//~ #include "ans_msb.hpp"
 #include "ans_reorder_fold.hpp"
 
-#include "ans_sint.hpp"
-#include "ans_smsb.hpp"
+//~ #include "ans_sint.hpp"
+//~ #include "ans_smsb.hpp"
 
-
-struct ANSint {
-    static std::string name() { return std::string("ANS"); }
-
-    static size_t encode(const uint32_t* in_ptr, size_t in_size_u32,
-        uint8_t* out_ptr, size_t out_size_u8, uint8_t* buf = NULL)
-    {
-        return ans_int_compress(out_ptr, out_size_u8, in_ptr, in_size_u32);
-    }
-    static void decode(const uint8_t* in_ptr, size_t in_size_u8,
-        uint32_t* out_ptr, size_t out_size_u32, uint8_t* buf = NULL)
-    {
-        ans_int_decompress(out_ptr, out_size_u32, in_ptr, in_size_u8);
-    }
-};
-
-struct ANSmsb {
-    static std::string name() { return "ANSmsb"; }
-
-    static size_t encode(const uint32_t* in_ptr, size_t in_size_u32,
-        uint8_t* out_ptr, size_t out_size_u8, uint8_t* buf = NULL)
-    {
-        return ans_msb_compress(out_ptr, out_size_u8, in_ptr, in_size_u32);
-    }
-    static void decode(const uint8_t* in_ptr, size_t in_size_u8,
-        uint32_t* out_ptr, size_t out_size_u32, uint8_t* buf = NULL)
-    {
-        ans_msb_decompress(out_ptr, out_size_u32, in_ptr, in_size_u8);
-    }
-};
 
 template <uint32_t fidelity> struct ANSfold {
     static const uint32_t fold_fidelity = fidelity;
