@@ -62,7 +62,7 @@ brepair:
 
 # directory containing the ans-fold encoding-decoding tools 
 ansf:
-	make -C ansf
+	make -C ans
 
 
 clean:
