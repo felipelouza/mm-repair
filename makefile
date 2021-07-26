@@ -16,10 +16,10 @@ MALLOC_FILES=mc/malloc_count.c mc/malloc_count.h
 endif
 
 # targets not producing a file declared phony
-.PHONY: all brepair clean
+.PHONY: all brepair ans clean
 
 # main target
-all: $(EXECS) brepair
+all: $(EXECS) brepair ansf
 
 # general rule for the targets in this directory
 %: %.c
@@ -59,6 +59,11 @@ iremult: remult.c
 # directory containing the (balanced) irepar/idespair tools 
 brepair:
 	make -C brepair
+
+# directory containing the ans-fold encoding-decoding tools 
+ansf:
+	make -C ansf
+
 
 clean:
 	rm -f $(EXECS)

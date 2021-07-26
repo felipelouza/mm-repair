@@ -16,14 +16,14 @@ endif
 
 
 # main executables 
-EXECS=ansfold.x encode.x decode.x
+EXECS=encode.x decode.x
 
 # targets not producing a file declared phony
 .PHONY: all clean
 
 all: $(EXECS)
 
-
+# test multiple version, requires boost
 ansfold.x: ansfold.cpp cutil.hpp util.hpp methods.hpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< -lboost_system -lboost_regex -lboost_filesystem -lboost_program_options
 
