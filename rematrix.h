@@ -133,7 +133,6 @@ rematrix *remat_create(int r, int c, char *basename)
   if (m->Cf == NULL) die("Cannot open C (" CFILE_EXT ") file");
   #ifdef USE_ANS
   m->Cclen = s.st_size;
-  std::cerr << m->Cclen << std::endl; 
   m->Ccseq = new uint8_t[m->Cclen];
   if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,m->Cf)!=m->Cclen)
    die("Cannot read " CFILE_EXT " file");    
