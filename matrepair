@@ -24,6 +24,8 @@ idespair_exe = "brepair/idespair"
 # note: if file names ends with .double then the matrix is assumed to be 
 # in dense binary format (see mat2vc.py help) 
 mat2vc_exe = "mat2vc.py"
+# tool to compress a sequence of int32 unsing ans-fold  
+ansf_exe = "ans/encode.x"
 
 
 def main():
@@ -37,6 +39,7 @@ def main():
   parser.add_argument('-c', help='decompress and check',action='store_true')
   parser.add_argument('-r', help='compression full report',action='store_true')
   parser.add_argument('-m', help='force repair to use at most M MBs (def. 95%% of available RAM)',default=-1, type=int)
+  parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
   parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
@@ -71,36 +74,58 @@ def main():
           print("Decompressed file matches");
         else:
           print("Decompressed file differs");
-      
-      
+            
     else:       # mat2vc + irepair
       # ----------conversion to the .vc format 
-      command = "{exe} {csvfile} {rows} {cols}".format(
-        exe = os.path.join(args.main_dir,mat2vc_exe), csvfile=args.input,
-        rows = args.rows, cols=args.cols);
-      print("==== Conversion csv/bin->vc\nCommand:", command)
-      if(execute_command(command,logfile)!=True):
-        return
-      vc_time = time.time()-start
-      print("Conversion time: {0:.4f}".format(vc_time))
-      if args.norepair:
-        print("==== Stopping after the conversion phase as requested")      
-        return
+      if args.y and not need_rebuild(args.input, ".vc", ".val"):
+        print("---- Skipping conversion csv/bin->vc")
+        vc_time = -1
+      else:
+        command = "{exe} {csvfile} {rows} {cols}".format(
+          exe = os.path.join(args.main_dir,mat2vc_exe), csvfile=args.input,
+          rows = args.rows, cols=args.cols);
+        print("==== Conversion csv/bin->vc\nCommand:", command)
+        if(execute_command(command,logfile)!=True):
+          return
+        vc_time = time.time()-start
+        print("Conversion time: {0:.4f}".format(vc_time))
+        if args.norepair:
+          print("==== Stopping after the conversion phase as requested")      
+          return
 
       # ---- apply irepair to the .vc file modified dictionary
-      start = time.time()
-      command = "{exe} {csvfile}.vc {mb}".format(mb=args.m,
-                exe = os.path.join(args.main_dir,irepair_exe), csvfile=args.input)
-      print("==== Repair compression\nCommand:", command)
-      if(execute_command(command,logfile)!=True):
-       return
-      repair_time = time.time()-start
-      print("Repair time: {0:.4f}".format(repair_time))
+      if args.y and not need_rebuild(args.input+".vc", ".C", ".R"):
+        print("---- Skipping irepair")
+        repair_time = -1
+      else:
+        start = time.time()
+        command = "{exe} {csvfile}.vc {mb}".format(mb=args.m,
+                  exe = os.path.join(args.main_dir,irepair_exe), csvfile=args.input)
+        print("==== Repair compression\nCommand:", command)
+        if(execute_command(command,logfile)!=True):
+         return
+        repair_time = time.time()-start
+        print("Repair time: {0:.4f}".format(repair_time))
+        
       
+      # ---- apply ans_fold-1 to the .vc.C file 
+      if args.y and not need_rebuild(args.input+".vc.C", ".ansf.1"):
+        print("---- Skipping ans-fold")
+        ansf_time = -1
+      else:
+        start = time.time()
+        command = "{exe} {csvfile}.vc.C ".format(
+                  exe = os.path.join(args.main_dir,ansf_exe), csvfile=args.input)
+        print("==== Ans-fold compression\nCommand:", command)
+        if(execute_command(command,logfile)!=True):
+         return
+        ansf_time = time.time()-start
+        print("Ans-fold time: {0:.4f}".format(ansf_time))
+
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      
       if args.r:
-        compression_report(args,vc_time,repair_time,total_time)
+        compression_report(args,vc_time,repair_time,ansf_time,total_time)
       
       # delete temporary .vc file
       if not args.k:
@@ -108,15 +133,18 @@ def main():
         if(execute_command(command,logfile)!=True):
           return
 
+
+
   print("==== Done")
 
 
 
-def compression_report(args,tconv,trepair,ttot):
+def compression_report(args,tconv,trepair,tans,ttot):
   print("==== Compression Report:")
   print(" >> matrix name:",args.input);
   print(" >> conversion time: {0:.2f}".format(tconv))
   print(" >> repair time: {0:.2f}".format(trepair))
+  print(" >> ansf time: {0:.2f}".format(tans))
   print(" >> total time: {0:.2f}".format(ttot))  
   isize = 8*args.rows*args.cols
   print(" >> matrix dense size:",isize, "bytes")
@@ -133,7 +161,10 @@ def compression_report(args,tconv,trepair,ttot):
   psize = valsize + csize+rsize
   print(" >> Uncompressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   # print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
-  estimate_compressed_grammar_size(args.input)
+  estimate_compressed_grammar_size(args.input,isize)
+  ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
+  psize = valsize+ans_csize+rsize 
+  print(" >> Ans grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
 
 
 def show_command_line(f):
@@ -181,7 +212,7 @@ def bits(n):
 # estimate space usage of RePair output using the minimum number of bits 
 # for symbol, no other complex econding
 # include also the .val file  
-def estimate_compressed_grammar_size(basename):
+def estimate_compressed_grammar_size(basename,isize):
   rsize = os.path.getsize(basename+".vc.R")
   assert (rsize-4)%8 == 0, "Invalid .R file format" 
   nnonterm = (rsize-4)//8   # number of non terminals 
@@ -194,9 +225,21 @@ def estimate_compressed_grammar_size(basename):
   numc = os.path.getsize(basename+".vc.C")//4   # symbols in C string 
   tot = ((numc+2*nnonterm)*totbits+7)// 8       # bytes to represent C+R
   tot += 4 + os.path.getsize(basename+".val")   # 1 extra byte in R and val file 
-  print(" >> Compressed grammar+val representation size (bytes):",tot)
+  print(" >> Compressed grammar+val representation size:",tot, "bytes  ({0:.2f}%)".format(100*tot/isize))
 
-  
+# check if the files source.ext... has to be computed 
+def need_rebuild(source,*exts):
+  assert os.path.exists(source), "Missing source"
+  for ext in exts:
+    dest = source + ext
+    if not os.path.exists(dest):
+      return True           #one destination missing: we need to build it
+    # rebuild if dest is older   
+    if os.path.getmtime(dest) < os.path.getmtime(source):
+      return True
+  # all dependencies exists and are more recent than the source 
+  return False 
+
 
 if __name__ == '__main__':
   main()
