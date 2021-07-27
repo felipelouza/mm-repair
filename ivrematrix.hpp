@@ -15,19 +15,13 @@
 #include <unistd.h>
 #include <limits.h>
 
-#ifdef USE_ANS
-  #include <iostream>
-  #include <algorithm>
-  #include <cstdint>
-  #define ANSf 1
-  #define CFILE_EXT ".vc.C.ansf.1"
-  #define BUF_LOG2 20                  // log size decompression buffer  
-  #define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
-  #include "ans/decode.hpp"
-#else 
-  #define CFILE_EXT ".vc.C"
-#endif
-#define RFILE_EXT ".vc.R"
+#include <sdsl/int_vector.hpp>
+#include <iostream>
+#include <string>
+#define CFILE_EXT ".vc.C.iv"
+#define RFILE_EXT ".vc.R.iv"
+
+
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
@@ -64,17 +58,11 @@ typedef struct {
   int Alpha;      // alphabet size of input matrix coincides with smallest non terminal symbol 
   matval *NTval;  // values associated to non-terminals (possibly shared with NTrules)
   size_t NTnum;   // number of non terminals 
-  int *NTrules;   // right hand side of non-terminal 
-  int *Cseq;      // array C of repair grammar
-  size_t Clen;    // len of C array
-#ifdef USE_ANS
-  uint8_t *Ccseq; // ans-compressed array C of repair grammar
-  size_t Cclen;   // lenght ans-compressed array
-#endif  
+  sdsl::int_vector<> NTrules;
+  size_t Clen;
+  sdsl::int_vector<> Cseq;
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
-  FILE *Cf;       // C file 
-  FILE *Rf;       // R file  
 } rematrix;  
 
 
@@ -106,53 +94,24 @@ rematrix *remat_create(int r, int c, char *basename)
   if(strlen(basename)+20>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
   strcat(fname,RFILE_EXT);
-  if (stat (fname,&s) != 0)die("Cannot stat rule (" RFILE_EXT ") file");
-  off_t len = s.st_size;
-  m->Rf = fopen (fname,"rb");
-  if (m->Rf == NULL) die("Cannot open rules (" RFILE_EXT ") file"); 
-
-  // read alphabet size for the original input string 
-  if (fread(&m->Alpha,sizeof(int),1,m->Rf) != 1)  
-   die("Cannot read rules (" RFILE_EXT ") file (1)"); 
-  m->NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
-  m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
-  if(m->NTrules==NULL) die("Cannot allocate R array");
-  if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
-    die("Cannot read rules (" RFILE_EXT ") file (2)");
-  if(fclose(m->Rf)) die("Error closing rules (" RFILE_EXT ") file");
-    m->Rf=NULL;
+  std::cerr << "Reading: " << std::string(fname) << std::endl;
+  sdsl::int_vector<> pippo;
+  load_from_file(pippo, std::string(fname));
+  std::cerr << "Size: " << pippo.size() << " width " << pippo.width() << std::endl; 
+  // std::cerr << "Size: " << m->NTrules.size() << " width " << m->NTrules.width() << std::endl; 
+  assert(m->NTrules.size()%2==1); // the first entry is the alpha size
+  m->Alpha = m->NTrules[0];
+  m->NTnum = m->NTrules.size()/2;
+  
   // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
   
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
-  if (stat (fname,&s) != 0) die("Cannot stat C (" CFILE_EXT ") file");
-  m->Cf = fopen (fname,"r");
-  if (m->Cf == NULL) die("Cannot open C (" CFILE_EXT ") file");
-  #ifdef USE_ANS
-  m->Cclen = s.st_size;
-  m->Ccseq = new uint8_t[m->Cclen];
-  if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,m->Cf)!=m->Cclen)
-   die("Cannot read " CFILE_EXT " file");    
-  // extract decompressed length and remove it from compressed data 
-  m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
-  m->Ccseq += sizeof(size_t);
-  m->Cclen -= sizeof(size_t);  
-  // allocate decompressed buffer
-  m->Cseq = (int *) malloc((1<<BUF_LOG2)*sizeof(int));
-  if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
-  #else
-  m->Clen = (s.st_size)/sizeof(int);
-  m->Cseq = (int *) malloc(m->Clen*sizeof(int));
-  if(fread(m->Cseq,sizeof(int),m->Clen,m->Cf)!=m->Clen)
-   die("Cannot read " CFILE_EXT " file");   
-  #endif 
-  // close the file
-  if(fclose(m->Cf)!=0) die("Error closing values " CFILE_EXT " file"); 
-  m->Cf = NULL;
-  
-  
+  load_from_file(m->Cseq,std::string(fname));
+  m->Clen = m->Cseq.size();
+      
   // ------------ read matrix values 
   strcpy(fname,basename);
   strcat(fname,".val");
@@ -174,23 +133,10 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   y->size = m->rows;
   y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
   // --- compute output 
-  #ifdef USE_ANS
-  // create and initialize decoder
-  auto ans_dec = ANSf_decoder<ANSf>();
-  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
-  #endif
   int ycur = 0;
   xmatval sum=0;
   for(size_t j=0; j < m->Clen; j++) {
-    #ifdef USE_ANS
-    if((j & BUF_MASK) ==0) {
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
-      if(d==0) die("Illegal decode call");
-    }
-    int i = m->Cseq[j&BUF_MASK];
-    #else
     int i = m->Cseq[j];
-    #endif
     if(i>=m->Alpha) { // non terminal 
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
@@ -214,7 +160,6 @@ void remat_mult(rematrix *m, vector *x, vector *y)
 void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure the rules are available and dimensions agree
-  if(m->NTrules==NULL) die("Rules array missing");
   if(m->rows!=y->size) die("Dimension mismatch (left-mult)");   
   // clean NT values
   clear_NTval(m);
@@ -226,24 +171,11 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 
   // propagate y-values down the tree  
   // variables used by decode_entry 
-  #ifdef USE_ANS
-  // create and initialize decoder
-  auto ans_dec = ANSf_decoder<ANSf>();
-  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
-  #endif
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
-    #ifdef USE_ANS
-    if((j & BUF_MASK) ==0) {
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq, std::min((size_t) (1<<BUF_LOG2), m->Clen -j));
-      if(d==0) die("Illegal decode call");
-    }
-    int i = m->Cseq[j&BUF_MASK];
-    #else
     int i = m->Cseq[j];
-    #endif
     if(i>=m->Alpha) { // non terminal 
       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
       assert(ycur < y->size);
@@ -268,28 +200,9 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 void remat_destroy(rematrix *m)
 {  
   free(m->Mval);
-  // these are usually accessed sequentially, so one could keep them on file
-  // this feature is curenntly not used!
-  if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
-  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
-  #ifdef USE_ANS
-  if(m->Ccseq!=NULL) {
-    delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
-    m->Ccseq = NULL;
-  } 
-  #endif
-
-  // if the files were left open in case their data have to be reloaded close them now
-  // currently we are not suing this and close the files immediately  
-  if(m->Rf!=NULL) { 
-    if(fclose(m->Rf)) die("Error closing rules (" RFILE_EXT ") file");
-    m->Rf=NULL;
-  }
-  if(m->Cf!=NULL) {
-    if(fclose(m->Cf)) die("Error closing " CFILE_EXT " file");
-    m->Cf=NULL;
-  }
+  sdsl::util::clear(m->NTrules);
+  sdsl::util::clear(m->Cseq);
   free(m);
 }
 
@@ -357,12 +270,12 @@ static void propagate_NTval(rematrix *m, vector *x)
   // variables used by decode_entry 
   xmatval a; size_t col;   
   // scan rules in reverse order
-  int *pair = m->NTrules + 2*m->NTnum;  // pointer beyond the last rule 
+  int pos = 1 + 2*m->NTnum;  // pointer beyond the last rule 
   for(ssize_t i=m->NTnum-1;i>=0;i--) {
     xmatval s = m->NTval[i]; // value associated to rule i
-    pair -= 2;               // go back one rule in m->NTrules
+    pos -= 2;               // go back one rule in m->NTrules
     for(int j=0;j<2;j++) {   // propagate s to rule i right-hand-size   
-      int p = pair[j];
+      int p = m->NTval[pos+j];
       if(p>=m->Alpha) { // non terminal
         p -= m->Alpha;
         if(p>=i) die("Fatal Error: Forward rule (propagate_NTval)");
@@ -376,7 +289,7 @@ static void propagate_NTval(rematrix *m, vector *x)
       }
     }
   }
-  assert(pair==m->NTrules);
+  assert(pos==1);
 }
 
 
@@ -387,27 +300,19 @@ static void propagate_NTval(rematrix *m, vector *x)
 // array will be needed in any additional operation  
 static void fill_NTval(rematrix *m, vector *x, bool share) 
 {
-  if(m->NTrules==NULL) die("Invalid call to fill_NTval");
+  assert(!share); // share not possible if R is compressed 
 
-  if(share) {
-    // make sure the overwriting is possible 
-    assert(sizeof(matval)<=2*sizeof(int));
-    // share the same memory space 
-    m->NTval = (matval *) m->NTrules;
-  }
-  else {
-    if(m->NTval==NULL) {
+  if(m->NTval==NULL) {
       m->NTval = (matval *) malloc(m->NTnum*sizeof(matval));
       if(m->NTval==NULL) die("Cannot allocate NTval (fill)");
-    }
-  } 
+  }
   
   // compute values 
-  int *pair = m->NTrules;
+  int pos = 1; // start of first rule
   for(int i=0; i<(ssize_t) m->NTnum;i++) {  // i is number of NT computed so far
     xmatval sum = 0;
     for(int j=0;j<2;j++) {
-      int p = pair[j];
+      int p = m->NTrules[pos+j];
       if(p>=m->Alpha) { // non terminal
         p -= m->Alpha;
         if(p>=i) die("Fatal Error: Forward rule (fill_NTval)");
@@ -427,7 +332,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
         #endif
       }
     }
-    pair += 2;   // advance to next rule
+    pos += 2;   // advance to next rule
     m->NTval[i]=sum;
     #ifndef INT_VALS 
     if(DEBUG) printf("  NT[%d]: %f\n",i,sum); //!!!!!!!!!
@@ -435,8 +340,6 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
     if(DEBUG) printf("  NT[%d]: %d\n",i,sum); //!!!!!!!!!
     #endif
   }
-  // make NTrules[] invalid
-  if(share) m->NTrules = NULL;
   return;  
 }
 

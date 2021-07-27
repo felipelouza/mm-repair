@@ -9,6 +9,8 @@
 #endif
 #ifdef CSR_MATRIX
 #include "csrmatrix.h"
+#elif defined(USE_INTVEC)
+#include "ivrematrix.hpp"
 #else
 #include "rematrix.h"
 #endif
