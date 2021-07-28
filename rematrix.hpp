@@ -18,9 +18,20 @@
 #include <sdsl/int_vector.hpp>
 #include <iostream>
 #include <string>
+
+#ifdef USE_ANSIV
+  #include <algorithm>
+  #include <cstdint>
+  #define ANSf 1
+  #define CFILE_EXT ".vc.C.ansf.1"
+  #define BUF_LOG2 20                  // log size decompression buffer  
+  #define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
+  #include "ans/decode.hpp"
+  #define RFILE_EXT ".vc.R.iv"
+#else
 #define CFILE_EXT ".vc.C.iv"
 #define RFILE_EXT ".vc.R.iv"
-
+#endif
 
 
 // set to 1 to print a lot of debug information 
@@ -59,8 +70,14 @@ typedef struct {
   matval *NTval;  // values associated to non-terminals (possibly shared with NTrules)
   size_t NTnum;   // number of non terminals 
   sdsl::int_vector<> NTrules;
-  size_t Clen;
+  size_t Clen;    // len of C array
+#ifdef USE_ANSIV
+  int *Cseq;      // array C of repair grammar
+  uint8_t *Ccseq; // ans-compressed array C of repair grammar
+  size_t Cclen;   // length ans-compressed array
+#else
   sdsl::int_vector<> Cseq;
+#endif  
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
 } rematrix;  
@@ -85,20 +102,14 @@ rematrix *remat_create(int r, int c, char *basename)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
-  //rematrix *m=(rematrix *) malloc(sizeof(rematrix));
-  rematrix *m= new rematrix;
-  
+  rematrix *m= new rematrix;  
   m->rows=r; m->cols=c;
 
   // ------------ open and read rule file
   if(strlen(basename)+20>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
   strcat(fname,RFILE_EXT);
-  std::cerr << "Reading: " << std::string(fname) << std::endl;
-  //sdsl::int_vector<> pippo;
   load_from_file(m->NTrules, std::string(fname));
-  //std::cerr << "Size: " << pippo.size() << " width " << pippo.width() << std::endl; 
-  std::cerr << "Size: " << m->NTrules.size() << " width " << (int) m->NTrules.width() << std::endl; 
   assert(m->NTrules.size()%2==1); // the first entry is the alpha size
   m->Alpha = m->NTrules[0];
   m->NTnum = m->NTrules.size()/2;
@@ -109,9 +120,26 @@ rematrix *remat_create(int r, int c, char *basename)
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
+#ifdef USE_ANSIV  
+  if (stat (fname,&s) != 0) die("Cannot stat C (" CFILE_EXT ") file");
+  f = fopen (fname,"r");
+  if (f == NULL) die("Cannot open C (" CFILE_EXT ") file");
+  m->Cclen = s.st_size;
+  m->Ccseq = new uint8_t[m->Cclen];
+  if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,f)!=m->Cclen)
+   die("Cannot read " CFILE_EXT " file");    
+  // extract decompressed length and remove it from compressed data 
+  m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
+  m->Ccseq += sizeof(size_t);
+  m->Cclen -= sizeof(size_t);  
+  // allocate decompressed buffer
+  m->Cseq = (int *) malloc((1<<BUF_LOG2)*sizeof(int));
+  if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
+#else
+  // much simpler if Cseq is just an int_vector
   load_from_file(m->Cseq,std::string(fname));
   m->Clen = m->Cseq.size();
-      
+#endif
   // ------------ read matrix values 
   strcpy(fname,basename);
   strcat(fname,".val");
@@ -133,10 +161,23 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   y->size = m->rows;
   y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
   // --- compute output 
+  #ifdef USE_ANSIV
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<ANSf>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   int ycur = 0;
   xmatval sum=0;
   for(size_t j=0; j < m->Clen; j++) {
+    #ifdef USE_ANSIV
+    if((j & BUF_MASK) ==0) {
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
+      if(d==0) die("Illegal decode call");
+    }
+    int i = m->Cseq[j&BUF_MASK];
+    #else
     int i = m->Cseq[j];
+    #endif
     if(i>=m->Alpha) { // non terminal 
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
@@ -171,11 +212,24 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 
   // propagate y-values down the tree  
   // variables used by decode_entry 
+  #ifdef USE_ANSIV
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<ANSf>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
+    #ifdef USE_ANSIV
+    if((j & BUF_MASK) ==0) {
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq, std::min((size_t) (1<<BUF_LOG2), m->Clen -j));
+      if(d==0) die("Illegal decode call");
+    }
+    int i = m->Cseq[j&BUF_MASK];
+    #else
     int i = m->Cseq[j];
+    #endif
     if(i>=m->Alpha) { // non terminal 
       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
       assert(ycur < y->size);
@@ -202,8 +256,15 @@ void remat_destroy(rematrix *m)
   free(m->Mval);
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
   sdsl::util::clear(m->NTrules);
+#ifdef USE_ANSIV
+  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
+  if(m->Ccseq!=NULL) {
+    delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
+    m->Ccseq = NULL;
+  } 
+#else
   sdsl::util::clear(m->Cseq);
-  //free(m);
+#endif
   delete m;
 }
 

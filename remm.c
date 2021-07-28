@@ -9,7 +9,7 @@
 #endif
 #ifdef CSR_MATRIX
 #include "csrmatrix.h"
-#elif defined(USE_INTVEC) or defined(USE_ANSIV)
+#elif defined(USE_INTVEC) || defined(USE_ANSIV)
 #include "rematrix.hpp"
 #else
 #include "rematrix.h"

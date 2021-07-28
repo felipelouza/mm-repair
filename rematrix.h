@@ -69,7 +69,7 @@ typedef struct {
   size_t Clen;    // len of C array
 #ifdef USE_ANS
   uint8_t *Ccseq; // ans-compressed array C of repair grammar
-  size_t Cclen;   // lenght ans-compressed array
+  size_t Cclen;   // length ans-compressed array
 #endif  
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
