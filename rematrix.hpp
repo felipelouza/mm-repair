@@ -85,8 +85,8 @@ rematrix *remat_create(int r, int c, char *basename)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
-  rematrix *m=(rematrix *) malloc(sizeof(rematrix));
-  if(m==NULL) die("Cannot alloc matrix");
+  //rematrix *m=(rematrix *) malloc(sizeof(rematrix));
+  rematrix *m= new rematrix;
   
   m->rows=r; m->cols=c;
 
@@ -95,10 +95,10 @@ rematrix *remat_create(int r, int c, char *basename)
   strcpy(fname,basename);
   strcat(fname,RFILE_EXT);
   std::cerr << "Reading: " << std::string(fname) << std::endl;
-  sdsl::int_vector<> pippo;
-  load_from_file(pippo, std::string(fname));
-  std::cerr << "Size: " << pippo.size() << " width " << pippo.width() << std::endl; 
-  // std::cerr << "Size: " << m->NTrules.size() << " width " << m->NTrules.width() << std::endl; 
+  //sdsl::int_vector<> pippo;
+  load_from_file(m->NTrules, std::string(fname));
+  //std::cerr << "Size: " << pippo.size() << " width " << pippo.width() << std::endl; 
+  std::cerr << "Size: " << m->NTrules.size() << " width " << (int) m->NTrules.width() << std::endl; 
   assert(m->NTrules.size()%2==1); // the first entry is the alpha size
   m->Alpha = m->NTrules[0];
   m->NTnum = m->NTrules.size()/2;
@@ -203,7 +203,8 @@ void remat_destroy(rematrix *m)
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
   sdsl::util::clear(m->NTrules);
   sdsl::util::clear(m->Cseq);
-  free(m);
+  //free(m);
+  delete m;
 }
 
 
@@ -275,7 +276,7 @@ static void propagate_NTval(rematrix *m, vector *x)
     xmatval s = m->NTval[i]; // value associated to rule i
     pos -= 2;               // go back one rule in m->NTrules
     for(int j=0;j<2;j++) {   // propagate s to rule i right-hand-size   
-      int p = m->NTval[pos+j];
+      int p = m->NTrules[pos+j];
       if(p>=m->Alpha) { // non terminal
         p -= m->Alpha;
         if(p>=i) die("Fatal Error: Forward rule (propagate_NTval)");

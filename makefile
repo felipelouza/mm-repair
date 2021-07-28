@@ -37,9 +37,13 @@ csrmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
 ansremm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS
 
+ansivremm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANSIV
+
+
 LIB_DIR = /home/giovanni/c/lib
 INC_DIR = /home/giovanni/c/include
-ivremm: remm.c ivrematrix.hpp vector.h $(MALLOC_FILES)
+ivremm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_INTVEC -lsdsl -I$(INC_DIR) -L$(LIB_DIR)
 
 

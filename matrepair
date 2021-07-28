@@ -26,6 +26,8 @@ idespair_exe = "brepair/idespair"
 mat2vc_exe = "mat2vc.py"
 # tool to compress a sequence of int32 unsing ans-fold  
 ansf_exe = "ans/encode.x"
+# tool to compress a sequence of int32 unsing an integer vector from sdsl   
+iv_exe = "sdsl/encode.x"
 
 
 def main():
@@ -107,6 +109,29 @@ def main():
         repair_time = time.time()-start
         print("Repair time: {0:.4f}".format(repair_time))
         
+      # ---- apply integer vector encoding to the .vc.C and vc.R files
+      iv_time = 0 
+      if args.y and not need_rebuild(args.input+".vc.C", ".iv"):
+        print("---- Skipping iv(C)")
+      else:
+        start = time.time()
+        command = "{exe} {csvfile}.vc.C ".format(
+                  exe = os.path.join(args.main_dir,iv_exe), csvfile=args.input)
+        print("==== Integer vector .C compression\nCommand:", command)
+        if(execute_command(command,logfile)!=True):
+         return
+        iv_time += time.time()-start
+      if args.y and not need_rebuild(args.input+".vc.R", ".iv"):
+        print("---- Skipping iv(R)")
+      else:
+        start = time.time()
+        command = "{exe} {csvfile}.vc.R ".format(
+                  exe = os.path.join(args.main_dir,iv_exe), csvfile=args.input)
+        print("==== Integer vector .R compression\nCommand:", command)
+        if(execute_command(command,logfile)!=True):
+         return
+        iv_time += time.time()-start
+      print("Integer vector compression time: {0:.4f}".format(iv_time))
       
       # ---- apply ans_fold-1 to the .vc.C file 
       if args.y and not need_rebuild(args.input+".vc.C", ".ansf.1"):
@@ -125,7 +150,7 @@ def main():
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      
       if args.r:
-        compression_report(args,vc_time,repair_time,ansf_time,total_time)
+        compression_report(args,vc_time,repair_time,iv_time,ansf_time,total_time)
       
       # delete temporary .vc file
       if not args.k:
@@ -139,7 +164,7 @@ def main():
 
 
 
-def compression_report(args,tconv,trepair,tans,ttot):
+def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print("==== Compression Report:")
   print(" >> matrix name:",args.input);
   print(" >> conversion time: {0:.2f}".format(tconv))
@@ -162,9 +187,15 @@ def compression_report(args,tconv,trepair,tans,ttot):
   print(" >> Uncompressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   # print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
   estimate_compressed_grammar_size(args.input,isize)
+  csize = os.path.getsize(args.input+".vc.C.iv") 
+  rsizeiv = os.path.getsize(args.input+".vc.R.iv") 
+  psize = valsize + csize+rsizeiv
+  print(" >> Compressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
   psize = valsize+ans_csize+rsize 
-  print(" >> Ans grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> Ans grammar+R32+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  psize = valsize+ans_csize+rsizeiv 
+  print(" >> Ans grammar+RIV+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
 
 
 def show_command_line(f):
