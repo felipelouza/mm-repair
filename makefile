@@ -81,4 +81,6 @@ sdsl:
 clean:
 	rm -f $(EXECS)
 	make -C brepair clean
+	make -C ans clean
+	make -C sdsl clean
 

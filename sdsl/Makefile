@@ -1,4 +1,4 @@
-include Make.helper
+#include Make.helper
 # CXX_FLAGS=$(MY_CXX_FLAGS) $(MY_CXX_OPT_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) 
 LIB_DIR = /home/giovanni/c/lib
 INC_DIR = /home/giovanni/c/include
