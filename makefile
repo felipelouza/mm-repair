@@ -1,3 +1,8 @@
+# if present read helper from sdsl directory
+Helper=sdsl/Make.helper
+ifneq ($(wildcard $(Helper)),)
+include $(Helper)
+endif
 # compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
@@ -38,13 +43,11 @@ ansremm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS
 
 
-LIB_DIR = /home/giovanni/c/lib
-INC_DIR = /home/giovanni/c/include
 ivremm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_INTVEC -lsdsl -I$(INC_DIR) -L$(LIB_DIR)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_INTVEC
 
 ansivremm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANSIV -lsdsl -I$(INC_DIR) -L$(LIB_DIR)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_ANSIV 
 
 
 

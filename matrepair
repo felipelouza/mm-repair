@@ -185,8 +185,6 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
   print(" >> Uncompressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  # print(" >> bytes x entry: {0:.2f}".format(psize/(args.rows*args.cols)))
-  estimate_compressed_grammar_size(args.input,isize)
   csize = os.path.getsize(args.input+".vc.C.iv") 
   rsizeiv = os.path.getsize(args.input+".vc.R.iv") 
   psize = valsize + csize+rsizeiv
@@ -241,8 +239,8 @@ def bits(n):
   return b
 
 # estimate space usage of RePair output using the minimum number of bits 
-# for symbol, no other complex econding
-# include also the .val file  
+# for symbol, no other complex econding include also the .val file
+# *** No longer used: we don't need the estimate since we implemeted the actual compression    
 def estimate_compressed_grammar_size(basename,isize):
   rsize = os.path.getsize(basename+".vc.R")
   assert (rsize-4)%8 == 0, "Invalid .R file format" 

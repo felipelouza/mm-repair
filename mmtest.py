@@ -74,10 +74,10 @@ def time_test(n,logfile):
         print("## Error executing:", command,file=logfile);
         print("## stdout:\n", ex.stdout ,file=logfile);
         print("## stderr:\n", ex.stderr ,file=logfile);
-        continue
+        sys.exit(2)
       except Exception as ex:
         print(" Test failed:", str(ex))
-        continue
+        sys.exit(2)
       elapsed = int(ris.stdout.split()[-2])
       peakmem = int(ris.stderr.split()[3])
       with open(Evname,"rb") as evf:

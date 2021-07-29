@@ -1,8 +1,10 @@
-#include Make.helper
-# CXX_FLAGS=$(MY_CXX_FLAGS) $(MY_CXX_OPT_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) 
-LIB_DIR = /home/giovanni/c/lib
-INC_DIR = /home/giovanni/c/include
-CXX_FLAGS=-std=c++11 -Wall -Wextra -I$(INC_DIR) -L$(LIB_DIR)
+# if present read helper from sdsl directory
+Helper=Make.helper
+ifneq ($(wildcard $(Helper)),)
+include $(Helper)
+endif
+# flags and targets
+CXX_FLAGS=-std=c++11 -Wall -I$(INC_DIR) -L$(LIB_DIR)
 CCLIB=-lsdsl
 SOURCES=$(wildcard *.cpp)
 EXECS=$(SOURCES:.cpp=.x)

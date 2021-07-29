@@ -109,6 +109,7 @@ rematrix *remat_create(int r, int c, char *basename)
   if(strlen(basename)+20>PATH_MAX) die("Illegal base name");
   strcpy(fname,basename);
   strcat(fname,RFILE_EXT);
+  if (stat (fname,&s) != 0)die("Cannot stat rule (" RFILE_EXT ") file");
   load_from_file(m->NTrules, std::string(fname));
   assert(m->NTrules.size()%2==1); // the first entry is the alpha size
   m->Alpha = m->NTrules[0];
@@ -120,8 +121,8 @@ rematrix *remat_create(int r, int c, char *basename)
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
-#ifdef USE_ANSIV  
   if (stat (fname,&s) != 0) die("Cannot stat C (" CFILE_EXT ") file");
+#ifdef USE_ANSIV  
   f = fopen (fname,"r");
   if (f == NULL) die("Cannot open C (" CFILE_EXT ") file");
   m->Cclen = s.st_size;
