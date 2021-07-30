@@ -1,8 +1,10 @@
-  #!/usr/bin/env python3
+#!/usr/bin/env python3
 import subprocess, os.path, sys, argparse, time, struct
 
 Description = """
-Tool to create a Latex table containing the results of a set of experiments"""
+Tool to create a Latex table containing the results of a set of experiments
+
+Currently only tests on matrix-vector multiplication are supported"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 Files_prefix = 'data/'
