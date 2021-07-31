@@ -6,7 +6,7 @@ Tool to create a Latex table containing the results of a set of experiments
 
 Currently only tests on matrix-vector multiplication are supported"""
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['census', 'census.c2'] ## ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 Files_prefix = 'data/'
 Logfile_name = "errors.log"
 
@@ -15,7 +15,7 @@ Algo = ['csrmm', 'remm','ivremm','ansremm','ansivremm']
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
-         'airline78':(14462943, 29)}
+         'airline78':(14462943, 29),'census.c2':(2458285, 68),}
 
 # name of file containing the input/output vectors
 Xvname = "x1.dbl"
@@ -91,7 +91,7 @@ def time_test(n,logfile):
 def makerow(f, a):
   s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "&{:6.2f} &{:6.0f}  {:8.3g}".format(p[1],p[2]/1000000,p[3])
+    s += "&{:6.2f} &{:6.0f}  {:10.5g}".format(p[1],p[2]/1000000,p[3])
   s += "\\\\\n"
   return s
 
