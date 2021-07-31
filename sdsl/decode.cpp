@@ -25,4 +25,5 @@ int main(int argc, char* argv[])
     cout<<"v.size()="<<v.size()<<endl;
     cout<<"v.width()="<<(int)v.width()<<endl;
     cout<<"v[0]="<<v[0]<<endl;
+    // TODO: save the decoded array to file
 }
