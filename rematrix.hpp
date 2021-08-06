@@ -24,14 +24,15 @@
   #include <cstdint>
   #define ANSf 1
   #define CFILE_EXT ".vc.C.ansf.1"
-  #define BUF_LOG2 20                  // log size decompression buffer  
-  #define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
   #include "ans/decode.hpp"
   #define RFILE_EXT ".vc.R.iv"
 #else
 #define CFILE_EXT ".vc.C.iv"
 #define RFILE_EXT ".vc.R.iv"
 #endif
+
+#define BUF_LOG2 20                  // log size decompression buffer  
+#define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
 
 
 // set to 1 to print a lot of debug information 
@@ -71,12 +72,12 @@ typedef struct {
   size_t NTnum;   // number of non terminals 
   sdsl::int_vector<> NTrules;
   size_t Clen;    // len of C array
+  int *Cseq;      // array C of repair grammar, here only buffer of size 1<<BUF_LOG2
 #ifdef USE_ANSIV
-  int *Cseq;      // array C of repair grammar
   uint8_t *Ccseq; // ans-compressed array C of repair grammar
-  size_t Cclen;   // length ans-compressed array
+  size_t Cclen;   // length of ans-compressed array
 #else
-  sdsl::int_vector<> Cseq;
+  sdsl::int_vector<> Ccseq; // int-vector C of repair grammar
 #endif  
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
@@ -133,14 +134,15 @@ rematrix *remat_create(int r, int c, char *basename)
   m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
   m->Ccseq += sizeof(size_t);
   m->Cclen -= sizeof(size_t);  
+#else
+  // much simpler if Ccseq is just an int_vector
+  load_from_file(m->Ccseq,std::string(fname));
+  m->Clen = m->Ccseq.size();
+#endif
   // allocate decompressed buffer
   m->Cseq = (int *) malloc((1<<BUF_LOG2)*sizeof(int));
   if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
-#else
-  // much simpler if Cseq is just an int_vector
-  load_from_file(m->Cseq,std::string(fname));
-  m->Clen = m->Cseq.size();
-#endif
+
   // ------------ read matrix values 
   strcpy(fname,basename);
   strcat(fname,".val");
@@ -170,15 +172,16 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   int ycur = 0;
   xmatval sum=0;
   for(size_t j=0; j < m->Clen; j++) {
-    #ifdef USE_ANSIV
     if((j & BUF_MASK) ==0) {
+      #ifdef USE_ANSIV
       size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
       if(d==0) die("Illegal decode call");
+      #else
+      for(size_t d = 0; d < std::min((size_t)(1<<BUF_LOG2), m->Clen -j); d++)
+        m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+      #endif
     }
-    int i = m->Cseq[j&BUF_MASK];
-    #else
-    int i = m->Cseq[j];
-    #endif
+    int i = m->Cseq[j&BUF_MASK]; // read from buffer    
     if(i>=m->Alpha) { // non terminal 
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
@@ -222,15 +225,16 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   // propagate y-values to symbols in C
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
-    #ifdef USE_ANSIV
     if((j & BUF_MASK) ==0) {
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq, std::min((size_t) (1<<BUF_LOG2), m->Clen -j));
+      #ifdef USE_ANSIV
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
       if(d==0) die("Illegal decode call");
+      #else
+      for(size_t d = 0; d < std::min((size_t)(1<<BUF_LOG2), m->Clen -j); d++)
+        m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+      #endif
     }
     int i = m->Cseq[j&BUF_MASK];
-    #else
-    int i = m->Cseq[j];
-    #endif
     if(i>=m->Alpha) { // non terminal 
       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
       assert(ycur < y->size);
@@ -258,14 +262,14 @@ void remat_destroy(rematrix *m)
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
   sdsl::util::clear(m->NTrules);
 #ifdef USE_ANSIV
-  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
   if(m->Ccseq!=NULL) {
     delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
     m->Ccseq = NULL;
   } 
 #else
-  sdsl::util::clear(m->Cseq);
+  sdsl::util::clear(m->Ccseq);
 #endif
+  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
   delete m;
 }
 
