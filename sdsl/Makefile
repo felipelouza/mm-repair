@@ -4,7 +4,7 @@ ifneq ($(wildcard $(Helper)),)
 include $(Helper)
 endif
 # flags and targets
-CXX_FLAGS=-std=c++11 -Wall -I$(INC_DIR) -L$(LIB_DIR)
+CXX_FLAGS=-std=c++11 -O3 -Wall -I$(INC_DIR) -L$(LIB_DIR)
 CCLIB=-lsdsl
 SOURCES=$(wildcard *.cpp)
 EXECS=$(SOURCES:.cpp=.x)

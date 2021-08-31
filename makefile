@@ -6,7 +6,7 @@ endif
 # compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
-CXX_FLAGS=-std=c++17 -O3 -g
+CXX_FLAGS=-std=c++17 -DNDEBUG -O3 -msse4.2
 
 
 # comment out this definition to get rid of malloc_count 

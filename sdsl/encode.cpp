@@ -1,8 +1,11 @@
 /*
  * Transforms a sequence of 64-bit integers into a bit-compressed integer vector.
- * The first command line parameter argv[1] specifies the file, which contains the sequence
- * of integers.
- * The bit-compressed integer vector is stored in a file called `argv[1].int_vector`.
+ * The first command line parameter argv[1] specifies the input file, 
+ * which contains the sequence of integers to be transformed (ie compressed)
+ * The bit-compressed integer vector is stored in a file called `argv[1].iv`.
+ * 
+ * Used for the compression of the R array in ansivremm and ivremm
+ * and for the compression of the C array in ivremm 
  */
 #include <sdsl/util.hpp>
 #include <sdsl/int_vector.hpp>

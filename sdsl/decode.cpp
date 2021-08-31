@@ -1,8 +1,5 @@
 /*
- * Transforms a sequence of 64-bit integers into a bit-compressed integer vector.
- * The first command line parameter argv[1] specifies the file, which contains the sequence
- * of integers.
- * The bit-compressed integer vector is stored in a file called `argv[1].int_vector`.
+ * Function to test the decompression of an int_vector
  */
 #include <sdsl/util.hpp>
 #include <sdsl/int_vector.hpp>
@@ -19,9 +16,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    string ofile = string(argv[1]);
+    string ifile = string(argv[1]);
     int_vector<> v;
-    load_from_file(v, ofile);
+    load_from_file(v, ifile);
     cout<<"v.size()="<<v.size()<<endl;
     cout<<"v.width()="<<(int)v.width()<<endl;
     cout<<"v[0]="<<v[0]<<endl;

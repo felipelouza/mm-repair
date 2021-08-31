@@ -3,7 +3,12 @@
  * 
  * operations on repair compressed matrices
  * 
- * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
+ * The code here uses an int array for the R (rule array)
+ * while the C sequence is compressed with ANS (if USE_ANS) 
+ * or again with an int array.
+ * Used by the executables ansremm and remm
+ * 
+ * Copyright (C) 2021-2099   giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdbool.h>

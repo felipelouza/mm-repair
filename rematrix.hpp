@@ -3,7 +3,12 @@
  * 
  * operations on repair compressed matrices
  * 
- * Copyright (C) 2021-2099   giovanni.manzini@uniupo.it
+ * The code here uses an sdsl int_vector for the R (rule) array
+ * while the C sequence is compressed with ANS (if USE_ANSIV) 
+ * or again with an int_vector.
+ * Used by the executables ansivremm and ivremm
+ *  
+ * Copyright (C) 2021-2099   giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #include <assert.h>
 #include <stdbool.h>
@@ -31,8 +36,8 @@
 #define RFILE_EXT ".vc.R.iv"
 #endif
 
-#define BUF_LOG2 20                  // log size decompression buffer  
-#define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize begining of buffer
+#define BUF_LOG2 18                  // log of size decompression buffer  
+#define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize beginning of buffer
 
 
 // set to 1 to print a lot of debug information 
@@ -56,7 +61,7 @@
 typedef double  matval;     // type representing a matrix/vector entry
 typedef double xmatval;     // type representing a matrix entry with larger precision   
 
-// report error message and terminates
+// report error message and terminate
 static void die(const char *s);
 
 // include definitions for dense uncompressed vectors 
@@ -67,17 +72,17 @@ static void die(const char *s);
 // matrix represented as a re-pair grammar
 typedef struct {
   int rows,cols;  // # rows and columns of input matrix 
-  int Alpha;      // alphabet size of input matrix coincides with smallest non terminal symbol 
-  matval *NTval;  // values associated to non-terminals (possibly shared with NTrules)
+  int Alpha;      // alphabet size of input matrix: coincides with smallest non terminal symbol 
+  matval *NTval;  // values associated to non-terminals during computation 
   size_t NTnum;   // number of non terminals 
-  sdsl::int_vector<> NTrules;
+  sdsl::int_vector<> NTrules; // rule array from repair: length = 2*NTnum+1
   size_t Clen;    // len of C array
-  int *Cseq;      // array C of repair grammar, here only buffer of size 1<<BUF_LOG2
+  int *Cseq;      // uncompressed array C from repair; here is only a buffer of size 1<<BUF_LOG2
 #ifdef USE_ANSIV
-  uint8_t *Ccseq; // ans-compressed array C of repair grammar
+  uint8_t *Ccseq; // ans-compressed array C from repair
   size_t Cclen;   // length of ans-compressed array
 #else
-  sdsl::int_vector<> Ccseq; // int-vector C of repair grammar
+  sdsl::int_vector<> Ccseq; // int-vector C from repair
 #endif  
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
@@ -173,15 +178,17 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   xmatval sum=0;
   for(size_t j=0; j < m->Clen; j++) {
     if((j & BUF_MASK) ==0) {
+      // fill the buffer 
+      size_t to_read = std::min((size_t)(1<<BUF_LOG2), m->Clen -j);
       #ifdef USE_ANSIV
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
       if(d==0) die("Illegal decode call");
       #else
-      for(size_t d = 0; d < std::min((size_t)(1<<BUF_LOG2), m->Clen -j); d++)
-        m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+      for(size_t d = 0; d < to_read; d++)
+        m->Cseq[d] = m->Ccseq[d+j];  // decode a bunch of packed ints
       #endif
     }
-    int i = m->Cseq[j&BUF_MASK]; // read from buffer    
+    int i = m->Cseq[j&BUF_MASK]; // read a single int from buffer    
     if(i>=m->Alpha) { // non terminal 
      if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file");
      sum += m->NTval[i];
@@ -213,7 +220,6 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   x->v = (matval *) realloc(x->v,x->size*sizeof(matval));
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
-
   // propagate y-values down the tree  
   // variables used by decode_entry 
   #ifdef USE_ANSIV
@@ -226,15 +232,16 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   int ycur=0;
   for(size_t j=0; j<m->Clen;j++) {  
     if((j & BUF_MASK) ==0) {
+      size_t to_read = std::min((size_t)(1<<BUF_LOG2), m->Clen -j);
       #ifdef USE_ANSIV
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq,std::min((size_t)(1<<BUF_LOG2), m->Clen -j));
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
       if(d==0) die("Illegal decode call");
       #else
-      for(size_t d = 0; d < std::min((size_t)(1<<BUF_LOG2), m->Clen -j); d++)
+      for(size_t d = 0; d < to_read; d++)
         m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
       #endif
     }
-    int i = m->Cseq[j&BUF_MASK];
+    int i = m->Cseq[j&BUF_MASK];    // read a single int from buffer
     if(i>=m->Alpha) { // non terminal 
       if( (i = i-m->Alpha)>= (int)m->NTnum ) die("Illegal non terminal in C file (left-mult)");
       assert(ycur < y->size);
@@ -331,6 +338,7 @@ static void clear_NTval(rematrix *m)
 }
 
 // propagate NTvalues up to the terminals and the x array
+// the NTrules array is read in right to left 
 // used in left multiplication 
 static void propagate_NTval(rematrix *m, vector *x) 
 {
@@ -340,7 +348,7 @@ static void propagate_NTval(rematrix *m, vector *x)
   int pos = 1 + 2*m->NTnum;  // pointer beyond the last rule 
   for(ssize_t i=m->NTnum-1;i>=0;i--) {
     xmatval s = m->NTval[i]; // value associated to rule i
-    pos -= 2;               // go back one rule in m->NTrules
+    pos -= 2;                // go back one rule in m->NTrules
     for(int j=0;j<2;j++) {   // propagate s to rule i right-hand-size   
       int p = m->NTrules[pos+j];
       if(p>=m->Alpha) { // non terminal
@@ -361,10 +369,8 @@ static void propagate_NTval(rematrix *m, vector *x)
 
 
 // compute the value associated to each non-terminal
-// possibly overwriting the rule array if share==true
+// cannot overwrite the rule array so share must be false
 // used by right multiplication 
-// Note: currently we are always using share=false since the rule
-// array will be needed in any additional operation  
 static void fill_NTval(rematrix *m, vector *x, bool share) 
 {
   assert(!share); // share not possible if R is compressed 
