@@ -31,18 +31,18 @@
   #define CFILE_EXT ".vc.C.ansf.1"
   #include "ans/decode.hpp"
   #define RFILE_EXT ".vc.R.iv"
+  #define BUF_LOG2 20                  // log of (size decompression buffer)  
 #else
-#define CFILE_EXT ".vc.C.iv"
-#define RFILE_EXT ".vc.R.iv"
+  #define CFILE_EXT ".vc.C.iv"
+  #define RFILE_EXT ".vc.R.iv"
+  #define BUF_LOG2 18                  // log of (size decompression buffer)  
 #endif
 
-#define BUF_LOG2 18                  // log of size decompression buffer  
-#define BUF_MASK ((1<<BUF_LOG2)-1)   // mask to recognize beginning of buffer
+#define BUF_MASK ((1<<BUF_LOG2)-1)     // mask to recognize beginning of buffer
 
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
-
 
 
 // the use of float's has not been fully tested 
