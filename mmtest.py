@@ -6,7 +6,8 @@ Tool to create a Latex table containing the results of a set of experiments
 
 Currently only tests on matrix-vector multiplication are supported"""
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['covtype', 'census']
+##['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 ##['census', 'census.c2'] ## 
 Files_prefix = 'data/'
 Logfile_name = "errors.log"
@@ -23,7 +24,7 @@ Yvname = "y.dbl"
 Zvname = "z.dbl"
 Evname = "ein.dbl"
 Timelimit = 18000
-
+TmpFilename = "tmp_mmtest"
 
 # check that the test files exist and sizes are defined
 def check_testfiles(sufxs):
@@ -47,6 +48,42 @@ def createx(cols,value=1):
   with open(Xvname,"wb") as f:
     for i in range(cols):
       f.write(struct.pack("<d", float(value)))
+
+
+# convert a csv file to binary
+def convert(logfile):
+  table = []   # latex table containing the results 
+  for f in Files:
+    name  = Files_prefix + f
+    rows,cols = Sizes[f]
+    tablerow = []  # row of the results table
+    command = "./{exe} -d {name} -o {temp} {r} {c}".format(
+                exe = "mat2bin.py", temp=TmpFilename, name=name, r=rows, c=cols)
+    try:
+      ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+    except subprocess.TimeoutExpired:
+      # caso time out
+      print(" Test failed: no result after %d seconds" % Timelimit)
+      continue
+    except subprocess.CalledProcessError as ex:
+      print(" Test failed: non-zero exit code ", ex.returncode)
+      # write stdout/stderr to a separate logfile
+      print("## Error executing:", command,file=logfile);
+      print("## stdout:\n", ex.stdout ,file=logfile);
+      print("## stderr:\n", ex.stderr ,file=logfile);
+      sys.exit(2)
+    except Exception as ex:
+      print(" Test failed:", str(ex))
+      sys.exit(2)
+    tablerow.append(os.path.getsize(TmpFilename))
+    # elapsed = int(ris.stdout.split()[-2])
+    # peakmem = int(ris.stderr.split()[3])
+    # tablerow.append((a, elapsed/n,peakmem, e))
+    # tests for current file completed
+    table.append(makerow_mc(f, tablerow))
+  # all files processed
+  return table
 
 
 # test running times and space for matrix multiplication 
@@ -95,6 +132,13 @@ def makerow(f, a):
   s += "\\\\\n"
   return s
 
+def makerow_mc(f, a):
+  s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
+  for p in a:
+    s += "&{:10.0f} ".format(p)
+  s += "\\\\\n"
+  return s
+
 
 def show_command_line(f):
   f.write("=== Command line: ") 
@@ -108,18 +152,23 @@ def main():
   parser.add_argument('op', help='operation to test: mm|mc', type=str)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   args = parser.parse_args()
-  if args.op!='mm':
-    print("Unknown operation! Must be mm",file=sys.stderr)
-    exit(1)
-  check_testfiles([".vc",".val",".vc.R",".vc.C"])
-  # run the algorithm   
+     
+  # run the task   
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:
-    table = time_test(args.n,logfile)
+    if args.op=='mm':    # matrix multiplication 
+      check_testfiles([".vc",".val",".vc.R",".vc.C"])
+      table = time_test(args.n,logfile)
+    elif args.op=='mc':   # matrix conversion
+      table = convert(logfile)
+    else: 
+      print("Unknown operation! Must be mm or mc",file=sys.stderr)
+      exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  for s in table:
-    print(s,end="")
+  if args.op=='mm' or args.op=='mc':  
+    for s in table:
+      print(s,end="")
   exit(0)
 
   

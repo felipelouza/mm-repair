@@ -4,13 +4,13 @@ import sys, time, argparse, subprocess, os.path, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into binary form, ie rows x cols floats of doubles (with option -d)
+into binary form, ie rows x cols floats or doubles (with option -d)
 
 The option --strip instead of converting to binary form
 simply strips trailing or leading columns, or leading rows
 maintaining the csv format. This is done at the textual level so
-non-stripped values are not modified in this operation (eg integers
-remain integres, they are not converted to float with a 0 fractional part). 
+non-stripped values are not modified by this operation (eg integers
+remain integers, they are not converted to floats with a 0 fractional part). 
 """
 
 shasum_exe = "sha256sum"
@@ -22,6 +22,7 @@ def main():
   parser.add_argument('cols', help='number of columns', type=int)
   parser.add_argument('-c', help='initial columns to skip, can be negative (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
+  parser.add_argument('-o', help='output file name (def. input.r.c.double)',type=str,default="" )
   parser.add_argument('-d', help='output values as double precision floats',action='store_true')
   parser.add_argument('--strip', help='only strip values, do not convert ',action='store_true')
   #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
@@ -36,13 +37,15 @@ def main():
     
   # take start time 
   start0 = start = time.time()
-  outmode = "wb"  # by default ouput file is binary
   with open(args.input,"rt") as f:
-    if args.strip: 
+    # set output file name and output file mode
+    if args.o!="": 
+      outname = args.o
+    elif args.strip:
       outname = args.input + ".%dx%d" %(args.rows,args.cols)
-      outmode = "w" 
     elif args.d: outname = args.input + ".%dx%d.double" %(args.rows,args.cols) 
     else: outname = args.input + ".%dx%d.float" %(args.rows,args.cols) 
+    outmode = "w" if args.strip else "wb"  # by default ouput file is binary
     with open(outname,outmode) as g:
       nonz = 0
       r = 0 # number of read rows
