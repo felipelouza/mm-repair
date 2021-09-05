@@ -4,10 +4,11 @@ import subprocess, os.path, sys, argparse, time, struct
 Description = """
 Tool to create a Latex table containing the results of a set of experiments
 
-Currently only tests on matrix-vector multiplication are supported"""
+Currently supported tests:
+   mm: matrix-vector multiplication
+   mc: conversion to dense matrix format and compression with gz/xz"""
 
-Files = ['covtype', 'census']
-##['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 ##['census', 'census.c2'] ## 
 Files_prefix = 'data/'
 Logfile_name = "errors.log"
@@ -25,6 +26,7 @@ Zvname = "z.dbl"
 Evname = "ein.dbl"
 Timelimit = 18000
 TmpFilename = "tmp_mmtest"
+
 
 # check that the test files exist and sizes are defined
 def check_testfiles(sufxs):
@@ -52,15 +54,23 @@ def createx(cols,value=1):
 
 # convert a csv file to binary
 def convert(logfile):
-  table = []   # latex table containing the results 
+  table = [" name & rows & size & gzsize & xzsize \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = Files_prefix + f
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
     command = "./{exe} -d {name} -o {temp} {r} {c}".format(
                 exe = "mat2bin.py", temp=TmpFilename, name=name, r=rows, c=cols)
+    command2 = "{exe} -kf {name}".format(exe = "gzip",  name=TmpFilename)            
+    command3 = "{exe} -kf {name}".format(exe = "xz",  name=TmpFilename)            
     try:
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+      #print(command2)
+      ris = subprocess.run(command2.split(),stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+      #print(command3)
+      ris = subprocess.run(command3.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
       # caso time out
@@ -76,7 +86,8 @@ def convert(logfile):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    tablerow.append(os.path.getsize(TmpFilename))
+    tablerow.append((os.path.getsize(TmpFilename),os.path.getsize(TmpFilename+".gz"),
+                     os.path.getsize(TmpFilename+".xz")))
     # elapsed = int(ris.stdout.split()[-2])
     # peakmem = int(ris.stderr.split()[3])
     # tablerow.append((a, elapsed/n,peakmem, e))
@@ -135,7 +146,7 @@ def makerow(f, a):
 def makerow_mc(f, a):
   s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "&{:10.0f} ".format(p)
+    s += "&{:10.0f} &{:10.0f} &{:10.0f} ".format(p[0],p[1],p[2])
   s += "\\\\\n"
   return s
 
