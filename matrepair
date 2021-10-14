@@ -152,8 +152,8 @@ def main():
       if args.r:
         compression_report(args,vc_time,repair_time,iv_time,ansf_time,total_time)
       
-      # delete temporary .vc file
-      if not args.k:
+      # DISABLED: delete temporary .vc file
+      if False and not args.k: # temporarily disabled 
         command = "rm -f {csvfile}.vc".format(csvfile=args.input)
         if(execute_command(command,logfile)!=True):
           return
@@ -169,6 +169,7 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> matrix name:",args.input);
   print(" >> conversion time: {0:.2f}".format(tconv))
   print(" >> repair time: {0:.2f}".format(trepair))
+  print(" >> integer vectors time: {0:.2f}".format(tiv))
   print(" >> ansf time: {0:.2f}".format(tans))
   print(" >> total time: {0:.2f}".format(ttot))  
   isize = 8*args.rows*args.cols
@@ -180,20 +181,21 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> total numer of nonzero: {0}".format(vcsize//4 - args.rows))
   print(" >> number of distinct nonzero: {0}".format(valsize//8))
   psize = valsize+vcsize
-  print(" >> value-col representation size (vc+val): {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
+  print(" >> CSRV  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   csize = os.path.getsize(args.input+".vc.C") 
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
-  print(" >> Uncompressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> RE32  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   csize = os.path.getsize(args.input+".vc.C.iv") 
   rsizeiv = os.path.getsize(args.input+".vc.R.iv") 
   psize = valsize + csize+rsizeiv
-  print(" >> Compressed grammar+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
-  psize = valsize+ans_csize+rsize 
-  print(" >> Ans grammar+R32+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  # ANS32 no longer considered
+  # psize = valsize+ans_csize+rsize 
+  # print(" >> ANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   psize = valsize+ans_csize+rsizeiv 
-  print(" >> Ans grammar+RIV+val size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  print(" >> REANS size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
 
 
 def show_command_line(f):
@@ -258,7 +260,7 @@ def estimate_compressed_grammar_size(basename,isize):
 
 # check if the files source.ext... has to be computed 
 def need_rebuild(source,*exts):
-  assert os.path.exists(source), "Missing source"
+  assert os.path.exists(source), "Missing source: " + source
   for ext in exts:
     dest = source + ext
     if not os.path.exists(dest):
