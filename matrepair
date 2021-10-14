@@ -44,6 +44,7 @@ def main():
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
   parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
+  parser.add_argument('--noconv',  help='skip the conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
   # if no max RAM provided on command line uses 90% of total 
@@ -62,24 +63,24 @@ def main():
       print(" *** not implemented yet ***");
       return
       # to be fixed
-      exe = integer_despair_exe
-      command = "{exe} {file}".format(
-                exe = os.path.join(args.main_dir,exe), file=args.input)
-      print("==== Decompressing C+R files.\nCommand:", command)
-      if(execute_command(command,logfile)!=True):
-        return
-      print("Elapsed time: {0:.4f}".format(time.time()-start0));
-      if args.c:      
-        command = "cmp {file} {file}.out".format(file=args.input); 
-        print("==== Comparing decompressed file.\nCommand:", command);
-        if(execute_command(command,logfile)):
-          print("Decompressed file matches");
-        else:
-          print("Decompressed file differs");
-            
+      # exe = integer_despair_exe
+      # command = "{exe} {file}".format(
+                # exe = os.path.join(args.main_dir,exe), file=args.input)
+      # print("==== Decompressing C+R files.\nCommand:", command)
+      # if(execute_command(command,logfile)!=True):
+        # return
+      # print("Elapsed time: {0:.4f}".format(time.time()-start0));
+      # if args.c:      
+        # command = "cmp {file} {file}.out".format(file=args.input); 
+        # print("==== Comparing decompressed file.\nCommand:", command);
+        # if(execute_command(command,logfile)):
+          # print("Decompressed file matches");
+        # else:
+          # print("Decompressed file differs");
+                  
     else:       # mat2vc + irepair
       # ----------conversion to the .vc format 
-      if args.y and not need_rebuild(args.input, ".vc", ".val"):
+      if args.noconv or (args.y and not need_rebuild(args.input, ".vc", ".val")):
         print("---- Skipping conversion csv/bin->vc")
         vc_time = -1
       else:
@@ -174,11 +175,12 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> total time: {0:.2f}".format(ttot))  
   isize = 8*args.rows*args.cols
   print(" >> matrix dense size:",isize, "bytes")
-  psize = os.path.getsize(args.input)
-  print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
+  #psize = os.path.getsize(args.input)
+  #print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   valsize = os.path.getsize(args.input+".val")
   vcsize = os.path.getsize(args.input+".vc") 
-  print(" >> total numer of nonzero: {0}".format(vcsize//4 - args.rows))
+  nonzero = vcsize//4 - args.rows
+  print(" >> total numer of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
   print(" >> number of distinct nonzero: {0}".format(valsize//8))
   psize = valsize+vcsize
   print(" >> CSRV  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
