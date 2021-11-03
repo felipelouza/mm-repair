@@ -10,7 +10,8 @@ Currently supported tests:
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 ##['census', 'census.c2'] ## 
-Files_prefix = 'data/'
+Files_prefix = 'pdata/'
+#Files_prefix = 'd0/'
 Logfile_name = "errors.log"
 
 Algo = ['csrmm', 'remm','ivremm','ansremm','ansivremm']
@@ -97,6 +98,42 @@ def convert(logfile):
   return table
 
 
+# compress with matrepair
+def compress(logfile):
+  table = [" name     & rows & val & vc.C & vc.R \\\\\n"]   # latex table containing the results 
+  for f in Files:
+    name  = Files_prefix + f
+    rows,cols = Sizes[f]
+    tablerow = []  # row of the results table
+    command = "./{exe} -rky --noconv {name} {r} {c}".format(
+                exe = "matrepair", name=name, r=rows, c=cols)
+    try:
+      ris = subprocess.run(command.split(),stdout=logfile,
+                           stderr=logfile,timeout=Timelimit,check=True)
+    except subprocess.TimeoutExpired:
+      # caso time out
+      print(" Test failed: no result after %d seconds" % Timelimit)
+      continue
+    except subprocess.CalledProcessError as ex:
+      print(" Test failed: non-zero exit code ", ex.returncode)
+      # write stdout/stderr to a separate logfile
+      print("## Error executing:", command,file=logfile);
+      print("## stdout:\n", ex.stdout ,file=logfile);
+      print("## stderr:\n", ex.stderr ,file=logfile);
+      sys.exit(2)
+    except Exception as ex:
+      print(" Test failed:", str(ex))
+      sys.exit(2)
+    tablerow.append((os.path.getsize(name+".val"),os.path.getsize(name+".vc.C"),
+                     os.path.getsize(name+".vc.R")))
+    # tests for current file completed
+    table.append(makerow_mc(f, tablerow))
+  # all files processed
+  return table
+
+
+
+
 # test running times and space for matrix multiplication 
 def time_test(n,logfile):
   table = []   # latex table containing the results 
@@ -160,7 +197,7 @@ def show_command_line(f):
 def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('op', help='operation to test: mm|mc', type=str)
+  parser.add_argument('op', help='operation to test: mm|mc|mz', type=str)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   args = parser.parse_args()
      
@@ -172,12 +209,14 @@ def main():
       table = time_test(args.n,logfile)
     elif args.op=='mc':   # matrix conversion
       table = convert(logfile)
+    elif args.op=='mz':   # matrix compression
+      table = compress(logfile)
     else: 
-      print("Unknown operation! Must be mm or mc",file=sys.stderr)
+      print("Unknown operation! Must be mc, mm, or mz",file=sys.stderr)
       exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  if args.op=='mm' or args.op=='mc':  
+  if args.op=='mm' or args.op=='mc' or args.op=='mz':  
     for s in table:
       print(s,end="")
   exit(0)
