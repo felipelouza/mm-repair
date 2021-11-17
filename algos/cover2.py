@@ -205,12 +205,12 @@ class Graph:
         solfile.close()
  
 if __name__ == '__main__' :
-    if len(sys.argv) != 2+1 :
-        print('Usage is:',sys.argv[0],'<matrix name> <generator ext.>')
+    if len(sys.argv) != 1+1 :
+        print('Usage is:',sys.argv[0],'<path to the tsp file>')
         exit(-1)
     
-    mat_name = sys.argv[1]
-    gen_name = sys.argv[2]
+    path_to_tsp_file = sys.argv[1]
+    tsp_filename = path_to_tsp_file.split('.tsp')[0]
 
-    g = Graph(mat_name+'.'+gen_name)
+    g = Graph(tsp_filename)
     g.cover()
