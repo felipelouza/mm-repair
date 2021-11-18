@@ -8,7 +8,7 @@ In this directory you find the code which generates the column similarity matrix
 - PathCover+
 - Maximum weighed matching (MWM)
 
-In [this page](http://akira.ruc.dk/~keld/research/LKH-3/) you’ll find a recent[^1] Lin-Kernighan heuristic to the Travelling Salesman Problem (TSP), which is also of interest for our column-reordering problem.
+In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a recent Lin-Kernighan heuristic to the Travelling Salesman Problem (TSP), which is also of interest for our column-reordering problem.
 
 
 ## Build 
