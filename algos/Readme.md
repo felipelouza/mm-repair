@@ -27,11 +27,11 @@ or, as an alternative, `make release -j` for better performances. The code will 
 
 ## Generating the column similarity matrix
 
-### Step 1. Computing a column-major order representation
-Given the `covtype` matrix in csv format (581012 rows, 54 columns), we firstly generate a sparse column-major representation for `covtype` using the following command:
+### Step 1. Computing a column_major order representation
+Given the `covtype` matrix in csv format (581012 rows, 54 columns), we firstly generate a sparse column_major representation for `covtype` using the following command:
 
 ```bash
-python3 column-major.py <PATH_TO_COVTYPE>/covtype
+python3 column_major.py <PATH_TO_COVTYPE>/covtype
 ```
 This will generate the new folder `<PATH_TO_COVTYPE>/covtype_cols`.
 
