@@ -13,7 +13,7 @@ In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a re
 
 ## Build 
 
-Upon cloning the repository, from the root directory of the project `cd` into the this subdirectory.
+Upon cloning the repository, from the root directory of the project `cd` into the `algos` subdirectory.
 
 ```bash
 cd algos
