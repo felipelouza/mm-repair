@@ -6,7 +6,7 @@ In this directory you find the code which generates the column similarity matrix
 
 - PathCover
 - PathCover+
-- Maximum weighed matching (MWM)
+- Maximum weighted matching (MWM)
 
 In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a recent Lin-Kernighan heuristic to the Travelling Salesman Problem (TSP), which is also of interest for our column-reordering problem.
 
@@ -14,7 +14,7 @@ In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a re
 
 ## Why this subdirectory?
 
-You can already find some column permutation in the `solfiles` fodler that you can find if you navigate back to the root directory of this project. The column-permutation files have the extension `.solution`. In this directory you find the code we used to generate those `.solution` files.
+You can already find some column permutations in the `solfiles` folder located in the root directory of this project; the column-permutation files therein contained have the extension `.solution`. In this directory you find the code which generates those `.solution` files.
 
 ---
 
