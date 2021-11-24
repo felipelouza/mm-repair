@@ -1,32 +1,47 @@
 import os, sys
-import hashlib 
+import hashlib
+import re 
 
 Description = """
 We read a matrix stored in row-major order, and we store it
 using a sparse representation using a column-major order.
 """
 
-#has a string to a 32-bit integer
-def hash(str, separator='.') :
-    #check whether str==0
-    tokens = str.split('e') #remove what follows 'e'
-    tokens = tokens[0].split('E') #remove what follows 'E'
-    tokens = tokens[0].split(separator) #separate integer and decimal parts
-    a = int(tokens[0])
-    b = 0
-    if len(tokens)>1 :
-        assert(len(tokens) == 2)
-        b = int(tokens[1])
-    is_zero = (a==0 and b==0)
-    print('q:',a,b)
+#check whether a string represent an integer or not
+def check_int(s):
+    if s[0] in ('-', '+'):
+        return s[1:].isdigit()
+    return s.isdigit()
+
+#hash a string into a 32-bit integer
+def hash(s, separator='\.') :
+    if check_int(s) :
+        return s
+
+    #check whether s represent 0
+    regex = '^[+-]?([0-9]+)({separator}([0-9]+))?'.format(separator=separator)
+    res = re.search(regex, s)
+    
+    is_zero = True
+    for ch in res.group(1) :
+        if not is_zero :
+            break
+        if ch != '0' :
+            is_zero = False
+    for ch in  res.group(3) :
+        if not is_zero :
+            break
+        if ch != '0' :
+            is_zero = False
+
     if is_zero :
         #a zero remains a zero
-        return 0
+        return 0 
     else :
         #hash
-        b = bytes(str, 'utf-8')
+        b = bytes(s, 'utf-8')
         h = int.from_bytes(hashlib.sha256(b).digest()[:4], 'little') # 32-bit int
-    return h
+        return h
 
 
 def count_cols(infilepath) :
@@ -61,7 +76,6 @@ if __name__ == '__main__' :
 
     infile = open(infilepath, 'r')
     for i,line in _readlines(infile) :
-        #values = line[:-1].split(',') #assuming to deal with integers
         values = [hash(s) for s in line[:-1].split(',')]
         assert(len(values) == ncols)
         for v,f in zip(values,outfiles) :
