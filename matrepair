@@ -22,8 +22,8 @@ irepair_exe = "brepair/irepair0"
 idespair_exe = "brepair/idespair"
 # tool to compute the value-column representation of a csv matrix
 # note: if file names ends with .dbl then the matrix is assumed to be 
-# in dense binary format (see mat2vc.py help) 
-mat2vc_exe = "mat2vc.py"
+# in dense binary format (see mat2csrv.py help) 
+mat2csrv_exe = "mat2csrv.py"
 # tool to compress a sequence of int32 unsing ans-fold  
 ansf_exe = "ans/encode.x"
 # tool to compress a sequence of int32 unsing an integer vector from sdsl   
@@ -41,7 +41,7 @@ def main():
   parser.add_argument('-r', help='compression full report',action='store_true')
   parser.add_argument('-m', help='force repair to use at most M MBs (def. 95%% of available RAM)',default=-1, type=int)
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
-  parser.add_argument('-k', help='keep intermediate files',action='store_true')
+  # parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
   parser.add_argument('--noconv',  help='skip the conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
@@ -77,14 +77,14 @@ def main():
         # else:
           # print("Decompressed file differs");
                   
-    else:       # mat2vc + irepair
+    else:       # mat2csrv + irepair
       # ----------conversion to the .vc format 
       if args.noconv or (args.y and not need_rebuild(args.input, ".vc", ".val")):
         print("---- Skipping conversion dbl/csv->csrv")
         vc_time = -1
       else:
         command = "{exe} {mfile} {rows} {cols}".format(
-          exe = os.path.join(args.main_dir,mat2vc_exe), mfile=args.input,
+          exe = os.path.join(args.main_dir,mat2csrv_exe), mfile=args.input,
           rows = args.rows, cols=args.cols);
         print("==== Conversion dbl/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
