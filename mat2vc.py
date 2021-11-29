@@ -2,14 +2,15 @@
 import sys, time, argparse, math, os.path, struct, array
 
 # input file extension indicating that the input matrix is in binary 
-dbl_extension = ".double"
+dbl_extension = ".dbl"
 
 Description = """
-Tool to convert a matrix written in text csv format (one line per row)
-in a the value-column representation, generating a .vc and a .val file
+Tool to convert a matrix written in csv or double format into
+the CRSV representation, generating a .vc file and a .val file
 
-If the input file ends with {ext} then it is assumed to 
-contain the input in binary with 8 byte for each entry stored in a double
+If the input file ends with {ext} then it is assumed to be in binary form 
+with each entry represented as an 8 byte double; otherwise the matrix is
+assumed to be in csv textual format with one line per row
 """.format(ext=dbl_extension)
 
 

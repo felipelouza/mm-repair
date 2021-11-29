@@ -4,7 +4,7 @@ import sys, time, argparse, subprocess, os.path, struct, datetime
 from psutil import virtual_memory
 
 Description = """
-Column-value representation + Repair compression
+Compressed Sparse Row-Value representation + Repair compression
 
   Compression:
      {exe} file [options]
@@ -20,8 +20,8 @@ Column-value representation + Repair compression
 irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
-# tool to compute the value-colum representation of a csv matrix
-# note: if file names ends with .double then the matrix is assumed to be 
+# tool to compute the value-column representation of a csv matrix
+# note: if file names ends with .dbl then the matrix is assumed to be 
 # in dense binary format (see mat2vc.py help) 
 mat2vc_exe = "mat2vc.py"
 # tool to compress a sequence of int32 unsing ans-fold  
@@ -36,7 +36,6 @@ def main():
   parser.add_argument('input', help='matrix csv file name', type=str)
   parser.add_argument('rows',  help='number of rows', type=int)
   parser.add_argument('cols', help='number of columns', type=int)
-  # parser.add_argument('-t', help='number of helper threads (def. None)', default=0, type=int)
   parser.add_argument('-d', help='decompress',action='store_true')
   parser.add_argument('-c', help='decompress and check',action='store_true')
   parser.add_argument('-r', help='compression full report',action='store_true')
@@ -81,13 +80,13 @@ def main():
     else:       # mat2vc + irepair
       # ----------conversion to the .vc format 
       if args.noconv or (args.y and not need_rebuild(args.input, ".vc", ".val")):
-        print("---- Skipping conversion csv/bin->vc")
+        print("---- Skipping conversion dbl/csv->csrv")
         vc_time = -1
       else:
-        command = "{exe} {csvfile} {rows} {cols}".format(
-          exe = os.path.join(args.main_dir,mat2vc_exe), csvfile=args.input,
+        command = "{exe} {mfile} {rows} {cols}".format(
+          exe = os.path.join(args.main_dir,mat2vc_exe), mfile=args.input,
           rows = args.rows, cols=args.cols);
-        print("==== Conversion csv/bin->vc\nCommand:", command)
+        print("==== Conversion dbl/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
           return
         vc_time = time.time()-start
@@ -96,14 +95,14 @@ def main():
           print("==== Stopping after the conversion phase as requested")      
           return
 
-      # ---- apply irepair to the .vc file modified dictionary
+      # ---- apply irepair to the .vc file 
       if args.y and not need_rebuild(args.input+".vc", ".C", ".R"):
         print("---- Skipping irepair")
         repair_time = -1
       else:
         start = time.time()
-        command = "{exe} {csvfile}.vc {mb}".format(mb=args.m,
-                  exe = os.path.join(args.main_dir,irepair_exe), csvfile=args.input)
+        command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
+                  exe = os.path.join(args.main_dir,irepair_exe), mfile=args.input)
         print("==== Repair compression\nCommand:", command)
         if(execute_command(command,logfile)!=True):
          return
@@ -116,8 +115,8 @@ def main():
         print("---- Skipping iv(C)")
       else:
         start = time.time()
-        command = "{exe} {csvfile}.vc.C ".format(
-                  exe = os.path.join(args.main_dir,iv_exe), csvfile=args.input)
+        command = "{exe} {mfile}.vc.C ".format(
+                  exe = os.path.join(args.main_dir,iv_exe), mfile=args.input)
         print("==== Integer vector .C compression\nCommand:", command)
         if(execute_command(command,logfile)!=True):
          return
@@ -126,8 +125,8 @@ def main():
         print("---- Skipping iv(R)")
       else:
         start = time.time()
-        command = "{exe} {csvfile}.vc.R ".format(
-                  exe = os.path.join(args.main_dir,iv_exe), csvfile=args.input)
+        command = "{exe} {mfile}.vc.R ".format(
+                  exe = os.path.join(args.main_dir,iv_exe), mfile=args.input)
         print("==== Integer vector .R compression\nCommand:", command)
         if(execute_command(command,logfile)!=True):
          return
@@ -140,8 +139,8 @@ def main():
         ansf_time = -1
       else:
         start = time.time()
-        command = "{exe} {csvfile}.vc.C ".format(
-                  exe = os.path.join(args.main_dir,ansf_exe), csvfile=args.input)
+        command = "{exe} {mfile}.vc.C ".format(
+                  exe = os.path.join(args.main_dir,ansf_exe), mfile=args.input)
         print("==== Ans-fold compression\nCommand:", command)
         if(execute_command(command,logfile)!=True):
          return
@@ -155,7 +154,7 @@ def main():
       
       # DISABLED: delete temporary .vc file
       if False and not args.k: # temporarily disabled 
-        command = "rm -f {csvfile}.vc".format(csvfile=args.input)
+        command = "rm -f {mfile}.vc".format(mfile=args.input)
         if(execute_command(command,logfile)!=True):
           return
 
@@ -193,9 +192,9 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   psize = valsize + csize+rsizeiv
   print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
-  # ANS32 no longer considered
+  # ANS32Plain no longer considered
   # psize = valsize+ans_csize+rsize 
-  # print(" >> ANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  # print(" >> ANS32Plain size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   psize = valsize+ans_csize+rsizeiv 
   print(" >> REANS size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
 

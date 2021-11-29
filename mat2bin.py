@@ -4,7 +4,10 @@ import sys, time, argparse, subprocess, os.path, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into binary form, ie rows x cols floats or doubles (with option -d)
+into binary form, ie rows x cols doubles or floats (with option -f)
+Optionally, a set of leading rows and/or columns can be removed before 
+the conversion. If the number of columns to remove is negative, 
+minus that number of trailing columns are removed. 
 
 The option --strip instead of converting to binary form
 simply strips trailing or leading columns, or leading rows
@@ -13,39 +16,39 @@ non-stripped values are not modified by this operation (eg integers
 remain integers, they are not converted to floats with a 0 fractional part). 
 """
 
-shasum_exe = "sha256sum"
+shasum_exe = "sha1sum"
 
 def main():
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('input', help='input file name', type=str)
-  parser.add_argument('rows', help='number of rows', type=int)
-  parser.add_argument('cols', help='number of columns', type=int)
+  parser.add_argument('rows', help='number of rows in outfile', type=int)
+  parser.add_argument('cols', help='number of columns in outfile', type=int)
   parser.add_argument('-c', help='initial columns to skip, can be negative (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
-  parser.add_argument('-o', help='output file name (def. input.r.c.double)',type=str,default="" )
-  parser.add_argument('-d', help='output values as double precision floats',action='store_true')
+  parser.add_argument('-o', help='output file name (def. input.rxc)',type=str,default="" )
+  parser.add_argument('-f', help='output values as single precision floats',action='store_true')
   parser.add_argument('--strip', help='only strip values, do not convert ',action='store_true')
   #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
   #parser.add_argument('-v',  help='verbose',action='store_true')
   args = parser.parse_args()
-  if args.d and args.strip:
-    print("Error: Options -d and --strip are mutually exclusive");
+  if args.f and args.strip:
+    print("Error: Options -f and --strip are mutually exclusive");
     return 
   if args.strip and args.c==0 and args.r==0:
     print("Error: strip mode with nothing to strip");
     return 
     
   # take start time 
-  start0 = start = time.time()
+  print("SHA1  Infile:", file_digest(args.input), args.input);
   with open(args.input,"rt") as f:
     # set output file name and output file mode
     if args.o!="": 
       outname = args.o
     elif args.strip:
       outname = args.input + ".%dx%d" %(args.rows,args.cols)
-    elif args.d: outname = args.input + ".%dx%d.double" %(args.rows,args.cols) 
-    else: outname = args.input + ".%dx%d.float" %(args.rows,args.cols) 
-    outmode = "w" if args.strip else "wb"  # by default ouput file is binary
+    elif args.f: outname = args.input + ".%dx%d.float" %(args.rows,args.cols) 
+    else: outname = args.input + ".%dx%d.dbl" %(args.rows,args.cols) 
+    outmode = "w" if args.strip else "wb"  # by default output file is binary
     with open(outname,outmode) as g:
       nonz = 0
       r = 0 # number of read rows
@@ -67,15 +70,16 @@ def main():
           if args.strip:
             print(",".join(a),file=g)
           else:
-            ## convert to double 
+            ## convert to float 
             b = [float(x) for x in a]
             for x in b:
               if x!=0:
                 nonz +=1
                 values.add(x)
-            if args.d: g.write(struct.pack("%dd" % len(b), *b))
-            else: g.write(struct.pack("%df" % len(b), *b))
+            if args.f: g.write(struct.pack("%df" % len(b), *b)) # single precision 
+            else:      g.write(struct.pack("%dd" % len(b), *b)) # double precision
           wr += 1
+  print("SHA1 Outfile:", file_digest(outname), outname);
   if wr!=args.rows:
     print("Warning! Written", wr, "rows instead of", args.rows)
   if not(args.strip):  
