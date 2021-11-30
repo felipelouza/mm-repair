@@ -20,7 +20,7 @@ You can already find some column permutations in the `solfiles` folder located i
 
 ## Build 
 
-Upon cloning the repository, from the root directory of the project `cd` into the `algos` subdirectory.
+Upon cloning the repository, from the root directory of the project `cd` into the `reordering` subdirectory.
 
 ```bash
 cd algos
@@ -31,6 +31,31 @@ A portion of the code base is written in `c++` and needs to be compiled. Run:
 make -j
 ```
 or, as an alternative, `make release -j` for better performances. The code will be compiled into a new `build` directory.
+
+## Summary tables
+
+| Extension | Description |
+| --- | --- | 
+| `.csv` | A data set in CSV format of comma-separated numbers (either integers or floating-point). |
+| `<DATA_SET>_cols`[^2] | A folder representing a matrix in column-major order. It contains a file for each column of the data set it refers to.  |
+| `.tsp` | A file storing a column-similarity matrix (CSM). |
+| `.par` | A configuration file used by the Lin–Kernighan (LKH) algorithm. |
+| `.pairs` | A list of matched column pairs obtained via the maximum weighted matching (MWM) algorithm. |
+| `.tsp.solution` | A column permutation obtained using the Lin–Kernighan (LKH) heuristic to the travelling salesman problem (TSP). |
+| `.cover.solution` | A column permutation obtained using the PathCover algorithm. |
+| `.cover2.solution` | A column permutation obtained using the PathCover+ algorithm. |
+| `.mwm.solution` | A column permutation obtained using the maximum weighted matching (MWM) algorithm. |
+
+| Program | Requirements | Output ext. | Description |
+| --- | --- | --- | --- | 
+| `column_major.py` | `.csv` | `<DATA_SET>_cols`[^2] | represents a given data set in column-major order, using a sparse representation. |
+| `tsp_generator.cpp` | `<DATA_SET>_cols` | `.tsp`, `.par` | generates the all-pair CSM. |
+| `tsp_generator_pruned_local.cpp` | `<DATA_SET>_cols` | `.tsp`, `.par` | generates the locally-pruned CSM. |
+| `tsp_generator_pruned_global.cpp` | `<DATA_SET>_cols` | `.tsp`, `.par` | generates the globally-pruned CSM. |
+| `cover.py` | `.tsp` | `.cover.solution` | computes the column permutation using PathCover. |
+| `cover2.py` | `.tsp` | `.cover2.solution` | computes the column permutation using PathCover+. |
+| `mwm.cpp` | `.tsp` | `.pairs` | computes the maximum weighted matching (MWM). |
+| `mwm_sol_from_pairs,cpp` | `.pairs` | `.mwm.solution` | computes the column permutation using the maximum weighted matching (MWM). |
 
 ## Generating the column similarity matrix
 
@@ -54,16 +79,18 @@ In alternative, you may want to construct a pruned version of the CSM. Assuming 
 ```bash
 cd build && ./tsp_generator_pruned_global  <PATH_TO_COVTYPE>/covtype 581012 54 4
 ```
-which generates the two configuration files `covtype.pruned_global_4.tsp` and `covtype.pruned_local_4.par`[^2].
+The last argument (equal to `4`, in our example) is the pruning parameter *k*. Smaller values of *k* translate into higher degrees of pruning. High values of *k* correspond instead to denser CSM (i.e., containg more edges) and to time-coonsuming CSM constructions.
 
-For the _local pruning_ approach, use `./tsp_generator_pruned_local` instead. You’ll get a `covtype.pruned_local_4.tsp` and `covtype.pruned_local_4.par`[^2] files in this case.
+The command in our example generates the two configuration files: `covtype.pruned_global_4.tsp` and `covtype.pruned_local_4.par`[^3].
+
+For the _local pruning_ approach, on should use `./tsp_generator_pruned_local` instead. You’ll get a `covtype.pruned_local_4.tsp` and `covtype.pruned_local_4.par`[^3] files in this case.
 
 
 ## Executing the reordering algorithms
 Let `<TSP_FILE>` denote any of the `.tsp` files generated following the instructions above (e.g., `covtype.standard.tsp`).
 
 ### Running PathCover
-We need to back to the `algos` directory and launch the `cover.py` script.
+We need to back to the `reordering` directory and launch the `cover.py` script.
 Assuming that you are in in the `build` directory, run:
 ```bash
 cd .. && python3 cover.py <PATH_TO_COVER>/<TSP_FILE>
@@ -82,7 +109,7 @@ where <GENERATOR> stands for the method used to generate the CSM matrix, and is 
 - `pruned_global_4`, `pruned_global_8`, etc., for the globally-pruned CSM.
 - `pruned_local_4`, `pruned_local_8`, etc., for the locally-pruned CSM.
 
-Then, go back to the `algos` directory, and launch the `mwm_sol_from_pairs.py` script:
+Then, go back to the `reordering` directory, and launch the `mwm_sol_from_pairs.py` script:
 ```bash
 cd .. && python3 mwm_sol_from_pairs.py <PATH_TO_COVTYPE>/covtype <GENERATOR>
 ```
@@ -90,4 +117,5 @@ cd .. && python3 mwm_sol_from_pairs.py <PATH_TO_COVTYPE>/covtype <GENERATOR>
 ---
 
 [^1]: page visited in November 2021. 
-[^2]: the `.par` configuration files may be used to run the Lin-Kernighan algorithm.
+[^2]: this is actually a folder name, rather than a file extansion.
+[^3]: the `.par` configuration files may be used to run the Lin-Kernighan algorithm.

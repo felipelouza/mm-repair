@@ -8,4 +8,4 @@ Herein you can find suitable column permutations which can be used to reorder co
 
 ## How to generate this column-permutation files?
 
-For the code needed to generate this files, please navigate up into the root directory and then down into the `algos` subfolder.
+For the code needed to generate this files, please navigate up into the `reordering` folder.
