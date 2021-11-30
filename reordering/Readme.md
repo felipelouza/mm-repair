@@ -55,7 +55,7 @@ or, as an alternative, `make release -j` for better performances. The code will 
 | `cover.py` | `.tsp` | `.cover.solution` | computes the column permutation using PathCover. |
 | `cover2.py` | `.tsp` | `.cover2.solution` | computes the column permutation using PathCover+. |
 | `mwm.cpp` | `.tsp` | `.pairs` | computes the maximum weighted matching (MWM). |
-| `mwm_sol_from_pairs,cpp` | `.pairs` | `.mwm.solution` | computes the column permutation using the maximum weighted matching (MWM). |
+| `mwm_sol_from_pairs.cpp` | `.pairs` | `.mwm.solution` | computes the column permutation using the maximum weighted matching (MWM). |
 
 ## Generating the column similarity matrix
 
