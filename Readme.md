@@ -121,6 +121,6 @@ Tool to create a vector and write it to a file in binary format (default 8-byte 
 
 ## Column reordering
 
-For the column reordering algorithms, take a look at the `reorder` subfolder.
+For the column reordering algorithms, take a look at the `reordering` subfolder.
 
 
