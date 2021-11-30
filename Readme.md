@@ -11,7 +11,7 @@ Given the `covtype` matrix in csv format (581012 rows, 54 columns) we compress i
 ```bash
 matrepair covtype 581012 54
 ```
-that creates the three files `covtype.val`, `covtype.vc.R` and `covtype.vc.C` representing the original matrix. 
+that creates the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see below). 
 
 Next, we create a vector containig 54 entries equal to 1.0 and store it to the file `x54.dbl`:
 ```bash
@@ -52,74 +52,75 @@ od -An -t f8 z.dbl | head
 
 ---
 
+## Available Matrix Compression Formats
+
+### CSRV
+Compressed Sparse Row/Value format. File extensions `.val` and `.vc`. The `.val` file contains the *distintc* nonzero entries of the input matrix represented as 8-byte doubles. The `.vc` file contains for each nonzero element *a = A[i][j]* an encoding of the pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. 
+
+
+### Re32
+The `.vc` file of the CSRV format is grammar compressed with RePair. All symbols are represented by 32 bit unsigned integers. File extensions `.val`, `.vc.R`, and `vc.C`
+
+
+### ReIV
+The `.vc.C` and `vc.R` files of the Re32 format are represented as packed arrays with the minimum number of bits per entry using the `int_vector` class from SDSL-lite.
+File extensions `.val`, `.vc.R.iv`, and `vc.C.iv`
+
+
+### ReANS
+The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array.
+File extensions `.val`, `.vc.R.iv`, and `vc.C.ansf.1`
+
+
+### ReANS32
+The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. 
+File extensions `.val`, `.vc.R`, and `vc.C.ansf.1`
+
+
+
+---
+
 ## Tools
 
 ### matrepair
-Tool to compute a grammar compressed matrix multiplication friendly versions of a matrix given in `.csv` format. Calls the tools `mat2vc` and `irepair0` (below). With option `-r`, shows a nice report detailing running times and compression ratio. See below for the different output formats which are generated in a sigle call to `matrepair`.
+Tool to compute the CSRV representation of a matrix and to compress it using the above representations. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. With option `-r`, shows a nice report detailing running times and compression ratios.
 
-### mat2vc.py
-Tool to preprocess a matrix in `.csv` format; creates a `.vc` and `.val` files containing a value-column representation of the matrix nonzero elements. Each nonzero element *a = A[i][j]* is represented by an integer encoding a pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. Since for dense matrices the `.csv` format is wasteful,  if the input file ends with `.double` then it is assumed to be in binary format with 8 bytes for each entry stored as a double
+### re32mm
+Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file and an integer parameter *n* and computes *n* times the operation *y=Mx*, *z=y^t M*, *x = z/|z|*.
+
+### csrvmm
+Analogous to *re32mm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (files `.val` and `.vc` see below) 
+
+### reivmm, reansmm, reans32mm
+Analogous to *re32* except that the input matrix is expected to be in the format ReIV, ReANS, and  ReANS32
+
+
+## Internal tools 
+
+### mat2csrv.py
+Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. Used by *matrepair*. Outputs the `.vc` and `.val` files.
 
 ### brepair/irepair0
-Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (used in the rhs of a rule). In matrepair is is used to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
+Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *matrepair* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
+
+### sdsl/encode.x
+Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the minimum number of bits per entry from (https://github.com/simongog/sdsl-lite)[sdsl-lite]. Used to generate the `.iv` files.
+
+### ans/encode.x
+Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used to generate the `.ansf.1` files.
+
+
+### mat2bin.py
+Tool to convert a matrix in csv format into binary float or double format (possibly removing some trailing or leading rows/columns). All entries are represented so the outfile has size `rows*cols*sizeof(double/float)`. With the option `--strip` the tool simply strips trailing or leading columns, or leading rows maintaining the csv format.
 
 ### makevec.py
 Tool to create a vector and write it to a file in binary format (default 8-byte doubles). The vector is specified giving a set of values which are repeated cyclically.
 
-### remm
-Tool to compute a series of left and right matrix-vector multiplications. Takes as input a repair compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file (possibly generated by `makevec.py`) and an integer parameter *n* and computes *n* times the operation *y=Mx*, *z=y^t M*, *x = z/|z|*.
-
-### csrmm
-Analogous to *remm* (uses the same code) except that the input matrix is in Compressed Sparse Row (CSR) format (files `.val` and `.vc` see below) 
-
-### ansremm, ivremm, ansivremm
-Analogous to *remm* except that the input matrix is expected to be in the format ReANS, ReIV, and  ReANSIV (see below)
-
----
-
-## Available Matrix Compression Formats
-
-### CSR
-Compressed Sparse Row format. File extensions `.val` and `.vc`
-
-### Re32
-The `.vc` file of the CSR format is grammar compressed with RePair. All symbols are represented by 31 bit unsigned integers. File extensions `.val`, `.vc.R`, and `vc.C`
-
-
-### ReANS
-The `.vc.C` file of the remm32 format is compressed using the ANS-fold-1 algorithm. 
-File extensions `.val`, `.vc.R`, and `vc.C.ansf.1`
-
-
-### ReIV
-The `.vc.C` and `vc.R` files of the remm32 format are represented as packed array with the minimum number of bits per entry using the `int_vector` class from SDSL-lite.
-File extensions `.val`, `.vc.R.iv`, and `vc.C.iv`
-
-
-### ReANSIV
-The `.vc.C` file of the remm32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array.
-File extensions `.val`, `.vc.R.iv`, and `vc.C.ansf.1`
-
----
-
-## Debugging/Work in progress
-
-### recg
-Tool to compute iterations of the Conjugate Gradient method. Takes as input with a repair compressed matrix (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *y* of size *R* stored in a binary file and an integer parameter *n* and computes *n* iterations of the CG algorithm to solve the minimization problem: *min_x | Mx - y|*.
-
-### mat2bin.py
-Tool to convert a matrix in csv format into binary float or double format. All entries are represented so the outfile has size `rows*cols*sizeof(double/float)`. With the option `--strip` the tool simply strips trailing or leading columns, or leading rows maintinaing the csv format. Used only for debugging or data preparation.
-
-### fillMissing.py
-Tool to replace in a csv file all missing and NA entries with a given string. Used only for debugging or data preparation.
-
-### count.py
-Tool to count the number of occurrences of an integer values in binary file containing n-bytes integers, with n=1,...,8. Used only for debugging.
 
 ---
 
 ## Column reordering
 
-For the column reordering algorithms, take a look at the `algos` subfolder.
+For the column reordering algorithms, take a look at the `reorder` subfolder.
 
 

@@ -5,15 +5,16 @@ Description = """
 Tool to create a Latex table containing the results of a set of experiments
 
 Currently supported tests:
-   mm: matrix-vector multiplication
-   mc: conversion to dense matrix format and compression with gz/xz"""
+   mc: conversion to dense matrix format and compression with gz/xz
+   mz: conversion to CSRV format followed by grammar compression
+   mm: test matrix-vector multiplication algorithms"""
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files_prefix = 'pdata/'
-#Files_prefix = 'd0/'
+#Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['covtype', 'census']
+Files_prefix = 'data/'
 Logfile_name = "errors.log"
 
-Algo = ['csrmm', 'remm','ivremm','ansremm','ansivremm']
+Algo = ['csrvmm', 're32mm','reivmm','reansmm']
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
@@ -52,14 +53,15 @@ def createx(cols,value=1):
       f.write(struct.pack("<d", float(value)))
 
 
-# convert a csv file to binary
+# convert a csv file to binary and compress it with gzip and xz
 def convert(logfile):
-  table = [" name & rows & size & gzsize & xzsize \\\\\n"]   # latex table containing the results 
+  table = ["### gzip and xz size vs dense uncompressed size\n", 
+           " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
     name  = Files_prefix + f
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "./{exe} -d {name} -o {temp} {r} {c}".format(
+    command = "./{exe} {name} -o {temp} {r} {c}".format(
                 exe = "mat2bin.py", temp=TmpFilename, name=name, r=rows, c=cols)
     command2 = "{exe} -kf {name}".format(exe = "gzip",  name=TmpFilename)            
     command3 = "{exe} -kf {name}".format(exe = "xz",  name=TmpFilename)            
@@ -97,14 +99,15 @@ def convert(logfile):
   return table
 
 
-# compress with matrepair
+# compress with matrepair obtaining CSRV and grammar representation
 def compress(logfile):
-  table = [" name     & rows & val & vc.C & vc.R \\\\\n"]   # latex table containing the results 
+  table = ["### csrv and repair size vs dense uncompressed size\n", 
+           " file     & rows &  crsv &  re32 &  reiv & reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = Files_prefix + f
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "./{exe} -rky --noconv {name} {r} {c}".format(
+    command = "./{exe} -r -y --noconv {name} {r} {c}".format(
                 exe = "matrepair", name=name, r=rows, c=cols)
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
@@ -123,10 +126,17 @@ def compress(logfile):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    tablerow.append((os.path.getsize(name+".val"),os.path.getsize(name+".vc.C"),
-                     os.path.getsize(name+".vc.R")))
+    v = os.path.getsize(name+".val")
+    vcsize = os.path.getsize(name+".vc") 
+    csize = os.path.getsize(name+".vc.C") 
+    rsize = os.path.getsize(name+".vc.R") 
+    csizeiv = os.path.getsize(name+".vc.C.iv") 
+    rsizeiv = os.path.getsize(name+".vc.R.iv") 
+    ans_csize = os.path.getsize(name+".vc.C.ansf.1")
+    tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
+                    v+ans_csize+rsizeiv))
     # tests for current file completed
-    table.append(makerow_mc(f, tablerow))
+    table.append(makerow_mz(f, tablerow))
   # all files processed
   return table
 
@@ -135,7 +145,12 @@ def compress(logfile):
 
 # test running times and space for matrix multiplication 
 def time_test(n,logfile):
-  table = []   # latex table containing the results 
+  # build latex table containing the reuslts  
+  table = ["### time x iteration and peak memory for matrix multiplication\n", 
+           " file     & rows "]
+  for a in Algo:
+    table[1] += "& {name:12.9}&".format(name=a)         
+  table[1] += "\\\\\n" 
   for f in Files:
     name  = Files_prefix + f
     rows,cols = Sizes[f]
@@ -166,6 +181,7 @@ def time_test(n,logfile):
       peakmem = int(ris.stderr.split()[3])
       with open(Evname,"rb") as evf:
         e = struct.unpack("d",evf.read(8))[0]
+      # a = algo, elapsed e=eigenvalue
       tablerow.append((a, elapsed/n,peakmem, e))
     # tests for current file completed
     table.append(makerow(f, tablerow))
@@ -173,18 +189,30 @@ def time_test(n,logfile):
   return table
 
 def makerow(f, a):
-  s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "&{:6.2f} &{:6.0f}  {:10.5g}".format(p[1],p[2]/1000000,p[3])
+    s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
   s += "\\\\\n"
   return s
 
 def makerow_mc(f, a):
-  s = "{name:10.9}&{col:<4}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  d = 8*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
-    s += "&{:10.0f} &{:10.0f} &{:10.0f} ".format(p[0],p[1],p[2])
+    s += "&{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f}".format(
+          p[0],p[0]/d,p[1],p[1]/d,p[2],p[2]/d)
   s += "\\\\\n"
   return s
+
+
+def makerow_mz(f, a):
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  d = 8*Sizes[f][0]*Sizes[f][1]/100
+  for p in a:
+    s += "&{:6.2f} &{:6.2f} &{:6.2f} &{:6.2f} ".format(p[0]/d,p[1]/d,p[2]/d,p[3]/d)
+  s += "\\\\\n"
+  return s
+
 
 
 def show_command_line(f):

@@ -13,7 +13,7 @@ CXX_FLAGS=-std=c++17 -DNDEBUG -O3 -msse4.2
 MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=remm recg csrmm csrcg ansremm ivremm ansivremm vc_reorder.x
+EXECS=re32mm csrvmm reansmm reivmm reans32mm vc_reorder.x
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
@@ -33,20 +33,19 @@ all: $(EXECS) brepair ansf sdsl
 
 # left and right matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
-remm: remm.c rematrix.h vector.h $(MALLOC_FILES)
+re32mm: remm.c rematrix.h vector.h $(MALLOC_FILES)
 	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
 
-csrmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
+csrvmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
 	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
-ansremm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
+reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS
 
-
-ivremm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
+reivmm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_INTVEC
 
-ansivremm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_ANSIV 
 
 vc_reorder.x: vc_reorder.cpp

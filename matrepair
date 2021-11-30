@@ -43,7 +43,7 @@ def main():
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
   # parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
-  parser.add_argument('--noconv',  help='skip the conversion phase (debug only)',action='store_true')
+  parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
   # if no max RAM provided on command line uses 90% of total 
@@ -78,7 +78,7 @@ def main():
           # print("Decompressed file differs");
                   
     else:       # mat2csrv + irepair
-      # ----------conversion to the .vc format 
+      # ----------conversion to the CSRV format 
       if args.noconv or (args.y and not need_rebuild(args.input, ".vc", ".val")):
         print("---- Skipping conversion dbl/csv->csrv")
         vc_time = -1
@@ -187,14 +187,14 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   rsize = os.path.getsize(args.input+".vc.R") 
   psize = valsize + csize+rsize
   print(" >> RE32  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  csize = os.path.getsize(args.input+".vc.C.iv") 
+  csizeiv = os.path.getsize(args.input+".vc.C.iv") 
   rsizeiv = os.path.getsize(args.input+".vc.R.iv") 
-  psize = valsize + csize+rsizeiv
+  psize = valsize + csizeiv+rsizeiv
   print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
-  # ANS32Plain no longer considered
+  # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
-  # print(" >> ANS32Plain size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
   psize = valsize+ans_csize+rsizeiv 
   print(" >> REANS size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
 
