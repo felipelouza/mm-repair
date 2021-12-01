@@ -23,7 +23,7 @@ You can already find some column permutations in the `solfiles` folder located i
 Upon cloning the repository, from the root directory of the project `cd` into the `reordering` subdirectory.
 
 ```bash
-cd algos
+cd reordering
 ```
 
 A portion of the code base is written in `c++` and needs to be compiled. Run:
@@ -56,6 +56,7 @@ or, as an alternative, `make release -j` for better performances. The code will 
 | `cover2.py` | `.tsp` | `.cover2.solution` | computes the column permutation using PathCover+. |
 | `mwm.cpp` | `.tsp` | `.pairs` | computes the maximum weighted matching (MWM). |
 | `mwm_sol_from_pairs.cpp` | `.pairs` | `.mwm.solution` | computes the column permutation using the maximum weighted matching (MWM). |
+
 
 ## Generating the column similarity matrix
 
@@ -90,7 +91,7 @@ For the _local pruning_ approach, on should use `./tsp_generator_pruned_local` i
 Let `<TSP_FILE>` denote any of the `.tsp` files generated following the instructions above (e.g., `covtype.standard.tsp`).
 
 ### Running PathCover
-We need to back to the `reordering` directory and launch the `cover.py` script.
+We need to go back to the `reordering` directory and launch the `cover.py` script.
 Assuming that you are in in the `build` directory, run:
 ```bash
 cd .. && python3 cover.py <PATH_TO_COVER>/<TSP_FILE>
@@ -117,5 +118,5 @@ cd .. && python3 mwm_sol_from_pairs.py <PATH_TO_COVTYPE>/covtype <GENERATOR>
 ---
 
 [^1]: page visited in November 2021. 
-[^2]: this is actually a folder name, rather than a file extansion.
+[^2]: this is actually a folder name, rather than a file extension.
 [^3]: the `.par` configuration files may be used to run the Lin-Kernighan algorithm.

@@ -25,7 +25,7 @@ def main():
   parser.add_argument('cols', help='number of columns in outfile', type=int)
   parser.add_argument('-c', help='initial columns to skip, can be negative (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
-  parser.add_argument('-o', help='output file name (def. input.rxc)',type=str,default="" )
+  parser.add_argument('-o', help='output file name (def. input.dbl)',type=str,default="" )
   parser.add_argument('-f', help='output values as single precision floats',action='store_true')
   parser.add_argument('--strip', help='only strip values, do not convert ',action='store_true')
   #parser.add_argument('--sum', help='compute output file shasum',action='store_true')
@@ -46,8 +46,8 @@ def main():
       outname = args.o
     elif args.strip:
       outname = args.input + ".%dx%d" %(args.rows,args.cols)
-    elif args.f: outname = args.input + ".%dx%d.float" %(args.rows,args.cols) 
-    else: outname = args.input + ".%dx%d.dbl" %(args.rows,args.cols) 
+    elif args.f: outname = args.input + ".float" 
+    else: outname = args.input + ".dbl"
     outmode = "w" if args.strip else "wb"  # by default output file is binary
     with open(outname,outmode) as g:
       nonz = 0
