@@ -36,6 +36,7 @@ def main():
   parser.add_argument('input', help='matrix csv file name', type=str)
   parser.add_argument('rows',  help='number of rows', type=int)
   parser.add_argument('cols', help='number of columns', type=int)
+  parser.add_argument('-b', help='number of row blocks (def. 1)', type=int, default=1)
   parser.add_argument('-d', help='decompress',action='store_true')
   parser.add_argument('-c', help='decompress and check',action='store_true')
   parser.add_argument('-r', help='compression full report',action='store_true')
@@ -49,7 +50,10 @@ def main():
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
-    args.m = max(1000,int(0.90*mem/2**20)) # assume at least 1GB in case virtual_memory() misbehaves
+    args.m = max(4000,int(0.90*mem/2**20))//args.b # assume at least 4GB in case virtual_memory() misbehaves
+  # init time counters 
+  vc_time = repair_time = iv_time = ansf_time = 0
+
 
   logfile_name = args.input + ".log"
   # get absolute path to main matrepair directory 
@@ -79,13 +83,12 @@ def main():
                   
     else:       # mat2csrv + irepair
       # ----------conversion to the CSRV format 
-      if args.noconv or (args.y and not need_rebuild(args.input, ".vc", ".val")):
+      if args.noconv or (args.y and not need_rebuild_multipart(args.input, args.b, ".vc", ".val")):
         print("---- Skipping conversion dbl/csv->csrv")
-        vc_time = -1
       else:
-        command = "{exe} {mfile} {rows} {cols}".format(
+        command = "{exe} {opts} {mfile} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,mat2csrv_exe), mfile=args.input,
-          rows = args.rows, cols=args.cols);
+          rows = args.rows, cols=args.cols, opts = "-b %d" % args.b);
         print("==== Conversion dbl/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
           return
@@ -94,59 +97,60 @@ def main():
         if args.norepair:
           print("==== Stopping after the conversion phase as requested")      
           return
-
-      # ---- apply irepair to the .vc file 
-      if args.y and not need_rebuild(args.input+".vc", ".C", ".R"):
-        print("---- Skipping irepair")
-        repair_time = -1
-      else:
-        start = time.time()
-        command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
-                  exe = os.path.join(args.main_dir,irepair_exe), mfile=args.input)
-        print("==== Repair compression\nCommand:", command)
-        if(execute_command(command,logfile)!=True):
-         return
-        repair_time = time.time()-start
-        print("Repair time: {0:.4f}".format(repair_time))
+          
+      # now we have args.b different blocks 
+      for bn in range(args.b):  
+        basename = args.input + ".{tot}.{part}".format(tot=args.b,part=bn);
+        # ---- apply irepair to the .vc file 
+        if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
+          print("---- Skipping irepair")
+        else:
+          start = time.time()
+          command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
+                    exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+          print("==== Repair compression\nCommand:", command)
+          if(execute_command(command,logfile)!=True):
+           return
+          repair_time += time.time()-start
+          print("Repair time: {0:.4f}".format(repair_time))
+          
+        # ---- apply integer vector encoding to the .vc.C and vc.R files
+        iv_time = 0 
+        if args.y and not need_rebuild(basename+".vc.C", ".iv"):
+          print("---- Skipping iv(C)")
+        else:
+          start = time.time()
+          command = "{exe} {mfile}.vc.C ".format(
+                    exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
+          print("==== Integer vector .C compression\nCommand:", command)
+          if(execute_command(command,logfile)!=True):
+           return
+          iv_time += time.time()-start
+        if args.y and not need_rebuild(basename+".vc.R", ".iv"):
+          print("---- Skipping iv(R)")
+        else:
+          start = time.time()
+          command = "{exe} {mfile}.vc.R ".format(
+                    exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
+          print("==== Integer vector .R compression\nCommand:", command)
+          if(execute_command(command,logfile)!=True):
+           return
+          iv_time += time.time()-start
+          print("Integer vector compression time: {0:.4f}".format(iv_time))
         
-      # ---- apply integer vector encoding to the .vc.C and vc.R files
-      iv_time = 0 
-      if args.y and not need_rebuild(args.input+".vc.C", ".iv"):
-        print("---- Skipping iv(C)")
-      else:
-        start = time.time()
-        command = "{exe} {mfile}.vc.C ".format(
-                  exe = os.path.join(args.main_dir,iv_exe), mfile=args.input)
-        print("==== Integer vector .C compression\nCommand:", command)
-        if(execute_command(command,logfile)!=True):
-         return
-        iv_time += time.time()-start
-      if args.y and not need_rebuild(args.input+".vc.R", ".iv"):
-        print("---- Skipping iv(R)")
-      else:
-        start = time.time()
-        command = "{exe} {mfile}.vc.R ".format(
-                  exe = os.path.join(args.main_dir,iv_exe), mfile=args.input)
-        print("==== Integer vector .R compression\nCommand:", command)
-        if(execute_command(command,logfile)!=True):
-         return
-        iv_time += time.time()-start
-      print("Integer vector compression time: {0:.4f}".format(iv_time))
-      
-      # ---- apply ans_fold-1 to the .vc.C file 
-      if args.y and not need_rebuild(args.input+".vc.C", ".ansf.1"):
-        print("---- Skipping ans-fold")
-        ansf_time = -1
-      else:
-        start = time.time()
-        command = "{exe} {mfile}.vc.C ".format(
-                  exe = os.path.join(args.main_dir,ansf_exe), mfile=args.input)
-        print("==== Ans-fold compression\nCommand:", command)
-        if(execute_command(command,logfile)!=True):
-         return
-        ansf_time = time.time()-start
-        print("Ans-fold time: {0:.4f}".format(ansf_time))
-
+        # ---- apply ans_fold-1 to the .vc.C file 
+        if args.y and not need_rebuild(basename+".vc.C", ".ansf.1"):
+          print("---- Skipping ans-fold")
+        else:
+          start = time.time()
+          command = "{exe} {mfile}.vc.C ".format(
+                    exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+          print("==== Ans-fold compression\nCommand:", command)
+          if(execute_command(command,logfile)!=True):
+           return
+          ansf_time += time.time()-start
+          print("Ans-fold time: {0:.4f}".format(ansf_time))
+      # end for on row blocks
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      
       if args.r:
@@ -154,7 +158,7 @@ def main():
       
       # DISABLED: delete temporary .vc file
       if False and not args.k: # temporarily disabled 
-        command = "rm -f {mfile}.vc".format(mfile=args.input)
+        command = "rm -f {mfile}.vc".format(mfile=basename)
         if(execute_command(command,logfile)!=True):
           return
 
@@ -162,7 +166,12 @@ def main():
 
   print("==== Done")
 
-
+def getsize_multipart(base,num,ext):
+  tot = 0
+  for i in range(num):
+    name = base + ".{num}.{part}".format(num=num,part=i)+ext
+    tot += os.path.getsize(name)
+  return tot
 
 def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print("==== Compression Report:")
@@ -176,22 +185,22 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> matrix dense size:",isize, "bytes")
   #psize = os.path.getsize(args.input)
   #print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
-  valsize = os.path.getsize(args.input+".val")
-  vcsize = os.path.getsize(args.input+".vc") 
+  valsize = getsize_multipart(args.input,args.b,".val")
+  vcsize = getsize_multipart(args.input,args.b,".vc") 
   nonzero = vcsize//4 - args.rows
-  print(" >> total numer of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
+  print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
   print(" >> number of distinct nonzero: {0}".format(valsize//8))
   psize = valsize+vcsize
   print(" >> CSRV  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
-  csize = os.path.getsize(args.input+".vc.C") 
-  rsize = os.path.getsize(args.input+".vc.R") 
+  csize = getsize_multipart(args.input,args.b,".vc.C") 
+  rsize = getsize_multipart(args.input,args.b,".vc.R") 
   psize = valsize + csize+rsize
   print(" >> RE32  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  csizeiv = os.path.getsize(args.input+".vc.C.iv") 
-  rsizeiv = os.path.getsize(args.input+".vc.R.iv") 
+  csizeiv = getsize_multipart(args.input,args.b,".vc.C.iv") 
+  rsizeiv = getsize_multipart(args.input,args.b,".vc.R.iv") 
   psize = valsize + csizeiv+rsizeiv
   print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  ans_csize = os.path.getsize(args.input+".vc.C.ansf.1")
+  ans_csize = getsize_multipart(args.input,args.b,".vc.C.ansf.1")
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
@@ -241,23 +250,6 @@ def bits(n):
     maxv = 1+2*maxv
   return b
 
-# estimate space usage of RePair output using the minimum number of bits 
-# for symbol, no other complex econding include also the .val file
-# *** No longer used: we don't need the estimate since we implemeted the actual compression    
-def estimate_compressed_grammar_size(basename,isize):
-  rsize = os.path.getsize(basename+".vc.R")
-  assert (rsize-4)%8 == 0, "Invalid .R file format" 
-  nnonterm = (rsize-4)//8   # number of non terminals 
-  with open(basename + ".vc.R","rb") as f:
-    s = f.read(4)
-    nterm = struct.unpack('I',s)[0] # read # of terminals in first 32 bit uint
-  totbits = bits(nterm+nnonterm)
-  print(" >> Terminals:",nterm,"Non-terms:", nnonterm, "Total:", nterm+nnonterm, \
-        "Bits x symbol:", totbits)
-  numc = os.path.getsize(basename+".vc.C")//4   # symbols in C string 
-  tot = ((numc+2*nnonterm)*totbits+7)// 8       # bytes to represent C+R
-  tot += 4 + os.path.getsize(basename+".val")   # 1 extra byte in R and val file 
-  print(" >> Compressed grammar+val representation size:",tot, "bytes  ({0:.2f}%)".format(100*tot/isize))
 
 # check if the files source.ext... has to be computed 
 def need_rebuild(source,*exts):
@@ -269,6 +261,16 @@ def need_rebuild(source,*exts):
     # rebuild if dest is older   
     if os.path.getmtime(dest) < os.path.getmtime(source):
       return True
+  # all dependencies exists and are more recent than the source 
+  return False 
+
+def need_rebuild_multipart(source,num,*exts):
+  assert os.path.exists(source), "Missing source: " + source
+  for ext in exts:
+    for i in range(num):
+      newext = ".{num}.{part}".format(num=num,part=i) + ext
+      if need_rebuild(source,newext):
+        return True
   # all dependencies exists and are more recent than the source 
   return False 
 

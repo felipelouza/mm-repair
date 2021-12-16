@@ -21,6 +21,7 @@ def main():
   parser.add_argument('input', help='input file name', type=str)
   parser.add_argument('rows', help='number of rows', type=int)
   parser.add_argument('cols', help='number of columns', type=int)
+  parser.add_argument('-b', help='number of row blocks (def. 1)', type=int, default=1)
   parser.add_argument('-c', help='initial columns to skip (def. 0)',type=int,default=0 )
   parser.add_argument('-r', help='initial rows to skip (def. 0)',type=int,default=0 )
   parser.add_argument('-f', help='store matrix entries as 32-bit floats',action='store_true')
@@ -40,72 +41,81 @@ def main():
     read_mode = "rt"
     print("Input file format is csv",file=sys.stderr)
     csv = True
+  assert args.b >0, "Number of row blocks must be greater than 0"
+  assert args.b<= args.rows, "Too many row blocks!"
+  # compute size of each block 
+  block_size = (args.rows+args.b-1)//args.b
+  print("Block size", block_size);
+  
   
   start = time.time()
   with open(args.input,read_mode) as f:
-    outname = args.input + ".vc"
-    outname_val = args.input + ".val"    
-    with open(outname,"wb") as g:
-      with open(outname_val,"wb") as g_val:
-        nonz = 0
-        r = 0   # number of read rows
-        wr = 0  # number of written rows
-        values  = {}
-        maxcode = 0
-        # read one line at a time from f
-        while True:
-          # read a text or binary matrix row 
-          if csv:
-            line = f.readline()
-            if not line:
-              break
-          else:
-            b = array.array('d')   # create empty array
-            try:
-              b.fromfile(f,args.cols)
-            except EOFError as e:
-              break
-          # check row 
-          r += 1
-          if wr>=args.rows:
-            print("Warning: not all matrix rows have been processed",file=sys.stderr)
-            break 
-          if r<=args.r: continue   # skip first args.r rows
-          # convert text numerical values
-          if csv:
-            a = line.rstrip().split(",")
-            a = a[args.c:] # remove initial arg.c columns
-            if len(a)!=args.cols:
-              # row with wrong number of elements: print error msg and exit
-              print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
-              sys.exit(1)
-            ## convert to double or integer (the latter if option -i was given)
-            if args.i: b = [  int(s) for s in a]
-            else:      b = [float(s) for s in a]
-          assert len(b)==args.cols
-          for i in range(len(b)):
-            # get (or create) integer id associated to value x=b[i]
-            x = b[i]
-            if x!=0:
-              nonz +=1
-              if x not in values:
-                newid = len(values)
-                values[x] = newid
-                if   args.i: g_val.write(struct.pack("<i", x)) # 32-bit int
-                elif args.f: g_val.write(struct.pack("<f", x)) # 32-bit float
-                else:        g_val.write(struct.pack("<d", x)) # 64-bit double 
-              assert x in values
-              # create code combining value id and column number
-              code = values[x]*args.cols + i 
-              code += 1              # shift by 1 to allow code for endrow code 0 
-              if code>= 2**30:
-                print("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
+    r = 0   # number of read rows
+    wr = 0  # number of written rows
+    for bn in range(args.b):
+      outname = args.input + ".{tot}.{part}.vc".format(tot=args.b,part=bn)
+      outname_val = args.input + ".{tot}.{part}.val".format(tot=args.b,part=bn)  
+      with open(outname,"wb") as g:
+        with open(outname_val,"wb") as g_val:
+          nonz = 0
+          values  = {}
+          maxcode = 0
+          # read one line at a time from f
+          while True:
+            # read a text or binary matrix row 
+            if csv:
+              line = f.readline()
+              if not line:
+                break
+            else:
+              b = array.array('d')   # create empty array
+              try:
+                b.fromfile(f,args.cols)
+              except EOFError as e:
+                break
+            # check row 
+            r += 1
+            if wr>=args.rows:
+              print("Warning: more matrix rows than expected",file=sys.stderr)
+              break 
+            if r<=args.r: continue   # skip first args.r rows
+            # convert text numerical values
+            if csv:
+              a = line.rstrip().split(",")
+              a = a[args.c:] # remove initial arg.c columns
+              if len(a)!=args.cols:
+                # row with wrong number of elements: print error msg and exit
+                print(a,file=sys.stderr); print("row", r,"has", len(a), "elements",file=sys.stderr)
                 sys.exit(1)
-              if code>maxcode: maxcode=code
-              g.write(struct.pack("<I", code))
-          # row wr completed, write unique end of row code, and update wr
-          g.write(struct.pack("<I", 0)) # not-so-uninque EOR code (was wr  now is 0 for all rows)
-          wr += 1
+              ## convert to double or integer (the latter if option -i was given)
+              if args.i: b = [  int(s) for s in a]
+              else:      b = [float(s) for s in a]
+            assert len(b)==args.cols
+            for i in range(len(b)):
+              # get (or create) integer id associated to value x=b[i]
+              x = b[i]
+              if x!=0:
+                nonz +=1
+                if x not in values:
+                  newid = len(values)
+                  values[x] = newid
+                  if   args.i: g_val.write(struct.pack("<i", x)) # 32-bit int
+                  elif args.f: g_val.write(struct.pack("<f", x)) # 32-bit float
+                  else:        g_val.write(struct.pack("<d", x)) # 64-bit double 
+                assert x in values
+                # create code combining value id and column number
+                code = values[x]*args.cols + i 
+                code += 1              # shift by 1 to allow code for endrow code 0 
+                if code>= 2**30:
+                  print("Code", code, "larger than 2**30. We are in trouble",file=sys.stderr)
+                  sys.exit(1)
+                if code>maxcode: maxcode=code
+                g.write(struct.pack("<I", code))
+            # row wr completed, write unique end of row code, and update wr
+            g.write(struct.pack("<I", 0)) # not-so-unique EOR code (was wr now is 0 for all rows)
+            wr += 1
+            # if a block is full stop and start the next 
+            if (wr%block_size) == 0: break
   if wr!=args.rows:
     print("Warning! Written", wr, "rows instead of", args.rows,file=sys.stderr)
   print("Elapsed time: {0:.4f} secs".format(time.time()-start),file=sys.stderr);
