@@ -72,7 +72,7 @@ int main (int argc, char **argv) {
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "e:n:y:z:v")) != -1) {
+  while ((c=getopt(argc, argv, "e:n:b:y:z:v")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -171,12 +171,14 @@ int main (int argc, char **argv) {
     #endif 
     memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
     lambda = vector_normalize(x); 
-    remat_mult(m,x,y);
+    if(nblocks==1) remat_mult(m,x,y);
+    else remat_mult_mth(m,x,y,td,nblocks);
     #ifdef DETAILED_TIMING
     t2 = times(&ignored);
     m1 += (t2-t1);
     #endif
-    remat_left_mult(y,m,z);
+    if(nblocks==1) remat_left_mult(y,m,z);
+    else remat_left_mult_mth(y,m,z,td,nblocks);
     #ifdef DETAILED_TIMING
     t3 = times(&ignored);
     m2 += (t3-t2);
@@ -279,7 +281,7 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   
   rematrix **b = (rematrix **) malloc(n*sizeof *b);
   if(b==NULL) die("Not enough memory");
-  int maxblock = rows/n;
+  int maxblock = (rows+n-1)/n;
   assert(maxblock>=1);
   
   char fname[PATH_MAX];

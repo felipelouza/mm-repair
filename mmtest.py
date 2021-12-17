@@ -10,8 +10,8 @@ Currently supported tests:
    mm: test matrix-vector multiplication algorithms"""
 
 #Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files = ['covtype', 'census']
-Files_prefix = 'data/'
+Files = ['covtype']
+Files_prefix = './'
 Logfile_name = "errors.log"
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
@@ -193,7 +193,10 @@ def test_time(n,logfile):
 def makerow_mm(f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
   for p in a:
-    s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
+    # no eigenvalue
+    # s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
+    # with eigenvalue
+    s += "&{:6.2f} &{:4.0f}&{:.3g}  ".format(p[1],p[2]/1000000,p[3])
   s += "\\\\\n"
   return s
 

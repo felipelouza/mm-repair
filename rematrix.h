@@ -175,8 +175,9 @@ rematrix *remat_create(int r, int c, char *basename)
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
   if(m->NTrules==NULL) die("Rules array missing (remat_mult)");
-  if(m->cols!=x->size) die("Dimension mismatch (remat_mult)");   
-  if(m->rows!=y->size) die("Dimension mismatch (remat_mult)");   
+  if(m->cols!=x->size) die("Dimension mismatch (remat_mult x)");   
+  if(m->rows!=y->size) die("Dimension mismatch (remat_mult y)");   
+
   // compute NT values according to x
   fill_NTval(m,x,false);
   // --- compute output 
@@ -221,8 +222,8 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure the rules are available and dimensions agree
   if(m->NTrules==NULL) die("Rules array missing (left-mult)");
-  if(m->rows!=y->size) die("Dimension mismatch (left-mult)");   
-  if(m->cols!=x->size) die("Dimension mismatch (left-mult)");   
+  if(m->rows!=y->size) die("Dimension mismatch (left-mult y)");   
+  if(m->cols!=x->size) die("Dimension mismatch (left-mult x)");   
   // clean x
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
   // clean NT values

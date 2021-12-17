@@ -49,7 +49,7 @@ vector *vector_split(vector *v, int n)
   assert(v!=NULL);
   vector *w = (vector *) malloc(n*sizeof *w);
   if(w==NULL) die("Out of memory");
-  int maxblock = v->size/n;
+  int maxblock = (v->size+n-1)/n;
   assert(maxblock>=1);
   
   int remaining = v->size;
@@ -126,6 +126,7 @@ void vector_set_zero(vector *v, int dim)
   if(v->size != dim) {
     v->v = (matval *) realloc(v->v,dim*sizeof(matval));
     if(v->v==NULL) die("Realloc failed");
+    v->size = dim;
   }
   for(int i=0;i<v->size;i++) v->v[i]=0;  
 }
