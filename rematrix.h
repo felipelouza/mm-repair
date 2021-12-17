@@ -89,6 +89,7 @@ typedef struct {
 rematrix *remat_create(int r, int c, char *basename);
 void remat_destroy(rematrix *v);
 void remat_mult(rematrix *m, vector *x, vector *y);
+void remat_left_mult(vector *y, rematrix *m, vector *x);
 matval *read_vals(FILE *f, size_t* size);
 xmatval decode_mult_entry(int p, rematrix *m, vector *x);
 xmatval decode_entry(int p, rematrix *m, size_t *c);
@@ -173,12 +174,11 @@ rematrix *remat_create(int r, int c, char *basename)
 // right multiplication 
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
-  if(m->cols!=x->size) die("Dimension mismatch (mult)");   
+  if(m->NTrules==NULL) die("Rules array missing (remat_mult)");
+  if(m->cols!=x->size) die("Dimension mismatch (remat_mult)");   
+  if(m->rows!=y->size) die("Dimension mismatch (remat_mult)");   
   // compute NT values according to x
   fill_NTval(m,x,false);
-  // create y
-  y->size = m->rows;
-  y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
   // --- compute output 
   #ifdef USE_ANS
   // create and initialize decoder
@@ -220,17 +220,16 @@ void remat_mult(rematrix *m, vector *x, vector *y)
 void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure the rules are available and dimensions agree
-  if(m->NTrules==NULL) die("Rules array missing");
+  if(m->NTrules==NULL) die("Rules array missing (left-mult)");
   if(m->rows!=y->size) die("Dimension mismatch (left-mult)");   
+  if(m->cols!=x->size) die("Dimension mismatch (left-mult)");   
+  // clean x
+  for(size_t i=0;i<x->size;i++) x->v[i]=0;
   // clean NT values
   clear_NTval(m);
-  // create x and clean it 
-  x->size = m->cols;
-  x->v = (matval *) realloc(x->v,x->size*sizeof(matval));
-  for(size_t i=0;i<x->size;i++) x->v[i]=0;
-
 
   // propagate y-values down the tree  
+
   // variables used by decode_entry 
   #ifdef USE_ANS
   // create and initialize decoder

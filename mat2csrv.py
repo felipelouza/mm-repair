@@ -53,8 +53,8 @@ def main():
     r = 0   # number of read rows
     wr = 0  # number of written rows
     for bn in range(args.b):
-      outname = args.input + ".{tot}.{part}.vc".format(tot=args.b,part=bn)
-      outname_val = args.input + ".{tot}.{part}.val".format(tot=args.b,part=bn)  
+      outname = args.input + filext_multipart(args.b,bn)+".vc"
+      outname_val = args.input + filext_multipart(args.b,bn)+".val"
       with open(outname,"wb") as g:
         with open(outname_val,"wb") as g_val:
           nonz = 0
@@ -123,6 +123,14 @@ def main():
   print(len(values), "distinct nonzeros values",file=sys.stderr)
   print("Largest codeword:", maxcode, " bits:", math.ceil(math.log(1+maxcode,2)),file=sys.stderr)
   print("==== Done",file=sys.stderr)
+
+
+# return the extension for multipart file
+def filext_multipart(n,i):
+  assert i<n, "Illegal parameters"
+  if n==1:
+    return ""
+  return ".{tot}.{part}".format(tot=n,part=i)
 
 
 def show_command_line(f):

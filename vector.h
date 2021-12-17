@@ -10,6 +10,7 @@ typedef struct {
 
 
 vector *vector_create();
+void vector_set_zero(vector *v,int n);
 vector *vector_split(vector *v,int n);
 xmatval vector_normalize(vector *v);
 void vector_destroy(vector *v);
@@ -21,9 +22,20 @@ void vector_destroy(vector *v);
 vector *vector_create()
 {
   vector *w = (vector *) malloc(sizeof(vector));
-  if(w==NULL) die("Realloc failed");
+  if(w==NULL) die("malloc failed");
   w->v = NULL;
   w->size=0;
+  return w;
+}
+
+// return a pointer to a zero vector of a given size 
+vector *vector_create_zero(int n)
+{
+  vector *w = vector_create();
+  assert(w!=NULL);
+  w->size=n;
+  w->v = (matval *) malloc(n*sizeof(matval));
+  if(w->v==NULL) die("malloc failed");
   return w;
 }
 
@@ -111,9 +123,10 @@ xmatval vector_scalar_prod(vector *v, vector *w)
 // set an existing vector to 0
 void vector_set_zero(vector *v, int dim)
 {
-  v->size = dim;
-  v->v = (matval *) realloc(v->v,dim*sizeof(matval));
-  if(v->v==NULL) die("Realloc failed");
+  if(v->size != dim) {
+    v->v = (matval *) realloc(v->v,dim*sizeof(matval));
+    if(v->v==NULL) die("Realloc failed");
+  }
   for(int i=0;i<v->size;i++) v->v[i]=0;  
 }
 

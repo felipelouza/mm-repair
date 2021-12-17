@@ -30,6 +30,7 @@ typedef struct {
   rematrix *m;   // matrix block
   vector *rv;    // row vector    (same size as a matrix row)
   vector *cv;    // column vector (      "               column)
+  int op;        // operation to be performed
   sem_t *sem;    // semaphore shared with the main thread
 } tdata;
 
@@ -48,9 +49,9 @@ static void usage_and_exit(char *name)
 
 static rematrix **remat_create_multipart(int, int,const char *, int blocks);
 static void remat_destroy_multipart(rematrix **b,int n);
-void *block_mult(void *v) {
-  return NULL;
-}
+static void *block_main(void *v);
+static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n);
+static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
 
 
 int main (int argc, char **argv) { 
@@ -131,7 +132,9 @@ int main (int argc, char **argv) {
   
   // create auxiliary vectors 
   vector *y = vector_create();
+  vector_set_zero(y,rows);
   vector *z = vector_create();
+  vector_set_zero(z,cols);
 
   // data structures for multithread computation (nblocks>1)
   vector *yv = NULL;  // array of subvectors
@@ -139,23 +142,26 @@ int main (int argc, char **argv) {
   pthread_t t[nblocks];
   sem_t tsem[nblocks];
   
-  
+  // initialize thread data
   if(nblocks>1) {
     yv = vector_split(y,nblocks);
     for(int i=0;i<nblocks;i++) {
       td[i].m = rblocks[i];
-      td[i].rv = NULL;
-      td[i].cv = &yv[i];
       td[i].sem = &tsem[i];
       xsem_init(&tsem[i],0,0,__LINE__,__FILE__);
-      xpthread_create(&t[i],NULL,&block_mult,&td[i],__LINE__,__FILE__);
+      xpthread_create(&t[i],NULL,&block_main,&td[i],__LINE__,__FILE__);
     }
   }
     
-    
   // compute products  
-  remat_mult(m,x,y);    // y = Mx
-  remat_left_mult(y,m,z);   // z = y^t M
+  if(nblocks==1) {
+    remat_mult(m,x,y);    // y = Mx
+    remat_left_mult(y,m,z);   // z = y^t M
+  }
+  else {
+    remat_mult_mth(m,x,y,td,nblocks);    // y = Mx
+    remat_left_mult_mth(y,m,z,td,nblocks);   // z = y^t M
+  }
   #ifdef DETAILED_TIMING
   t3 = times(&ignored);
   #endif
@@ -212,6 +218,12 @@ int main (int argc, char **argv) {
   else {
     free(yv);
     remat_destroy_multipart(rblocks,nblocks);
+    for(int i=0;i<nblocks;i++) {
+      td[i].op = -1; // stop thread
+      xsem_post(td[i].sem,__LINE__,__FILE__);
+      pthread_join(t[i],NULL);
+      xsem_destroy(td[i].sem,__LINE__,__FILE__);
+    }
   }
   #ifdef MALLOC_COUNT
     fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
@@ -224,6 +236,41 @@ int main (int argc, char **argv) {
   printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }
+
+
+// function executed by each thread 
+// wait on a semaphore for a ner operation to execute
+// on its given matrix
+static void *block_main(void *v)
+{
+  tdata *td = (tdata *) v;
+  vector *auxrow = vector_create();
+  vector_set_zero(auxrow,td->m->cols);  
+  
+  while(true) {
+    // wait for input 
+    xsem_wait(td->sem,__LINE__,__FILE__);
+    if(td->op<0) break;
+    else if(td->op==0) { //left mult
+      assert(td->cv!=NULL); // the input is a column vector
+      if(td->rv==NULL) td->rv = auxrow;
+      remat_left_mult(td->cv,td->m,td->rv);
+    }
+    else if(td->op==1) { //right mult
+      assert(td->rv!=NULL); // the input is a row vector
+      assert(td->cv!=NULL); // output must be given here 
+      remat_mult(td->m,td->rv,td->cv);
+    }
+    else die("Unknown operation");
+    // output ready 
+    xsem_post(td->sem,__LINE__,__FILE__);
+  }
+  vector_destroy(auxrow);
+  return NULL;
+}
+
+
+
 
 // read matrix consisting of n blocks  
 static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n)
@@ -255,3 +302,38 @@ static void remat_destroy_multipart(rematrix **b,int n)
     remat_destroy(b[i]);
   free(b);
 }
+
+
+static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
+{
+  // start the block multiplications
+  for(int i=0;i<n;i++) {
+    td[i].rv = x;      // input  
+    td[i].cv = &yv[i]; // output here 
+    td[i].op = 1;      // right mult
+    xsem_post(td[i].sem, __LINE__,__FILE__);
+  }
+  // wait for all blocks
+  for(int i=0;i<n;i++)
+    xsem_wait(td[i].sem, __LINE__,__FILE__); 
+}
+
+static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n)
+{
+  // start the block multiplications
+  for(int i=0;i<n;i++) {
+    td[i].rv = NULL;     // output in the internal vector 
+    td[i].cv = &yv[i];   // input 
+    td[i].op = 0;        // left mult
+    xsem_post(td[i].sem, __LINE__,__FILE__);
+  }
+  // clean result vector
+  vector_set_zero(x,x->size);
+  // wait for all blocks and sum all the x vectors 
+  for(int i=0;i<n;i++) {
+    xsem_wait(td[i].sem, __LINE__,__FILE__);
+    for(int i=0;i<x->size;i++)
+      x->v[i] += (td[i].rv)->v[i];
+  } 
+}
+

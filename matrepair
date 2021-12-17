@@ -100,7 +100,7 @@ def main():
           
       # now we have args.b different blocks 
       for bn in range(args.b):  
-        basename = args.input + ".{tot}.{part}".format(tot=args.b,part=bn);
+        basename = args.input + filext_multipart(args.b,bn)
         # ---- apply irepair to the .vc file 
         if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
           print("---- Skipping irepair")
@@ -169,7 +169,7 @@ def main():
 def getsize_multipart(base,num,ext):
   tot = 0
   for i in range(num):
-    name = base + ".{num}.{part}".format(num=num,part=i)+ext
+    name = base + filext_multipart(num,i)+ext
     tot += os.path.getsize(name)
   return tot
 
@@ -268,11 +268,18 @@ def need_rebuild_multipart(source,num,*exts):
   assert os.path.exists(source), "Missing source: " + source
   for ext in exts:
     for i in range(num):
-      newext = ".{num}.{part}".format(num=num,part=i) + ext
+      newext = filext_multipart(num,i) + ext
       if need_rebuild(source,newext):
         return True
   # all dependencies exists and are more recent than the source 
   return False 
+
+# return the extension for multipart file
+def filext_multipart(n,i):
+  assert i<n, "Illegal parameters"
+  if n==1:
+    return ""
+  return ".{tot}.{part}".format(tot=n,part=i)
 
 
 if __name__ == '__main__':
