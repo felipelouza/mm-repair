@@ -4,14 +4,14 @@ CFLAGS=-O3 -Wall -std=c99 -g
 CC=gcc
 
 # comment out this definition to get rid of malloc_count 
-MALLOC_FLAGS=../mc/malloc_count.c -DMALLOC_COUNT -ldl
+MALLOC_FLAGS=../tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
 EXECS=remm recg csrmm csrcg ansremm decode
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
-MALLOC_FILES=../mc/malloc_count.c ../mc/malloc_count.h
+MALLOC_FILES=../tools/malloc_count.c ../tools/malloc_count.h
 endif
 
 

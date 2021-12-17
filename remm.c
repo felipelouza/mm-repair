@@ -15,22 +15,41 @@
 #include "rematrix.h"
 #endif
 #ifdef MALLOC_COUNT
-#include "mc/malloc_count.h"
+#include "tools/malloc_count.h"
 #endif
 #include <time.h>
 #ifdef DETAILED_TIMING
 #include <sys/times.h>
 #endif
+#include <pthread.h>
+#include <semaphore.h>
+#include "tools/xerrors.h"
+
+// input/output data for each thread 
+typedef struct {
+  rematrix *m;   // matrix block
+  vector *rv;    // row vector    (same size as a matrix row)
+  vector *cv;    // column vector (      "               column)
+  sem_t *sem;    // semaphore shared with the main thread
+} tdata;
+
 
 static void usage_and_exit(char *name)
 {
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols xvector\n",name);
     fprintf(stderr,"\t\t-v             verbose\n");
+    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
     fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n");
     fprintf(stderr,"\t\t-e einfile     store computed eigenvalue in this file\n");
     fprintf(stderr,"\t\t-y yvector     store y-vector in this file\n");
     fprintf(stderr,"\t\t-z zvector     store z-vector in this file\n\n");
     exit(1);
+}
+
+static rematrix **remat_create_multipart(int, int,const char *, int blocks);
+static void remat_destroy_multipart(rematrix **b,int n);
+void *block_mult(void *v) {
+  return NULL;
 }
 
 
@@ -39,7 +58,7 @@ int main (int argc, char **argv) {
   extern int optind, opterr, optopt;
   int verbose=0;
   FILE *f;
-  int rows,cols,c,iter=1;
+  int rows,cols,c,iter=1,nblocks=1;
   xmatval lambda;
   char *ein_filename= NULL;
   char *yvec=NULL, *zvec=NULL;
@@ -59,6 +78,8 @@ int main (int argc, char **argv) {
         verbose++; break;
       case 'n':
         iter=atoi(optarg); break;
+      case 'b':
+        nblocks=atoi(optarg); break;
       case 'e':
         ein_filename=optarg; break;
       case 'y':
@@ -77,8 +98,8 @@ int main (int argc, char **argv) {
     fputs("\n",stderr);  
   }
   // check command line
-  if(iter<1) {
-    fprintf(stderr,"Error! Option -n must be at least one\n");
+  if(iter<1 || nblocks < 1) {
+    fprintf(stderr,"Error! Options -b and -n must be at least one\n");
     usage_and_exit(argv[0]);
   }  
   // virtually get rid of options from the command line 
@@ -91,6 +112,15 @@ int main (int argc, char **argv) {
   if(rows<1) die("Invalid number of rows");
   cols  = atoi(argv[3]);
   if(cols<1) die("Invalid number of columns");
+  
+  // ------------ read matrix or row blocks
+  rematrix *m = NULL;
+  rematrix **rblocks = NULL; 
+  if(nblocks==1)
+    m = remat_create(rows,cols,argv[1]); 
+  else 
+    rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+    
   // ------------ read input vector
   f = fopen(argv[4],"rb");
   if(f==NULL) die("Cannot open input vector file");
@@ -98,12 +128,32 @@ int main (int argc, char **argv) {
   x->v = read_vals(f,&x->size);
   if(x->size!=cols) die("Input vector size should be equal to # of columns");
   fclose(f);
-  // ------------ read matrix
-  rematrix *m = remat_create(rows,cols,argv[1]); 
   
-  // compute products
+  // create auxiliary vectors 
   vector *y = vector_create();
   vector *z = vector_create();
+
+  // data structures for multithread computation (nblocks>1)
+  vector *yv = NULL;  // array of subvectors
+  tdata td[nblocks];
+  pthread_t t[nblocks];
+  sem_t tsem[nblocks];
+  
+  
+  if(nblocks>1) {
+    yv = vector_split(y,nblocks);
+    for(int i=0;i<nblocks;i++) {
+      td[i].m = rblocks[i];
+      td[i].rv = NULL;
+      td[i].cv = &yv[i];
+      td[i].sem = &tsem[i];
+      xsem_init(&tsem[i],0,0,__LINE__,__FILE__);
+      xpthread_create(&t[i],NULL,&block_mult,&td[i],__LINE__,__FILE__);
+    }
+  }
+    
+    
+  // compute products  
   remat_mult(m,x,y);    // y = Mx
   remat_left_mult(y,m,z);   // z = y^t M
   #ifdef DETAILED_TIMING
@@ -157,7 +207,12 @@ int main (int argc, char **argv) {
   vector_destroy(z);
   vector_destroy(y);
   vector_destroy(x);
-  remat_destroy(m);
+  if(nblocks==1) 
+    remat_destroy(m);
+  else {
+    free(yv);
+    remat_destroy_multipart(rblocks,nblocks);
+  }
   #ifdef MALLOC_COUNT
     fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
            malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
@@ -170,3 +225,33 @@ int main (int argc, char **argv) {
   return 0;
 }
 
+// read matrix consisting of n blocks  
+static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n)
+{
+  assert(n>1); // there must be at least 2 blocks 
+  
+  rematrix **b = (rematrix **) malloc(n*sizeof *b);
+  if(b==NULL) die("Not enough memory");
+  int maxblock = rows/n;
+  assert(maxblock>=1);
+  
+  char fname[PATH_MAX];
+  int remaining = rows;
+  for(int i=0;i<n;i++) {
+    assert(remaining>0);
+    snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
+    int r = (remaining>maxblock? maxblock : remaining);
+    assert(r>0);
+    b[i] = remat_create(r,cols,fname);
+    remaining -= r;
+  }
+  assert(remaining==0);
+  return b;
+}
+
+static void remat_destroy_multipart(rematrix **b,int n)
+{
+  for(int i=0;i<n;i++)
+    remat_destroy(b[i]);
+  free(b);
+}

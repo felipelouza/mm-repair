@@ -1,6 +1,7 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  * Basic definitions for 1-dimensional dense vectors
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+
 // one dimensional dense uncompressed vector 
 typedef struct {
   matval *v;
@@ -9,6 +10,7 @@ typedef struct {
 
 
 vector *vector_create();
+vector *vector_split(vector *v,int n);
 xmatval vector_normalize(vector *v);
 void vector_destroy(vector *v);
 
@@ -24,6 +26,34 @@ vector *vector_create()
   w->size=0;
   return w;
 }
+
+// split a vector into and array of n subvectors
+// since these subvectors share the same storage
+// and do not have independent life, they are not  
+// vector pointers, but just elements of an array 
+vector *vector_split(vector *v, int n)
+{
+  assert(n>1);
+  assert(v!=NULL);
+  vector *w = (vector *) malloc(n*sizeof *w);
+  if(w==NULL) die("Out of memory");
+  int maxblock = v->size/n;
+  assert(maxblock>=1);
+  
+  int remaining = v->size;
+  for(int i=0;i<n;i++) {
+    assert(remaining>0);
+    int r = (remaining>maxblock? maxblock : remaining);
+    assert(r>0);
+    // init subvector
+    w[i].v = v->v + (v->size-remaining);
+    w[i].size = r;
+    remaining -= r;
+  }
+  assert(remaining==0);
+  return w;
+}
+
 
 
 // infinity norm normalization, return the norm before normalization

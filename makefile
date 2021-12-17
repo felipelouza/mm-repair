@@ -10,14 +10,14 @@ CXX_FLAGS=-std=c++17 -DNDEBUG -O3 -msse4.2
 
 
 # comment out this definition to get rid of malloc_count 
-MALLOC_FLAGS=mc/malloc_count.c -DMALLOC_COUNT -ldl
+MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
 EXECS=re32mm csrvmm reansmm reivmm reans32mm vc_reorder.x
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
-MALLOC_FILES=mc/malloc_count.c mc/malloc_count.h
+MALLOC_FILES=tools/malloc_count.c tools/malloc_count.h
 endif
 
 # targets not producing a file declared phony
@@ -33,20 +33,20 @@ all: $(EXECS) brepair ansf sdsl
 
 # left and right matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
-re32mm: remm.c rematrix.h vector.h $(MALLOC_FILES)
-	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS)
+re32mm: remm.c rematrix.h vector.h tools/xerrors.h $(MALLOC_FILES)
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -pthread
 
 csrvmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
-	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX -pthread
 
 reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS -pthread
 
 reivmm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_INTVEC
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread  -DUSE_INTVEC
 
 reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -DUSE_ANSIV 
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
 vc_reorder.x: vc_reorder.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $<
@@ -60,14 +60,6 @@ csrcg: recg.c csrmatrix.h vector.h $(MALLOC_FILES)
 	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
 
 
-
-
-# remult was a first, unstructured, prototype using float entries that 
-# can be created by the general rule above with target remult 
-# the following rule creates the version using integers instead of floats
-# if necessary the flag INT_VALS can be used also for the other tools 
-iremult: remult.c
-	$(CC) $(CFLAGS) -o $@ $< -DINT_VALS
 
 # directory containing the (balanced) irepar/idespair tools 
 brepair:
