@@ -13,6 +13,7 @@ Currently supported tests:
 Files = ['covtype']
 Files_prefix = './'
 Logfile_name = "errors.log"
+Time_exe = "/usr/bin/time"
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
@@ -102,15 +103,15 @@ def test_zip(logfile):
 
 
 # compress with matrepair obtaining CSRV and grammar representation
-def test_compress(logfile):
-  table = ["### csrv and repair size vs dense uncompressed size (precentage)\n", 
+def test_compress(args, logfile):
+  table = ["### csrv and repair size vs dense uncompressed size (percentage)\n", 
            " file     & rows &  crsv &  re32 &  reiv & reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = Files_prefix + f
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "./{exe} -r -y {name} {r} {c}".format(
-                exe = "matrepair", name=name, r=rows, c=cols)
+    command = "./{exe} -r -y -b {blocks} {name} {r} {c}".format(
+                exe = "matrepair", blocks = args.b, name=name, r=rows, c=cols)
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -128,13 +129,13 @@ def test_compress(logfile):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    v = os.path.getsize(name+".val")
-    vcsize = os.path.getsize(name+".vc") 
-    csize = os.path.getsize(name+".vc.C") 
-    rsize = os.path.getsize(name+".vc.R") 
-    csizeiv = os.path.getsize(name+".vc.C.iv") 
-    rsizeiv = os.path.getsize(name+".vc.R.iv") 
-    ans_csize = os.path.getsize(name+".vc.C.ansf.1")
+    v = getsize_multipart(name,args.b,".val")
+    vcsize = getsize_multipart(name,args.b,".vc") 
+    csize = getsize_multipart(name,args.b,".vc.C") 
+    rsize = getsize_multipart(name,args.b,".vc.R") 
+    csizeiv = getsize_multipart(name,args.b,".vc.C.iv") 
+    rsizeiv = getsize_multipart(name,args.b,".vc.R.iv") 
+    ans_csize = getsize_multipart(name,args.b,".vc.C.ansf.1")
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv))
     # tests for current file completed
@@ -142,13 +143,26 @@ def test_compress(logfile):
   # all files processed
   return table
 
+# return the extension for multipart file
+def filext_multipart(n,i):
+  assert i<n, "Illegal parameters"
+  if n==1:
+    return ""
+  return ".{tot}.{part}".format(tot=n,part=i)
+
+def getsize_multipart(base,num,ext):
+  tot = 0
+  for i in range(num):
+    name = base + filext_multipart(num,i)+ext
+    tot += os.path.getsize(name)
+  return tot
 
 
 
 # test running times and space for matrix multiplication 
-def test_time(n,logfile):
+def test_time(args,logfile):
   # build latex table containing the reuslts  
-  table = ["### time x iteration and peak memory usage for matrix multiplication\n", 
+  table = ["### time x iteration and peak memory usage in kb for matrix multiplication\n", 
            " file     & rows "]
   for a in Algos:
     table[1] += "& {name:12.9}&".format(name=a)         
@@ -160,11 +174,12 @@ def test_time(n,logfile):
     tablerow = []  # row of the results table
     for a in Algos:
       # only save the eigenvalue
-      command = "./{exe} -n {num} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
-                exe = a, num=n, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
+      command = "./{exe} -n {num} -b {blocks} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
+                exe = a, num=args.n, blocks=args.b, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
+      command = Time_exe + ' -f%e:%M ' + command          
       try:
-        ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+        ris = subprocess.run(command.split(),timeout=Timelimit,check=True,
+              stdout=subprocess.PIPE,stderr=subprocess.PIPE)
       except subprocess.TimeoutExpired:
         # caso time out
         print(" Test failed: no result after %d seconds" % Timelimit)
@@ -179,12 +194,14 @@ def test_time(n,logfile):
       except Exception as ex:
         print(" Test failed:", str(ex))
         sys.exit(2)
-      elapsed = int(ris.stdout.split()[-2])
-      peakmem = int(ris.stderr.split()[3])
+      # convert /bin/time output to elapsed, peak memory   
+      timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+      elapsed = float(str(timespace[0]))
+      peakmem = int(str(timespace[1]))
       with open(Evname,"rb") as evf:
         e = struct.unpack("d",evf.read(8))[0]
       # a = algo, elapsed e=eigenvalue
-      tablerow.append((a, elapsed/n,peakmem, e))
+      tablerow.append((a, elapsed/args.n,peakmem, e))
     # tests for current file completed
     table.append(makerow_mm(f, tablerow))
   # all files processed
@@ -196,7 +213,7 @@ def makerow_mm(f, a):
     # no eigenvalue
     # s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
     # with eigenvalue
-    s += "&{:6.2f} &{:4.0f}&{:.3g}  ".format(p[1],p[2]/1000000,p[3])
+    s += "&{:6.2f} &{:4.0f}:{:.5g} ".format(p[1],p[2],p[3])
   s += "\\\\\n"
   return s
 
@@ -231,6 +248,7 @@ def main():
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('op', help='operation to test: mm|mc|mz', type=str)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
+  parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)  
   args = parser.parse_args()
      
   # run the task   
@@ -238,11 +256,11 @@ def main():
   with open(Logfile_name,"a") as logfile:
     if args.op=='mm':    # matrix multiplication 
       check_testfiles([".vc",".val",".vc.R",".vc.C"])
-      table = test_time(args.n,logfile)
+      table = test_time(args, logfile)
     elif args.op=='mc':   # matrix conversion
       table = test_zip(logfile)
     elif args.op=='mz':   # matrix compression
-      table = test_compress(logfile)
+      table = test_compress(args,logfile)
     else: 
       print("Unknown operation! Must be mc, mm, or mz",file=sys.stderr)
       exit(1)

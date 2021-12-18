@@ -221,9 +221,9 @@ void remat_mult(rematrix *m, vector *x, vector *y)
 void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure the rules are available and dimensions agree
-  if(m->NTrules==NULL) die("Rules array missing (left-mult)");
-  if(m->rows!=y->size) die("Dimension mismatch (left-mult y)");   
-  if(m->cols!=x->size) die("Dimension mismatch (left-mult x)");   
+  if(m->NTrules==NULL) die("Rules array missing (remat_left_mult)");
+  if(m->rows!=y->size) die("Dimension mismatch (remat_left_mult y)");   
+  if(m->cols!=x->size) die("Dimension mismatch (remat_left_mult x)");   
   // clean x
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
   // clean NT values

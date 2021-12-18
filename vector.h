@@ -10,6 +10,7 @@ typedef struct {
 
 
 vector *vector_create();
+vector *vector_create_zero(int n);
 void vector_set_zero(vector *v,int n);
 vector *vector_split(vector *v,int n);
 xmatval vector_normalize(vector *v);

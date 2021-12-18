@@ -97,10 +97,9 @@ rematrix *remat_create(int r, int c, char *basename)
 // right multiplication 
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
-  if(m->cols!=x->size) die("Dimension mismatch (mult)");   
-  // create y
-  y->size = m->rows;
-  y->v = (matval *) realloc(y->v,y->size*sizeof(matval));
+  if(m->cols!=x->size) die("Dimension mismatch (remat_mult x)");   
+  if(m->rows!=y->size) die("Dimension mismatch (remat_mult y)");   
+
   // --- compute output 
   int ycur = 0;
   xmatval sum=0;
@@ -125,10 +124,9 @@ void remat_mult(rematrix *m, vector *x, vector *y)
 void remat_left_mult(vector *y, rematrix *m, vector *x)
 {
   // make sure dimensions agree
-  if(m->rows!=y->size) die("Dimension mismatch (left-mult)");   
-  // create x and clean it 
-  x->size = m->cols;
-  x->v = (matval *) realloc(x->v,x->size*sizeof(matval));
+  if(m->rows!=y->size) die("Dimension mismatch (remat_left_mult y)");   
+  if(m->cols!=x->size) die("Dimension mismatch (remat_left_mult x)");   
+  // clean x
   for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
   // variables used by decode_entry 
