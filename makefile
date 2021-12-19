@@ -1,13 +1,12 @@
-# if present read helper from sdsl directory
-Helper=sdsl/Make.helper
-ifneq ($(wildcard $(Helper)),)
-include $(Helper)
-endif
-# compilation flags
+# Add here the position of the lib and include files for 
+# the SDSL-lite library if they are in a non-standard location
+# LIB_DIR = /home/user/c/lib
+# INC_DIR = /home/user/c/include
+
+# Compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
 CXX_FLAGS=-std=c++17 -DNDEBUG -O3 -msse4.2
-
 
 # comment out this definition to get rid of malloc_count 
 MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl

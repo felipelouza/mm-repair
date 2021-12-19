@@ -18,7 +18,7 @@
 #include <iostream>
 #include <vector>
 #ifdef MALLOC_COUNT
-#include "../mc/malloc_count.h"
+#include "../tools/malloc_count.h"
 #endif
 
 #include "util.hpp"

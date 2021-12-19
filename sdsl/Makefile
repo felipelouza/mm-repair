@@ -1,13 +1,14 @@
-# if present read helper from sdsl directory
-Helper=Make.helper
-ifneq ($(wildcard $(Helper)),)
-include $(Helper)
-endif
-# flags and targets
+# Add here the position of the lib and include files for 
+# the SDSL-lite library if they are in a non-standard location
+# LIB_DIR = /home/user/c/lib
+# INC_DIR = /home/user/c/include
+
+# Compilation flags and targets
 CXX_FLAGS=-std=c++11 -O3 -Wall -I$(INC_DIR) -L$(LIB_DIR)
 CCLIB=-lsdsl
 SOURCES=$(wildcard *.cpp)
 EXECS=$(SOURCES:.cpp=.x)
+
 
 all: $(EXECS)
 	        

@@ -9,9 +9,9 @@ Currently supported tests:
    mz: conversion to CSRV format followed by grammar compression
    mm: test matrix-vector multiplication algorithms"""
 
-#Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files = ['covtype']
-Files_prefix = './'
+Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+# Files = ['covtype','census']
+Files_prefix = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
 
