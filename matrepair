@@ -241,7 +241,7 @@ def execute_command(command,logfile,outfile=None):
     return False
   return True
 
-# number of bits to represent integers fro 0 up to n-1
+# number of bits to represent integers from 0 up to n-1
 def bits(n):
   assert n>0
   b = maxv = 1

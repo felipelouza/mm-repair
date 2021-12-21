@@ -10,8 +10,8 @@ Currently supported tests:
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-# Files = ['covtype','census']
-Files_prefix = 'data/'
+Files = ['covtype']
+Data_dir = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
 
@@ -40,12 +40,12 @@ def check_testfiles(sufxs):
       print("  Size for test file", f, "missing",file=sys.stderr)
       ok = False
     for sx in sufxs:
-      path = Files_prefix + f + sx
+      path = os.path.join(args.d,f + sx)
       if not os.path.exists(path):
         print("  Test file", path, "missing",file=sys.stderr)
         ok = False
   if not ok:
-    print("Check variables: Files, Files_prefix, Sizes",file=sys.stderr)
+    print("Check -d option and constants Files and Sizes",file=sys.stderr)
     sys.exit(1)
 
 
@@ -61,7 +61,7 @@ def test_zip(logfile):
   table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
            " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
-    name  = Files_prefix + f
+    name= os.path.join(args.d,f)
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
     command = "./{exe} {name} -o {temp} {r} {c}".format(
@@ -107,7 +107,7 @@ def test_compress(args, logfile):
   table = ["### csrv and repair size vs dense uncompressed size (percentage)\n", 
            " file     & rows &  crsv &  re32 &  reiv & reans \\\\\n"]   # latex table containing the results 
   for f in Files:
-    name  = Files_prefix + f
+    name  = os.path.join(args.d,f)
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
     command = "./{exe} -r -y -b {blocks} {name} {r} {c}".format(
@@ -168,7 +168,7 @@ def test_time(args,logfile):
     table[1] += "& {name:12.9}&".format(name=a)         
   table[1] += "\\\\\n" 
   for f in Files:
-    name  = Files_prefix + f
+    name  = os.path.join(args.d, f)
     rows,cols = Sizes[f]
     createx(cols)  # create file containing x vector
     tablerow = []  # row of the results table
@@ -247,9 +247,14 @@ def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('op', help='operation to test: mm|mc|mz', type=str)
+  parser.add_argument('-d', help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
-  parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)  
+  parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
   args = parser.parse_args()
+     
+  if not  os.path.isdir(args.d):
+    print("Invalid data directory: "+ args.d,file=sys.stderr) 
+    exit(1) 
      
   # run the task   
   s1 = time.time()
