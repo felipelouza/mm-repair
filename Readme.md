@@ -3,16 +3,15 @@
 
 ## Prerequisites 
 
-* [sdsl-lite](https://github.com/simongog/sdsl-lite) Installation instruction: `git clone https://github.com/simongog/sdsl-lite.git` + 
-`cd sdsl-lite` + `./install.sh`
+* [sdsl-lite](https://github.com/simongog/sdsl-lite) (`git clone https://github.com/simongog/sdsl-lite.git` + 
+`cd sdsl-lite` + `./install.sh`)
 
-* [psutil](https://pypi.org/project/psutil/) Installation: `pip install psutil`
+* [psutil](https://pypi.org/project/psutil/) (`pip install psutil`)
 
 
 ## Installation 
 
 Clone/download then `make`
-
 
 
 ## Sample computation
@@ -107,29 +106,27 @@ Analogous to *re32mm* except that the input matrix is expected to be in the form
 
 ## Bulk testing 
 
-The tool *mmtest.py* can be used to test compression and matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files_prefix`, `Files`, `Sizes`. The first two variables are self-describing, while the third one is a dictionary providing the number of rows and columns for each file (extra files in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
+The tool *mmtest.py* can be used to test compression and matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files`, `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra emtries in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
 
 The command
 ```bash 
-mmtest.py mc
+mmtest.py -d /data mc
 ```
-converts the input matrices from the *csv* format to the dense double format and apply to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
-
-
-The command
-```bash 
-mmtest.py mz
-```
-computes the CSRV and grammar representations of the input matrices and show their size as percentage of the dense uncompressed matrices.
-Used for generating Table 1 in the paper.
+converts the input matrices from the `\data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
 
 
 The command
 ```bash 
-mmtest.py mm  -n Num
+mmtest.py -d data mz
 ```
-executes *Num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. Used for generating Table 2 in the paper.
+computes the CSRV and grammar representations of the input matrices from the `\data` directory and show their size as percentage of the dense uncompressed matrices. Used for generating Table 1 in the paper.
 
+
+The command
+```bash 
+mmtest.py -d data -n num mm
+```
+executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. Used for generating Table 2 in the paper.
 
 
 ---
