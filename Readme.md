@@ -16,14 +16,14 @@ Clone/download then `make`
 
 ## Sample computation
 
-Given the `covtype` matrix in csv format (581012 rows, 54 columns) we compress it with the command:
+Given the [covtype](https://www.kaggle.com/giovannimanzini/some-machine-learning-matrices?select=covtype) matrix in csv format (581012 rows, 54 columns) we compress it with the command:
 ```bash
 matrepair covtype 581012 54
 ```
 that creates the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see [Available Matrix Compression Formats](Available-Matrix-Compression-Formats)). 
 
 
-Next, we create a vector containig 54 entries equal to 1.0 and store it to the file `x54.dbl`:
+Next, we create a vector containing 54 entries equal to 1.0 and store it to the file `x54.dbl`:
 ```bash
 makevec.py x54.dbl 54 1
 ```

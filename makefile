@@ -1,5 +1,5 @@
 # Default position of the lib and include files for the SDSL-lite library; 
-# change this definition if they are in a non-standard location
+# change this definition if they are somewhere else
 LIB_DIR = ${HOME}/lib
 INC_DIR = ${HOME}/include
 

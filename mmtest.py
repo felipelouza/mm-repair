@@ -213,7 +213,7 @@ def makerow_mm(f, a):
     # no eigenvalue
     # s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
     # with eigenvalue
-    s += "&{:6.2f} &{:4.0f}:{:.5g} ".format(p[1],p[2],p[3])
+    s += "&{:6.2f} &{:4.0f}&{:.5g} ".format(p[1],p[2],p[3])
   s += "\\\\\n"
   return s
 
