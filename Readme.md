@@ -1,8 +1,18 @@
 # Matrix multiplication on RePair compressed matrices
 
+
+## Prerequisites 
+
+* [sdsl-lite](https://github.com/simongog/sdsl-lite) Installation instruction: `git clone https://github.com/simongog/sdsl-lite.git` + 
+`cd sdsl-lite` + `./install.sh`
+
+* [psutil](https://pypi.org/project/psutil/) Installation: `pip install psutil`
+
+
 ## Installation 
 
-Clone/download then `make`. There are no external dependencies.
+Clone/download then `make`
+
 
 
 ## Sample computation
