@@ -33,7 +33,7 @@ TmpFilename = "tmp_mmtest"
 
 
 # check that the test files exist and sizes are defined
-def check_testfiles(sufxs):
+def check_testfiles(args,sufxs):
   ok = True
   for f in Files:
     if f not in Sizes:
@@ -260,7 +260,7 @@ def main():
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:
     if args.op=='mm':    # matrix multiplication 
-      check_testfiles([".vc",".val",".vc.R",".vc.C"])
+      check_testfiles(args,[".vc",".val",".vc.R",".vc.C"])
       table = test_time(args, logfile)
     elif args.op=='mc':   # matrix conversion
       table = test_zip(logfile)
