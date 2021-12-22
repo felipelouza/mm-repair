@@ -40,6 +40,7 @@
 
 #define BUF_MASK ((1<<BUF_LOG2)-1)     // mask to recognize beginning of buffer
 
+#define VFILE_EXT ".val"
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
@@ -91,8 +92,8 @@ typedef struct {
 
 
 // main prototypes
-rematrix *remat_create(int r, int c, char *basename);
-void remat_destroy(rematrix *v);
+rematrix *remat_create(int r, int c, char *basename, bool read_values);
+void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 void remat_left_mult(vector *y, rematrix *m, vector *x);
 matval *read_vals(FILE *f, size_t* size);
@@ -105,7 +106,7 @@ static void clear_NTval(rematrix *m);
 static void propagate_NTval(rematrix *m, vector *x);
 
 // load compressed matrix information from files
-rematrix *remat_create(int r, int c, char *basename)
+rematrix *remat_create(int r, int c, char *basename, bool read_values)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
@@ -136,6 +137,8 @@ rematrix *remat_create(int r, int c, char *basename)
   m->Ccseq = new uint8_t[m->Cclen];
   if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,f)!=m->Cclen)
    die("Cannot read " CFILE_EXT " file");    
+  if(fclose(f)) 
+    die("Error closing C (" CFILE_EXT ") file");
   // extract decompressed length and remove it from compressed data 
   m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
   m->Ccseq += sizeof(size_t);
@@ -150,12 +153,17 @@ rematrix *remat_create(int r, int c, char *basename)
   if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
 
   // ------------ read matrix values 
-  strcpy(fname,basename);
-  strcat(fname,".val");
-  f = fopen(fname,"rb");
-  if(f==NULL) die("Cannot open matrix values (.val) file");
-  m->Mval = read_vals(f,&m->Mnum);
-  if(fclose(f)!=0) die("Error closing values (.val) file");
+  if(read_values) {
+    strcpy(fname,basename);
+    strcat(fname,VFILE_EXT);
+    f = fopen(fname,"rb");
+    if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
+    m->Mval = read_vals(f,&m->Mnum);
+    if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  }
+  else {
+    m->Mval=NULL; m->Mnum=0;
+  }
 
   return m;
 }
@@ -262,9 +270,9 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 }
 
 
-void remat_destroy(rematrix *m)
+void remat_destroy(rematrix *m, bool free_vals)
 {  
-  free(m->Mval);
+  if(free_vals) free(m->Mval);
   if(m->NTval)   {free(m->NTval); m->NTval=NULL;}
   sdsl::util::clear(m->NTrules);
 #ifdef USE_ANSIV

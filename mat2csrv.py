@@ -52,14 +52,14 @@ def main():
   with open(args.input,read_mode) as f:
     r = 0   # number of read rows
     wr = 0  # number of written rows
-    for bn in range(args.b):
-      outname = args.input + filext_multipart(args.b,bn)+".vc"
-      outname_val = args.input + filext_multipart(args.b,bn)+".val"
-      with open(outname,"wb") as g:
-        with open(outname_val,"wb") as g_val:
-          nonz = 0
-          values  = {}
-          maxcode = 0
+    nonz = 0        # total number of nonzeros  
+    maxcode = 0     # largest code in a .vc file
+    values  = {}    # dictionary of distinct nonzero 
+    outname_val = args.input +".val"
+    with open(outname_val,"wb") as g_val:
+      for bn in range(args.b):
+        outname = args.input + filext_multipart(args.b,bn)+".vc"
+        with open(outname,"wb") as g:
           # read one line at a time from f
           while True:
             # read a text or binary matrix row 

@@ -39,13 +39,14 @@ def check_testfiles(args,sufxs):
     if f not in Sizes:
       print("  Size for test file", f, "missing",file=sys.stderr)
       ok = False
+    
     for sx in sufxs:
       path = os.path.join(args.d,f + sx)
       if not os.path.exists(path):
         print("  Test file", path, "missing",file=sys.stderr)
         ok = False
   if not ok:
-    print("Check -d option and constants Files and Sizes",file=sys.stderr)
+    print("Check -d option and the constants Files and Sizes",file=sys.stderr)
     sys.exit(1)
 
 
@@ -129,7 +130,7 @@ def test_compress(args, logfile):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    v = getsize_multipart(name,args.b,".val")
+    v = os.path.getsize(name+".val")
     vcsize = getsize_multipart(name,args.b,".vc") 
     csize = getsize_multipart(name,args.b,".vc.C") 
     rsize = getsize_multipart(name,args.b,".vc.R") 
@@ -260,7 +261,7 @@ def main():
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:
     if args.op=='mm':    # matrix multiplication 
-      check_testfiles(args,[".vc",".val",".vc.R",".vc.C"])
+      check_testfiles(args,[".val"])
       table = test_time(args, logfile)
     elif args.op=='mc':   # matrix conversion
       table = test_zip(logfile)

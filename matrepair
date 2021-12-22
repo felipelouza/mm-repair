@@ -50,7 +50,7 @@ def main():
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
-    args.m = max(4000,int(0.90*mem/2**20))//args.b # assume at least 4GB in case virtual_memory() misbehaves
+    args.m = max(4000,int(0.90*mem/2**20)) # assume at least 4GB in case virtual_memory() misbehaves
   # init time counters 
   vc_time = repair_time = iv_time = ansf_time = 0
 
@@ -83,7 +83,8 @@ def main():
                   
     else:       # mat2csrv + irepair
       # ----------conversion to the CSRV format 
-      if args.noconv or (args.y and not need_rebuild_multipart(args.input, args.b, ".vc", ".val")):
+      files_changed = need_rebuild_multipart(args.input, args.b, ".vc") or need_rebuild(args.input,".val")
+      if args.noconv or (args.y and not files_changed):
         print("---- Skipping conversion dbl/csv->csrv")
       else:
         command = "{exe} {opts} {mfile} {rows} {cols}".format(
@@ -185,7 +186,7 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> matrix dense size:",isize, "bytes")
   #psize = os.path.getsize(args.input)
   #print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
-  valsize = getsize_multipart(args.input,args.b,".val")
+  valsize = os.path.getsize(args.input + ".val")
   vcsize = getsize_multipart(args.input,args.b,".vc") 
   nonzero = vcsize//4 - args.rows
   print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
@@ -251,7 +252,7 @@ def bits(n):
   return b
 
 
-# check if the files source.ext... has to be computed 
+# check if the files source.ext0 source.ext1 have to be generated 
 def need_rebuild(source,*exts):
   assert os.path.exists(source), "Missing source: " + source
   for ext in exts:

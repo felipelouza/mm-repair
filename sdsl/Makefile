@@ -1,7 +1,7 @@
 # Default position of the lib and include files for the SDSL-lite library; 
 # change this definition if they are somewhere else
-LIB_DIR = ${HOME}/lib
-INC_DIR = ${HOME}/include
+#LIB_DIR = ${HOME}/lib
+#INC_DIR = ${HOME}/include
 
 # Compilation flags and targets
 CXX_FLAGS=-std=c++11 -O3 -Wall -I$(INC_DIR) -L$(LIB_DIR)

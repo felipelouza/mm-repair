@@ -34,6 +34,7 @@
   #define CFILE_EXT ".vc.C"
 #endif
 #define RFILE_EXT ".vc.R"
+#define VFILE_EXT ".val"
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
@@ -86,8 +87,8 @@ typedef struct {
 
 
 // main prototypes
-rematrix *remat_create(int r, int c, char *basename);
-void remat_destroy(rematrix *v);
+rematrix *remat_create(int r, int c, char *basename, bool read_vals);
+void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 void remat_left_mult(vector *y, rematrix *m, vector *x);
 matval *read_vals(FILE *f, size_t* size);
@@ -100,7 +101,9 @@ static void clear_NTval(rematrix *m);
 static void propagate_NTval(rematrix *m, vector *x);
 
 // load compressed matrix information from files
-rematrix *remat_create(int r, int c, char *basename)
+// if read_vals==false then the actual matrix entries are not 
+// read from the .val file and Mval and Mnum are not initialized
+rematrix *remat_create(int r, int c, char *basename, bool read_values)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
@@ -156,20 +159,28 @@ rematrix *remat_create(int r, int c, char *basename)
    die("Cannot read " CFILE_EXT " file");   
   #endif 
   // close the file
-  if(fclose(m->Cf)!=0) die("Error closing values " CFILE_EXT " file"); 
+  if(fclose(m->Cf)!=0) die("Error closing " CFILE_EXT " file"); 
   m->Cf = NULL;
   
   
   // ------------ read matrix values 
-  strcpy(fname,basename);
-  strcat(fname,".val");
-  f = fopen(fname,"rb");
-  if(f==NULL) die("Cannot open matrix values (.val) file");
-  m->Mval = read_vals(f,&m->Mnum);
-  if(fclose(f)!=0) die("Error closing values (.val) file");
+  if(read_values) {
+    strcpy(fname,basename);
+    strcat(fname,VFILE_EXT);
+    f = fopen(fname,"rb");
+    if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
+    m->Mval = read_vals(f,&m->Mnum);
+    if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  }
+  else {
+    m->Mval=NULL; m->Mnum=0;
+  }
 
   return m;
 }
+
+
+
 
 // right multiplication 
 void remat_mult(rematrix *m, vector *x, vector *y)
@@ -271,9 +282,10 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 }
 
 
-void remat_destroy(rematrix *m)
+void remat_destroy(rematrix *m, bool free_vals)
 {  
-  free(m->Mval);
+  
+  if(free_vals) free(m->Mval);
   // these are usually accessed sequentially, so one could keep them on file
   // this feature is curenntly not used!
   if(m->NTrules) {free(m->NTrules); m->NTrules=NULL;}

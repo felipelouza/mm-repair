@@ -6,10 +6,10 @@ INC_DIR = ${HOME}/include
 # Compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
-CXX_FLAGS=-std=c++17 -DNDEBUG -O3 -msse4.2
+CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 
 # comment out this definition to get rid of malloc_count 
-MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
+# MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
 EXECS=re32mm csrvmm reansmm reivmm reans32mm vc_reorder.x

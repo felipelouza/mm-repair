@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <limits.h>
 
+#define VFILE_EXT ".val"
+
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
 
@@ -54,20 +56,20 @@ typedef struct {
 
 
 // main prototypes
-rematrix *remat_create(int r, int c, char *basename);
-void remat_destroy(rematrix *v);
+rematrix *remat_create(int r, int c, char *basename, bool read_vals);
+void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
 xmatval decode_mult_entry(int p, rematrix *m, vector *x);
 xmatval decode_entry(int p, rematrix *m, size_t *c);
 
 
-rematrix *remat_create(int r, int c, char *basename)
+rematrix *remat_create(int r, int c, char *basename,bool read_values)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
   rematrix *m=malloc(sizeof(rematrix));
-  if(m==NULL) die("Cannot alloc matrix");
+  if(m==NULL) die("Cannot allocate matrix");
   
   m->rows=r; m->cols=c;
 
@@ -84,12 +86,18 @@ rematrix *remat_create(int r, int c, char *basename)
    die("Cannot read .vc file");
   
   // ------------ read matrix values 
-  strcpy(fname,basename);
-  strcat(fname,".val");
-  f = fopen(fname,"rb");
-  if(f==NULL) die("Cannot open matrix values (.val) file");
-  m->Mval = read_vals(f,&m->Mnum);
-  if(fclose(f)!=0) die("Error closing values (.val) file");
+  if(read_values) {
+    strcpy(fname,basename);
+    strcat(fname,".val");
+    f = fopen(fname,"rb");
+    if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
+    m->Mval = read_vals(f,&m->Mnum);
+    if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  }
+  else {
+    m->Mval=NULL; m->Mnum=0;
+  }
+
 
   return m;
 }
@@ -148,9 +156,9 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
 }
 
 
-void remat_destroy(rematrix *m)
+void remat_destroy(rematrix *m, bool free_vals)
 {  
-  free(m->Mval);
+  if(free_vals) free(m->Mval);
   // these are usually accessed sequentially, so one could keep them on file
   if(m->CSRseq)    {free(m->CSRseq); m->CSRseq=NULL;}
 

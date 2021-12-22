@@ -119,7 +119,7 @@ int main (int argc, char **argv) {
   rematrix *m = NULL;
   rematrix **rblocks = NULL; 
   if(nblocks==1)
-    m = remat_create(rows,cols,argv[1]); 
+    m = remat_create(rows,cols,argv[1],true); 
   else 
     rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
     
@@ -221,7 +221,7 @@ int main (int argc, char **argv) {
   vector_destroy(y);
   vector_destroy(x);
   if(nblocks==1) 
-    remat_destroy(m);
+    remat_destroy(m,true);
   else {
     free(yv);
     remat_destroy_multipart(rblocks,nblocks);
@@ -290,6 +290,7 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   int maxblock = (rows+n-1)/n;
   assert(maxblock>=1);
   
+  // read everything except values
   char fname[PATH_MAX];
   int remaining = rows;
   for(int i=0;i<n;i++) {
@@ -297,17 +298,30 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
     snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
     int r = (remaining>maxblock? maxblock : remaining);
     assert(r>0);
-    b[i] = remat_create(r,cols,fname);
+    b[i] = remat_create(r,cols,fname,false);// false=> do not read .val file
     remaining -= r;
   }
   assert(remaining==0);
+  
+  // read values ad assign them to all matrices in  b[] 
+  snprintf(fname,PATH_MAX,"%s%s",base,VFILE_EXT);
+  FILE *f = fopen(fname,"rb");
+  if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
+  b[0]->Mval = read_vals(f,&b[0]->Mnum);
+  // copy Mval/Mnum to the other blocks
+  if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  for(int i=1;i<n;i++) {
+    b[i]->Mval = b[0]->Mval; b[i]->Mnum = b[0]->Mnum;
+  }  
   return b;
 }
 
 static void remat_destroy_multipart(rematrix **b,int n)
 {
+
+  free(b[0]->Mval); // free the unique copy of Mval we have   
   for(int i=0;i<n;i++)
-    remat_destroy(b[i]);
+    remat_destroy(b[i],false);
   free(b);
 }
 
