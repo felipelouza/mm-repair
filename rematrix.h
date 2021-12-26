@@ -126,7 +126,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
    die("Cannot read rules (" RFILE_EXT ") file (1)"); 
   m->NTnum = (len-sizeof(int))/(2*sizeof(int)); // number of non terminal (rules) 
   m->NTrules = (int *) malloc(m->NTnum*2*sizeof(int));
-  if(m->NTrules==NULL) die("Cannot allocate R array");
+  if(m->NTnum>0 && m->NTrules==NULL) die("Cannot allocate R array");
   if(fread(m->NTrules,2*sizeof(int),m->NTnum,m->Rf)!=m->NTnum)
     die("Cannot read rules (" RFILE_EXT ") file (2)");
   if(fclose(m->Rf)) die("Error closing rules (" RFILE_EXT ") file");
