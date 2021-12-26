@@ -5,8 +5,8 @@ Description = """
 Tool to create a Latex table containing the results of a set of experiments
 
 Currently supported tests:
-   mc: conversion to dense matrix format and compression with gz/xz
-   mz: conversion to CSRV format followed by grammar compression
+   mc: conversion to dense matrix format and compression with gz/xz for testing purposes
+   mz: conpression to CSRV format followed by RePair grammar compression
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
@@ -106,7 +106,7 @@ def test_zip(logfile):
 # compress with matrepair obtaining CSRV and grammar representation
 def test_compress(args, logfile):
   table = ["### csrv and repair size vs dense uncompressed size (percentage)\n", 
-           " file     & rows &  crsv &  re32 &  reiv & reans \\\\\n"]   # latex table containing the results 
+           " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = os.path.join(args.d,f)
     rows,cols = Sizes[f]
@@ -232,7 +232,7 @@ def makerow_mz(f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
   d = 8*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
-    s += "&{:6.2f} &{:6.2f} &{:6.2f} &{:6.2f} ".format(p[0]/d,p[1]/d,p[2]/d,p[3]/d)
+    s += "&{:>12} &{:12} &{:>12} &{:>12} ".format(p[0],p[1],p[2],p[3])
   s += "\\\\\n"
   return s
 
