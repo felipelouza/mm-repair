@@ -1,0 +1,93 @@
+#!/bin/bash -l
+
+#ex.: sudo bash chunk.sh /data/mm/covtype 581012 54 8
+#path must be absolute
+
+PATH_CSV=$1
+PATH_VC=$1
+DATASET=$2
+NR=$3
+NC=$4
+NB=$5
+
+DATASET_CSV=$PATH_CSV/$DATASET
+DATASET_VC=$PATH_VC/$DATASET
+
+let NR_FIRST=($NR+$NB-1)/$NB
+let NR_LAST=($NB-1)*$NR_FIRST
+let NR_LAST=$NR-$NR_LAST
+let NB_LAST=$NB-1
+
+echo Rows: $NR
+echo Columns: $NC
+echo Rows, first blocks: $NR_FIRST
+echo Rows, last block: $NR_LAST
+
+K_PAR=16
+MMR_PATH=/home/giovanni/c/hg/mmrepair/
+REORDERING_PATH=$MMR_PATH/reordering/
+REORDERING_BUILD_PATH=$REORDERING_PATH/build/
+
+echo Dividing into row chunks...
+
+python3 csv_splitter.py $DATASET_CSV $NR $NB &
+
+wait
+
+echo Dividing into row chunks...
+
+#all blocks
+for (( i=0; i+1<=$NB; ++i ))
+do
+    python3 $REORDERING_PATH/column_major.py $DATASET_CSV.$NB.$i &
+done
+
+wait
+
+echo Generating the CSM for each row chunk ...
+
+#first blocks
+for (( i=0; i+1<$NB; ++i ))
+do
+    cd $GEN_PATH &&
+    $REORDERING_BUILD_PATH/tsp_generator_pruned_local $DATASET_CSV.$NB.$i $NR_FIRST $NC $K_PAR &
+done
+
+#last block
+cd $GEN_PATH &&
+$REORDERING_BUILD_PATH/tsp_generator_pruned_local $DATASET_CSV.${NB-1}.$i $NR_LAST $NC $K_PAR &
+
+wait
+
+echo Running PathCover upon each row chunk ...
+
+for (( i=0; i<$NB; ++i ))
+do
+    python3 $REORDERING_PATH/cover.py $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp &
+done
+
+wait
+
+echo Reordering each .vc file ...
+
+for (( i=0; i+1<$NB; ++i ))
+do
+    $MMR_PATH/vc_reorder.x $DATASET_VC.$NB.$i $NR_FIRST $NC $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.cover.solution &&
+    echo " --- block $i done." &
+done
+$MMR_PATH/vc_reorder.x $DATASET_VC.$NB.$NB_LAST $NR_LAST $NC $DATASET_CSV.$NB.$NB_LAST.pruned_local_$K_PAR.cover.solution &&
+echo " --- block $NB_LAST done." &
+
+wait
+
+echo " --- cleaning"
+for (( i=0; i<$NB; ++i ))
+do
+  rm -fr $DATASET_CSV.$NB.$i\_cols &
+  rm -f  $DATASET_CSV.$NB.$i &
+done
+
+wait
+
+echo Done.
+

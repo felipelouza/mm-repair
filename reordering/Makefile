@@ -10,7 +10,8 @@ SRC      := ${TARGET}.cpp
 OBJECTS := $(OBJ_DIR)/mwm.o $(OBJ_DIR)/tsp_generator.o $(OBJ_DIR)/tsp_generator_pruned_global.o $(OBJ_DIR)/tsp_generator_pruned_local.o 
 TARGETS = mwm ring
 
-all: build $(APP_DIR)/mwm $(APP_DIR)/tsp_generator $(APP_DIR)/tsp_generator_pruned_global $(APP_DIR)/tsp_generator_pruned_local
+# $(APP_DIR)/mwm
+all: build  $(APP_DIR)/tsp_generator $(APP_DIR)/tsp_generator_pruned_global $(APP_DIR)/tsp_generator_pruned_local
 
 $(OBJ_DIR)/mwm.o: mwm.cpp
 		@mkdir -p $(@D)
