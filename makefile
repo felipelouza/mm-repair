@@ -12,7 +12,7 @@ CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=re32mm csrvmm reansmm reivmm reans32mm vc_reorder.x
+EXECS=re32mm csrvmm reansmm reivmm reans32mm
 
 # malloc_count dedendencies for 
 ifdef MALLOC_FLAGS
@@ -46,9 +46,6 @@ reivmm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
 
 reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
-
-vc_reorder.x: vc_reorder.cpp
-	$(CXX) $(CXX_FLAGS) -o $@ $<
 
 
 # conjugate gradient method

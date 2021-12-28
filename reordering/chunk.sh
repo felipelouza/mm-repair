@@ -12,6 +12,7 @@ NB=$5
 
 DATASET_CSV=$PATH_CSV/$DATASET
 DATASET_VC=$PATH_VC/$DATASET
+VCOEXT=o
 
 let NR_FIRST=($NR+$NB-1)/$NB
 let NR_LAST=($NB-1)*$NR_FIRST
@@ -24,8 +25,8 @@ echo Rows, first blocks: $NR_FIRST
 echo Rows, last block: $NR_LAST
 
 K_PAR=16
-MMR_PATH=/home/giovanni/c/hg/mmrepair/
-REORDERING_PATH=$MMR_PATH/reordering/
+#MMR_PATH=/home/giovanni/c/hg/mmrepair/
+REORDERING_PATH=$PWD
 REORDERING_BUILD_PATH=$REORDERING_PATH/build/
 
 echo Dividing into row chunks...
@@ -72,10 +73,14 @@ echo Reordering each .vc file ...
 
 for (( i=0; i+1<$NB; ++i ))
 do
-    $MMR_PATH/vc_reorder.x $DATASET_VC.$NB.$i $NR_FIRST $NC $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.cover.solution &&
+    ln -sf $DATASET_VC.$NB.$i.vco $DATASET_VC.$NB.$i.vc
+    $REORDERING_PATH/vc_reorder.x $DATASET_VC.$NB.$i $NR_FIRST $NC $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.cover.solution && 
+    ln -sf $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.cover.solution.vc $DATASET_VC.$NB.$i.vc &&
     echo " --- block $i done." &
 done
-$MMR_PATH/vc_reorder.x $DATASET_VC.$NB.$NB_LAST $NR_LAST $NC $DATASET_CSV.$NB.$NB_LAST.pruned_local_$K_PAR.cover.solution &&
+ln -sf $DATASET_VC.$NB.$NB_LAST.vco $DATASET_VC.$NB.$NB_LAST.vc
+$REORDERING_PATH/vc_reorder.x $DATASET_VC.$NB.$NB_LAST $NR_LAST $NC $DATASET_CSV.$NB.$NB_LAST.pruned_local_$K_PAR.cover.solution &&
+ln -sf $DATASET_CSV.$NB.$NB_LAST.pruned_local_$K_PAR.cover.solution.vc $DATASET_VC.$NB.$NB_LAST.vc &&
 echo " --- block $NB_LAST done." &
 
 wait
@@ -84,7 +89,10 @@ echo " --- cleaning"
 for (( i=0; i<$NB; ++i ))
 do
   rm -fr $DATASET_CSV.$NB.$i\_cols &
-  rm -f  $DATASET_CSV.$NB.$i &
+  rm -f  $DATASET_CSV.$NB.$i 
+  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.par
+  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp
+  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.cover.solution
 done
 
 wait

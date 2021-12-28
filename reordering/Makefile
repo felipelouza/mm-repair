@@ -8,10 +8,10 @@ INCLUDE  := #-I ../include/boost_1_71_0/
 SRC      := ${TARGET}.cpp
 
 OBJECTS := $(OBJ_DIR)/mwm.o $(OBJ_DIR)/tsp_generator.o $(OBJ_DIR)/tsp_generator_pruned_global.o $(OBJ_DIR)/tsp_generator_pruned_local.o 
-TARGETS = mwm ring
+#TARGETS = mwm ring
 
 # $(APP_DIR)/mwm
-all: build  $(APP_DIR)/tsp_generator $(APP_DIR)/tsp_generator_pruned_global $(APP_DIR)/tsp_generator_pruned_local
+all: build  $(APP_DIR)/tsp_generator $(APP_DIR)/tsp_generator_pruned_global $(APP_DIR)/tsp_generator_pruned_local vc_reorder.x
 
 $(OBJ_DIR)/mwm.o: mwm.cpp
 		@mkdir -p $(@D)
@@ -47,6 +47,9 @@ $(APP_DIR)/tsp_generator_pruned_local: $(OBJ_DIR)/tsp_generator_pruned_local.o
 		@mkdir -p $(@D)
 		$(CXX) $(INCLUDE) $(LDFLAGS) -o $@ $< $(CXXFLAGS) $(LDFLAGS)
 
+vc_reorder.x: vc_reorder.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
 .PHONY: all build clean debug release
 
 build:
@@ -60,4 +63,5 @@ release: CXXFLAGS += -O3
 release: all
 
 clean:
-		-@rm -rv $(BUILD)
+		-@rm -frv $(BUILD)
+		-@rm -f vc_reorder.x
