@@ -64,7 +64,8 @@ echo Running MWM upon each row chunk ...
 
 for (( i=0; i<$NB; ++i ))
 do
-    python3 $REORDERING_BUILD_PATH/mwm $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp &
+    $REORDERING_BUILD_PATH/mwm $DATASET_CSV.$NB.$i $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp &&
+    python3 $REORDERING_PATH/mwm_sol_from_pairs.py $DATASET_CSV.$NB.$i $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp & 
 done
 
 wait
