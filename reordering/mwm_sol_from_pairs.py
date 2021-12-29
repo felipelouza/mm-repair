@@ -41,7 +41,7 @@ def create_sequence(d) :
                 seq.append(last)
             d[last] = None
             ss.append(seq)
-    print(ss)
+    # print(ss)
     return ss
 
 if __name__ == '__main__' :

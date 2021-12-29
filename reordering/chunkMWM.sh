@@ -62,11 +62,12 @@ echo Running MWM upon each row chunk ...
 
 for (( i=0; i<$NB; ++i ))
 do
-    $REORDERING_BUILD_PATH/mwm $DATASET_CSV.$NB.$i $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp &&
-    python3 $REORDERING_PATH/mwm_sol_from_pairs.py $DATASET_CSV.$NB.$i $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp & 
+    $REORDERING_BUILD_PATH/mwm $DATASET_CSV.$NB.$i pruned_local_$K_PAR &&
+    python3 $REORDERING_PATH/mwm_sol_from_pairs.py $DATASET_CSV.$NB.$i pruned_local_$K_PAR & 
 done
 
 wait
+
 
 echo Reordering each .vc file ...
 
@@ -85,14 +86,16 @@ echo " --- block $NB_LAST done." &
 
 wait
 
+
+
 echo " --- cleaning"
 for (( i=0; i<$NB; ++i ))
 do
-  rm -fr $DATASET_CSV.$NB.$i\_cols &
-  rm -f  $DATASET_CSV.$NB.$i 
-  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.par
-  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp
-  rm -f  $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.mwm.solution
+  rm -r $DATASET_CSV.$NB.$i\_cols &
+  rm   $DATASET_CSV.$NB.$i
+  rm   $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.par
+  rm   $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.tsp
+  rm   $DATASET_CSV.$NB.$i.pruned_local_$K_PAR.mwm.solution
 done
 
 wait
