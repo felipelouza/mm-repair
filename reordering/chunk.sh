@@ -1,7 +1,9 @@
 #!/bin/bash -l
 
-#ex.: sudo bash chunk.sh /data/mm/covtype 581012 54 8
-#path must be absolute
+# sample invocation:
+#   chunk.sh /data/mm/ covtype 581012 54 8
+# data path must be absolute
+# must be executed from the mm-repair/reordering directory 
 
 PATH_CSV=$1
 PATH_VC=$1
@@ -25,7 +27,6 @@ echo Rows, first blocks: $NR_FIRST
 echo Rows, last block: $NR_LAST
 
 K_PAR=16
-#MMR_PATH=/home/giovanni/c/hg/mmrepair/
 REORDERING_PATH=$PWD
 REORDERING_BUILD_PATH=$REORDERING_PATH/build/
 
@@ -50,13 +51,10 @@ echo Generating the CSM for each row chunk ...
 #first blocks
 for (( i=0; i+1<$NB; ++i ))
 do
-    cd $GEN_PATH &&
     $REORDERING_BUILD_PATH/tsp_generator_pruned_local $DATASET_CSV.$NB.$i $NR_FIRST $NC $K_PAR &
 done
-
 #last block
-cd $GEN_PATH &&
-$REORDERING_BUILD_PATH/tsp_generator_pruned_local $DATASET_CSV.${NB-1}.$i $NR_LAST $NC $K_PAR &
+$REORDERING_BUILD_PATH/tsp_generator_pruned_local $DATASET_CSV.$NB.$NB_LAST $NR_LAST $NC $K_PAR &
 
 wait
 
@@ -71,6 +69,7 @@ wait
 
 echo Reordering each .vc file ...
 
+# .vco are the original unpermuted .vc files 
 for (( i=0; i+1<$NB; ++i ))
 do
     ln -sf $DATASET_VC.$NB.$i.vco $DATASET_VC.$NB.$i.vc
