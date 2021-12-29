@@ -105,7 +105,7 @@ def test_zip(logfile):
 
 # compress with matrepair obtaining CSRV and grammar representation
 def test_compress(args, logfile):
-  table = ["### csrv and repair size vs dense uncompressed size (percentage)\n", 
+  table = ["### csrv and repair size\n", 
            " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = os.path.join(args.d,f)
