@@ -174,8 +174,3 @@ Tool to convert a matrix in csv format into binary float or double format (possi
 Tool to create a vector of a given length and write it to a file in binary format (default 8-byte doubles). The vector is specified giving a set of values which are repeated cyclically.
 
 
-## Column reordering
-
-For the column reordering algorithms, take a look at the `reordering` subfolder.
-
-
