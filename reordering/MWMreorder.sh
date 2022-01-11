@@ -1,7 +1,10 @@
 #!/bin/bash -l
 
+# reorder row blocks using the Maximum Weight Matching heuristics
+
+
 # sample invocation:
-#   chunkMWM.sh /data/mm/ covtype 581012 54 8
+#   MWMreorder.sh /data/mm/ covtype 581012 54 8
 # data path must be absolute
 # must be executed from the mm-repair/reordering directory 
 

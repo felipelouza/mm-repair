@@ -1,7 +1,9 @@
 #!/bin/bash -l
 
+# reorder row blocks using the Path Cover heuristics
+
 # sample invocation:
-#   chunk.sh /data/mm/ covtype 581012 54 8
+#   PCreorder.sh /data/mm/ covtype 581012 54 8
 # data path must be absolute
 # must be executed from the mm-repair/reordering directory 
 

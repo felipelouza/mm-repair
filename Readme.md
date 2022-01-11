@@ -18,10 +18,9 @@ Clone/download then `make`
 
 Given the [covtype](https://www.kaggle.com/giovannimanzini/some-machine-learning-matrices?select=covtype) matrix in csv format (581012 rows, 54 columns) we compress it with the command:
 ```bash
-matrepair covtype 581012 54
+matrepair -r somedir/covtype 581012 54
 ```
-that creates the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see [Available Matrix Compression Formats](Available-Matrix-Compression-Formats)). 
-
+that creates in the directory `somedir` the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see [Available Matrix Compression Formats](Available-Matrix-Compression-Formats)). 
 
 Next, we create a vector containing 54 entries equal to 1.0 and store it to the file `x54.dbl`:
 ```bash
@@ -29,7 +28,7 @@ makevec.py x54.dbl 54 1
 ```
 Now we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ with the command:
 ```bash
-re32mm covtype 581012 54 x54.dbl -y y.dbl -z z.dbl
+re32mm  -y y.dbl -z z.dbl somedir/covtype 581012 54 x54.dbl
 ```
 The output vector `y.dbl` has length 581012 and contains the sum of the entries of each row:
 ```bash
@@ -58,6 +57,21 @@ od -An -t f8 z.dbl | head
                  12992451                 43226269
                  24825698                 78839086
                   7002929                 33807845
+```
+
+---
+
+## Paralell computation
+
+The command 
+```bash
+matrepair -r -b3 somedir/covtype 581012 54
+```
+splits the input matrix into three blocks of rows which are compressed separately. The command therefore creates the files `covtype.val`, `covtype.3.0.vc`, `covtype.3.0.vc.R`, `covtype.3.0.vc.C`, `covtype.3.0.vc.R.iv`, `covtype.3.0.vc.C.iv`, and `covtype.3.0.vc.C.ansf.1`, and similarly `covtype.3.1.vc` ...  `covtype.3.1.vc.C.ansf.1`, `covtype.3.2.vc` ... `covtype.3.2.vc.C.ansf.1`. 
+
+Next, we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ in parallel using the above row blocks with the command:
+```bash
+re32mm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
 ```
 
 ---
@@ -106,34 +120,34 @@ Analogous to *re32mm* except that the input matrix is expected to be in the form
 
 ## Bulk testing 
 
-The tool *mmtest.py* can be used to test compression and matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files`, `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra emtries in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
+The tool *mmtest.py* can be used to test compression and (parallel) matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
 
 The command
 ```bash 
 mmtest.py -d /data mc
 ```
-converts the input matrices from the `\data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
+converts the input matrices from the `/data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
 
 
 The command
 ```bash 
-mmtest.py -d data mz
+mmtest.py -b 8 -d /data mz
 ```
-computes the CSRV and grammar representations of the input matrices from the `\data` directory and show their size as percentage of the dense uncompressed matrices. Used for generating Table 1 in the paper.
+computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks. Used for generating Table 1 in the paper.
 
 
 The command
 ```bash 
-mmtest.py -d data -n num mm
+mmtest.py -b 8 -d /data -n num mm
 ```
-executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. Used for generating Table 2 in the paper.
+executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been aalready split into 8 row blocks and compressed as escribed above. Used for generating Table 2 in the paper.
 
 
 ---
 
 ## Column reordering
 
-For the column reordering algorithms, take a look at the `reorder` subfolder.
+For the column reordering algorithms, take a look at the `reordering` subfolder.
 
 ---
 

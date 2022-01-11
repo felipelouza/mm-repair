@@ -14,7 +14,7 @@ CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 # executables in this directory
 EXECS=re32mm csrvmm reansmm reivmm reans32mm
 
-# malloc_count dedendencies for 
+# malloc_count dependencies
 ifdef MALLOC_FLAGS
 MALLOC_FILES=tools/malloc_count.c tools/malloc_count.h
 endif
@@ -48,7 +48,7 @@ reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
 
-# conjugate gradient method
+# conjugate gradient method (no longer updated)
 recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
 	$(CC) $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
 
@@ -65,7 +65,7 @@ brepair:
 ansf:
 	make -C ans
 
-# directory containing the integer vector econding decoding tools 
+# directory containing the integer vector enconding-decoding tools 
 sdsl:
 	make -C sdsl
 

@@ -12,9 +12,9 @@ In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a re
 
 ---
 
-## Why this subdirectory?
+## Prerequisites
 
-You can already find some column permutations in the `solfiles` folder located in the root directory of this project; the column-permutation files therein contained have the extension `.solution`. In this directory you find the code which generates those `.solution` files.
+Maximum Weighted Matching (MWM) requires the boost library (`sudo apt install libboost-all-dev`)
 
 ---
 
@@ -31,6 +31,25 @@ A portion of the code base is written in `c++` and needs to be compiled. Run:
 make -j
 ```
 or, as an alternative, `make release -j` for better performances. The code will be compiled into a new `build` directory.
+
+---
+
+## Reordering in one shot 
+
+Assume the matrix `covtype` has been already compressed into 3 row blocks (with the command `matrepair -b 3 somedir/covtype  581012 54` or with `mmtest.py` see main Readme file). Then, from the `reordering` subdirectory the command
+
+```bash
+reorder pc  somedir/covtype  581012 54 3
+```
+applies the *PathCover* reordering algorithm independently to each one of the three row blocks of matrix `covtype`. This command generates in the directory `somedir` a new set of files `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc` whose elements have been permuted using the *PathCover* heuristics. To compute the grammar compression of the reordered files go back to the main directory and use the command `matrepair -r -y -b3 -r somedir/covtype 581012 54` (the `-y` option skips the recomputation of the *.vc* files if they are more recent than the input file).
+
+The command `reorder mwm ...` works as above using the *Maximum Weighted Matching* heuristics instead of *PathCover*. 
+
+---
+
+## Additional details on reordering
+
+The following material explains the details of the reordering process and allows the use of other reordering algorithms.
 
 ## Summary tables
 
