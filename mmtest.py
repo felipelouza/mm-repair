@@ -11,6 +11,7 @@ Currently supported tests:
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
 Files = ['covtype']
+Files = ['covtype','census']
 Data_dir = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
@@ -255,7 +256,7 @@ def main():
      
   if not  os.path.isdir(args.d):
     print("Invalid data directory: "+ args.d,file=sys.stderr) 
-    exit(1) 
+    sys.exit(1) 
      
   # run the task   
   s1 = time.time()
@@ -275,7 +276,7 @@ def main():
   if args.op=='mm' or args.op=='mc' or args.op=='mz':  
     for s in table:
       print(s,end="")
-  exit(0)
+
 
   
 if __name__ == '__main__':

@@ -64,7 +64,7 @@ def main():
     show_command_line(logfile)    
     if(args.d or args.c): # decompress and check
       print(" *** not implemented yet ***");
-      return
+      sys.exit(1)
       # to be fixed
       # exe = integer_despair_exe
       # command = "{exe} {file}".format(
@@ -92,7 +92,7 @@ def main():
           rows = args.rows, cols=args.cols, opts = "-b %d" % args.b);
         print("==== Conversion dbl/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
-          return
+          sys.exit(2)
         vc_time = time.time()-start
         print("Conversion time: {0:.4f}".format(vc_time))
         if args.norepair:
@@ -111,7 +111,7 @@ def main():
                     exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
           print("==== Repair compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
-           return
+           sys.exit(3)
           repair_time += time.time()-start
           print("Repair time: {0:.4f}".format(repair_time))
           
@@ -125,7 +125,7 @@ def main():
                     exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
           print("==== Integer vector .C compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
-           return
+           sys.exit(4)
           iv_time += time.time()-start
         if args.y and not need_rebuild(basename+".vc.R", ".iv"):
           print("---- Skipping iv(R)")
@@ -135,7 +135,7 @@ def main():
                     exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
           print("==== Integer vector .R compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
-           return
+           sys.exit(5)
           iv_time += time.time()-start
           print("Integer vector compression time: {0:.4f}".format(iv_time))
         
@@ -148,7 +148,7 @@ def main():
                     exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
           print("==== Ans-fold compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
-           return
+           sys.exit(6)
           ansf_time += time.time()-start
           print("Ans-fold time: {0:.4f}".format(ansf_time))
       # end for on row blocks
@@ -161,9 +161,7 @@ def main():
       if False and not args.k: # temporarily disabled 
         command = "rm -f {mfile}.vc".format(mfile=basename)
         if(execute_command(command,logfile)!=True):
-          return
-
-
+          sys.exit(7)
 
   print("==== Done")
 

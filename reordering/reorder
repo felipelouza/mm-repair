@@ -2,19 +2,12 @@
 import subprocess, os.path, sys, argparse, time, struct
 
 Description = """
-Tool to reorder a file (or collection of files)
+Reorder a .vc file splitted into row blocks 
 
 Currently supported algorithms:
    pc: path cover
   mwm: maximum weighted matching
 """
-
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files = ['covtype']
-
-Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
-         'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
-         'airline78':(14462943, 29)}
 
 
 Timelimit = 180000
@@ -43,49 +36,6 @@ def check_testfiles(args,sufxs):
   if not ok:
     print("Check -d option and the constants Files and Sizes",file=sys.stderr)
     sys.exit(1)
-
-
-
-# compress with matrepair obtaining CSRV and grammar representation
-def test_compress(args, logfile):
-  table = ["### csrv and repair size\n", 
-           " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
-  for f in Files:
-    name  = os.path.join(args.d,f)
-    rows,cols = Sizes[f]
-    tablerow = []  # row of the results table
-    command = "./{exe} -r -y -b {blocks} {name} {r} {c}".format(
-                exe = "matrepair", blocks = args.b, name=name, r=rows, c=cols)
-    try:
-      ris = subprocess.run(command.split(),stdout=logfile,
-                           stderr=logfile,timeout=Timelimit,check=True)
-    except subprocess.TimeoutExpired:
-      # caso time out
-      print(" Test failed: no result after %d seconds" % Timelimit)
-      continue
-    except subprocess.CalledProcessError as ex:
-      print(" Test failed: non-zero exit code ", ex.returncode)
-      # write stdout/stderr to a separate logfile
-      print("## Error executing:", command,file=logfile);
-      print("## stdout:\n", ex.stdout ,file=logfile);
-      print("## stderr:\n", ex.stderr ,file=logfile);
-      sys.exit(2)
-    except Exception as ex:
-      print(" Test failed:", str(ex))
-      sys.exit(2)
-    v = os.path.getsize(name+".val")
-    vcsize = getsize_multipart(name,args.b,".vc") 
-    csize = getsize_multipart(name,args.b,".vc.C") 
-    rsize = getsize_multipart(name,args.b,".vc.R") 
-    csizeiv = getsize_multipart(name,args.b,".vc.C.iv") 
-    rsizeiv = getsize_multipart(name,args.b,".vc.R.iv") 
-    ans_csize = getsize_multipart(name,args.b,".vc.C.ansf.1")
-    tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
-                    v+ans_csize+rsizeiv))
-    # tests for current file completed
-    table.append(makerow_mz(f, tablerow))
-  # all files processed
-  return table
 
 
 # execute command: return True is everything OK, False otherwise
@@ -151,7 +101,7 @@ def main():
     exe = "MWMreorder.sh"
   else:
     print("Unknown algorithm:  must be pc|mwm")
-    return
+    sys.exit(1)
      
   absdir = os.path.abspath(os.path.dirname(args.input))
   fname = os.path.basename(args.input)
@@ -160,18 +110,18 @@ def main():
     print("OK     Data directory", absdir)
   else:
     print("ERROR: Invalid data directory")
-    exit(1)
+    sys.exit(2)
     
   if args.blocks<2:
     print("ERROR: Invalid number of blocks (must be >1)") 
-    exit(1)    
+    sys.exit(3) 
      
   if args.rows<1 or args.cols<1:
     print("ERROR: Number of rows and columns must be positive") 
-    exit(1)    
+    sys.exit(4) 
      
   if not check_input_files(absdir,fname,args.blocks):
-    return 
+    sys.exit(5)
 
   print("\nStarting column reordering...")
 
@@ -182,6 +132,7 @@ def main():
     print("All done")
   else:
     print("Something went wrong: please contact the maintainers")
+    sys.exit(6)
   
   return     
 
