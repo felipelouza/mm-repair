@@ -10,6 +10,7 @@ Currently supported tests:
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+
 Data_dir = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
@@ -57,15 +58,17 @@ def createx(cols,value=1):
 
 
 # convert a csv file to binary and compress it with gzip and xz
-def test_zip(logfile):
+def test_gzip(args,logfile):
   table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
            " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
+    exe_name = os.path.join(args.main_dir,"mat2bin.py")
+
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "./{exe} {name} -o {temp} {r} {c}".format(
-                exe = "mat2bin.py", temp=TmpFilename, name=name, r=rows, c=cols)
+    command = "{exe} {name} -o {temp} {r} {c}".format(
+                exe = exe_name, temp=TmpFilename, name=name, r=rows, c=cols)
     command2 = "{exe} -kf {name}".format(exe = "gzip",  name=TmpFilename)            
     command3 = "{exe} -kf {name}".format(exe = "xz",  name=TmpFilename)            
     try:
@@ -104,14 +107,15 @@ def test_zip(logfile):
 
 # compress with matrepair obtaining CSRV and grammar representation
 def test_compress(args, logfile):
-  table = ["### csrv and repair size\n", 
+  table = ["### csrv and repair size; %d row-blocks\n" % args.b, 
            " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = os.path.join(args.d,f)
+    exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "./{exe} -r -y -b {blocks} {name} {r} {c}".format(
-                exe = "matrepair", blocks = args.b, name=name, r=rows, c=cols)
+    command = "{exe} -r -y -b {blocks} {name} {r} {c}".format(
+                exe = exe_name, blocks = args.b, name=name, r=rows, c=cols)
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -162,20 +166,21 @@ def getsize_multipart(base,num,ext):
 # test running times and space for matrix multiplication 
 def test_time(args,logfile):
   # build latex table containing the reuslts  
-  table = ["### time x iteration and peak memory usage in kb for matrix multiplication\n", 
+  table = ["### time x iteration and peak memory usage in kb for matrix multiplication; %d row-blocks\n" % args.b, 
            " file     & rows "]
   for a in Algos:
     table[1] += "& {name:12.9}&".format(name=a)         
   table[1] += "\\\\\n" 
   for f in Files:
     name  = os.path.join(args.d, f)
+    exe_name = os.path.join(args.main_dir,a)
     rows,cols = Sizes[f]
     createx(cols)  # create file containing x vector
     tablerow = []  # row of the results table
     for a in Algos:
       # only save the eigenvalue
-      command = "./{exe} -n {num} -b {blocks} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
-                exe = a, num=args.n, blocks=args.b, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
+      command = "{exe} -n {num} -b {blocks} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
+                exe = exe_name, num=args.n, blocks=args.b, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
       command = Time_exe + ' -f%e:%M ' + command          
       try:
         ris = subprocess.run(command.split(),timeout=Timelimit,check=True,
@@ -251,11 +256,16 @@ def main():
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
   args = parser.parse_args()
-     
+
+  # check data directory   
   if not  os.path.isdir(args.d):
     print("Invalid data directory: "+ args.d,file=sys.stderr) 
-    sys.exit(1) 
-     
+    sys.exit(1)
+  args.d = os.path.abspath(args.d)
+  
+  # get directory containing this file   
+  args.main_dir = os.path.dirname(os.path.abspath(__file__))
+   
   # run the task   
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:
@@ -263,7 +273,7 @@ def main():
       check_testfiles(args,[".val"])
       table = test_time(args, logfile)
     elif args.op=='mc':   # matrix conversion
-      table = test_zip(logfile)
+      table = test_gzip(args, logfile)
     elif args.op=='mz':   # matrix compression
       table = test_compress(args,logfile)
     else: 

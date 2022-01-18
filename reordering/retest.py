@@ -102,9 +102,9 @@ def main():
     print("ERROR: Invalid number of blocks (must be >1)") 
     sys.exit(3)    
 
-  table_abs = ["### csrv and repair size\n", 
+  table_abs = ["### csrv and repair size; %d row-blocks\n" % args.b, 
            " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
-  table_per = ["### csrv and repair size (percentage)\n", 
+  table_per = ["### csrv and repair size (percentage); %d row-blocks\n" % args.b, 
            " file     & rows &    crsv &    re32 &    reiv &   reans \\\\\n"]   # latex table containing the results 
   with open(Logfile_name,"w",1) as logfile:
     print("Sending logging messages to file:", logfile.name)
