@@ -34,7 +34,7 @@ or, as an alternative, `make release -j` for better performances. The code will 
 
 ---
 
-## Reordering in one shot 
+## Reordering a single file 
 
 Assume the matrix `covtype` has been already compressed into 3 row blocks (with the command `matrepair -b 3 somedir/covtype  581012 54` or with `mmtest.py` see main Readme file). Then, from the `reordering` subdirectory the command
 
@@ -43,17 +43,29 @@ reorder pc  somedir/covtype  581012 54 3
 ```
 applies the *PathCover* reordering algorithm independently to each one of the three row blocks of matrix `covtype`. The command `reorder mwm ...` works as above using the *Maximum Weighted Matching* heuristics instead of *PathCover*. 
 
-
 In the example above the `reorder` tool takes as input the `covtype` matrix (in csv format) and the `.vc` files of the three row blocks: `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc`. These files are copied into new files with extension `.vco` (unless the `.vco` files are already present); the tool then computes a reordering of each block and generates a new set of file `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc` whose elements have been permuted using the designate heuristics. 
 All the `.vc` and `.vco` files are read from (and stored to) the same directory `somedir` containing the matrix file `covtype`.
 
 To compute the grammar compression of the reordered files go back to the main directory and use the command
 
 ```
-matrepair -r -y -b3 -r somedir/covtype 581012 54
+../matrepair -r --noconv -b3 -r somedir/covtype 581012 54
 ``` 
 
-the `-y` option skips the recomputation of the `.vc` files if they are more recent than the input file, so the grammar compression is applied to the reoderd files. Note that any previous grammar compressed `.vc.C`, `.vc.R`, etc. is overwritten. As an alternative to using `matrepair` one can compte the reordering for each test file and then use `mmtest.py` again with option `-y`. 
+the `--noconv` option skips the recomputation of the `.vc` files, so the grammar compression is applied to the reoderd files. Note that any previous grammar compressed `.vc.C`, `.vc.R`, etc. is overwritten. As an alternative to using `matrepair` one can compte the reordering for each test file and then use `mmtest.py` again with option `-y`. 
+
+---
+
+## Bulk reordering 
+
+The tool *retest.py* can be used to test a reordering algorithm on a set of matrices. The matrices, and their number of rows and columns, are specified inside *retest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
+
+The command
+```bash 
+retest.py pc -d /data -b8
+```
+uses *matrepair* to compute the CSRV representation of the input matrices and splits them into 8 row blocks. Then, applies the *PathCover* reordering algorithm to each block, and finally uses gain *matrepair* to computes the grammar compression of the permuted blocks applying the *re32*, *reiv* and *reans* algorithms. The output are two tables showing the compressed size (absolute and percentage) of the different algorithms. Used to generate tables and figures in Section 5.3 of the paper.
+The command `retest.py mwm ...` works as above using the *Maximum Weighted Matching* heuristics instead of *PathCover*. 
 
 ---
 

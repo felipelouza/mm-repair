@@ -10,8 +10,6 @@ Currently supported tests:
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files = ['covtype']
-Files = ['covtype','census']
 Data_dir = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
@@ -80,7 +78,7 @@ def test_zip(logfile):
       ris = subprocess.run(command3.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
-      # caso time out
+      # handle time out
       print(" Test failed: no result after %d seconds" % Timelimit)
       continue
     except subprocess.CalledProcessError as ex:

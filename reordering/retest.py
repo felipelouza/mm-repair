@@ -10,7 +10,6 @@ Currently supported algorithms:
 """
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
-Files = ['covtype','census']
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
@@ -51,13 +50,21 @@ def execute_command(command,logfile):
   return True
 
 
-def makerow_mz(f, a):
+def makerow_abs(f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
-  d = 8*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:>12} &{:12} &{:>12} &{:>12} ".format(p[0],p[1],p[2],p[3])
   s += "\\\\\n"
   return s
+
+def makerow_per(f, a):
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  d = 8*Sizes[f][0]*Sizes[f][1]/100
+  for p in a:
+    s += "&{:8.4f} &{:8.4f} &{:8.4f} &{:8.4f} ".format(p[0]/d,p[1]/d,p[2]/d,p[3]/d)
+  s += "\\\\\n"
+  return s
+
 
 def getsize_multipart(base,num,ext):
   tot = 0
@@ -95,8 +102,10 @@ def main():
     print("ERROR: Invalid number of blocks (must be >1)") 
     sys.exit(3)    
 
-  table =   table = ["### csrv and repair size\n", 
+  table_abs = ["### csrv and repair size\n", 
            " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
+  table_per = ["### csrv and repair size (percentage)\n", 
+           " file     & rows &    crsv &    re32 &    reiv &   reans \\\\\n"]   # latex table containing the results 
   with open(Logfile_name,"w",1) as logfile:
     print("Sending logging messages to file:", logfile.name)
     for f in Files:
@@ -141,9 +150,13 @@ def main():
       tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                       v+ans_csize+rsizeiv))
       # tests for current file completed
-      table.append(makerow_mz(f, tablerow))
-    # output table rows   
-    for s in table:
+      table_abs.append(makerow_abs(f, tablerow))
+      table_per.append(makerow_per(f, tablerow))
+    # output tables  
+    for s in table_abs:
+      print(s,end="")
+    print()
+    for s in table_per:
       print(s,end="")
   return
 
