@@ -2,14 +2,16 @@
 import subprocess, os.path, sys, argparse, time, struct
 
 Description = """
-Reorder a .vc file splitted into row blocks 
+Reorder the individual blocks of a matrix in CSRV format 
 
-Currently supported algorithms:
-  pc:    PathCover
+Currently supported reordering algorithms:
+   pc:   PathCover
   mwm:   Maximum weighted matching
   lkh:   Lin-Kernighan
   pc+:   PathCover+
-Example: python3 reorder.py pc /data/mm/covtype 581012 54 -b 8 -k 16
+  
+Example usage: 
+  reorder.py pc /data/mm/covtype 581012 54 -b 8 -k 16
 """
 
 Timelimit = 180000
@@ -21,26 +23,7 @@ def filext_multipart(n,i):
     return ""
   return ".{tot}.{part}".format(tot=n,part=i)
 
-
-# check that the test files exist and sizes are defined
-def check_testfiles(args,sufxs):
-  ok = True
-  for f in Files:
-    if f not in Sizes:
-      print("  Size for test file", f, "missing",file=sys.stderr)
-      ok = False
-    
-    for sx in sufxs:
-      path = os.path.join(args.d,f + sx)
-      if not os.path.exists(path):
-        print("  Test file", path, "missing",file=sys.stderr)
-        ok = False
-  if not ok:
-    print("Check -d option and the constants Files and Sizes",file=sys.stderr)
-    sys.exit(1)
-
-
-# execute command: return True is everything OK, False otherwise
+# execute command: return True if everything OK, False otherwise
 def execute_command(command):
   try:
     subprocess.check_call(command.split(),timeout=Timelimit)
@@ -63,6 +46,8 @@ def execute_command_verbose(cmd, exit_code, msg='Something went wrong: please co
     print(msg)
     sys.exit(exit_code)
 
+# check that the input file and the corresponding .vco exist
+# note .vco files are obtained from .vc if necessary and possible 
 def check_input_files(datadir,name,n):
   fullname = os.path.join(datadir,name)
   if not os.path.isfile(fullname):
@@ -122,9 +107,9 @@ def main():
     print("ERROR: Invalid data directory")
     sys.exit(2)
     
-  #if args.b<2:
-  #  print("ERROR: Invalid number of blocks (must be >1)") 
-  #  sys.exit(3) 
+  if args.b<1:
+    print("ERROR: Invalid number of blocks (must be >0)") 
+    sys.exit(3) 
      
   if args.rows<1 or args.cols<1:
     print("ERROR: Number of rows and columns must be positive") 
@@ -133,9 +118,11 @@ def main():
   if not check_input_files(absdir,fname,args.b):
     sys.exit(5)
 
+  # number of rows in row blocks 
   nr_first = None if args.b==1 else (args.rows + args.b - 1) // args.b
   nr_last = None if args.b==1 else args.rows - ((args.b - 1) * nr_first)
 
+  # arguments to be passed to reordering algorithms 
   cr_args = {'a_descr':args.algo, 'a':algomap[args.algo], 'd':absdir, 'f':fname, 'r':args.rows, 'c':args.cols, 'b':args.b, 
       'k':args.k, 'b_lst':args.b-1, 'r_fst':nr_first, 'r_lst':nr_last,
       'lkh_version':'LKH-3.0.7', 'lkh_link':'http://webhotel4.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz' }
@@ -144,7 +131,11 @@ def main():
     reorder_matrix(cr_args)
   else :
     reorder_matrix_blocks(cr_args)
+  
+  return 0
 
+
+# reorder a matrix taken as a single block
 def reorder_matrix(cr_args) :
   print('Transposing the matrix...')
   cmd = 'python3 ./column_major.py {d}/{f}'.format(**cr_args)
@@ -181,9 +172,9 @@ def reorder_matrix(cr_args) :
   cmd = 'ln -sf {d}/{f}.vco {d}/{f}.vc '.format(**cr_args)
   execute_command_verbose(cmd, 11)
   cmd = './vc_reorder.x {d}/{f} {r} {c} {d}/{f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
-  execute_command_verbose(cmd, 11)
+  execute_command_verbose(cmd, 12)
   cmd = 'ln -sf {d}/{f}.pruned_local_{k}.{a}.solution.vc {d}/{f}.vc '.format(**cr_args)
-  execute_command_verbose(cmd, 11) 
+  execute_command_verbose(cmd, 13) 
 ##
   print('Cleaning...')
   cmd = 'rm -r '
@@ -194,9 +185,10 @@ def reorder_matrix(cr_args) :
   #if cr_args['a_descr'] == 'lkh' :
   #  cmd += '{d}/{f}.pruned_local_{k}.log '.format(**cr_args)
   
-  execute_command_verbose(cmd, 12)
+  execute_command_verbose(cmd, 14)
   return   
 
+# reoder a matrix splitted into b blocks
 def reorder_matrix_blocks(cr_args) :
   print('Dividing into row chunks...')
   cmd ='python3 csv_splitter.py {d}/{f} {r} {b} '.format(**cr_args)
@@ -224,16 +216,15 @@ def reorder_matrix_blocks(cr_args) :
   execute_command_verbose(cmd, 11) 
 ##
   print('Cleaning...')
-  cmd = 'rm -r '
   for i in range(cr_args['b']) :
+    cmd = 'rm -r '
     cmd += '{d}/{f}.{b}.{i}_cols '.format(**cr_args, i=i)
     cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.par '.format(**cr_args, i=i)
     cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.tsp '.format(**cr_args, i=i)
     cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.{a}.solution '.format(**cr_args, i=i)
     if cr_args['a_descr'] == 'lkh' :
       cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.log '.format(**cr_args, i=i)
-  
-  execute_command_verbose(cmd, 12)
+    execute_command_verbose(cmd, 12)
   return     
 
        
