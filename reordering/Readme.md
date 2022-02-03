@@ -8,7 +8,7 @@ In this directory you find the code which generates the column similarity matrix
 - PathCover+
 - Maximum weighted matching (MWM)
 
-In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a recent Lin-Kernighan heuristic to the Travelling Salesman Problem (TSP), which is also of interest for our column-reordering problem.
+In [this page](http://akira.ruc.dk/~keld/research/LKH-3/)[^1] you’ll find a recent Lin-Kernighan heuristic to the Travelling Salesman Problem (TSP), which is also of interest for our column-reordering problem. The code will be automatically downloaded and compiled if the Lin-Kernighan heuristic is used.
 
 ---
 
@@ -34,14 +34,14 @@ or, as an alternative, `make release -j` for better performances. The code will 
 
 ---
 
-## Reordering a single file 
+## Reordering a single matrix 
 
 Assume the matrix `covtype` has been already compressed into 3 row blocks (with the command `matrepair -b 3 somedir/covtype  581012 54` or with `mmtest.py` see main Readme file). Then, from the `reordering` subdirectory the command
 
 ```bash
-reorder pc  somedir/covtype  581012 54 3
+reorder.py -b 3 -k 8  pc somedir/covtype 581012 54 
 ```
-applies the *PathCover* reordering algorithm independently to each one of the three row blocks of matrix `covtype`. The command `reorder mwm ...` works as above using the *Maximum Weighted Matching* heuristics instead of *PathCover*. 
+applies the *PathCover* reordering algorithm independently to each one of the three row blocks of matrix `covtype`. The option`-k` specifies the pruning parameter used to build the CSM matrix. If the parameter `pc` is replaced by `mwm`, `lkh`, or `pc+` the reordering is done using the algorithm *Maximum Weighted Matching*, *Lin-Kernighan*, *PathCover+* respectively.
 
 In the example above the `reorder` tool takes as input the `covtype` matrix (in csv format) and the `.vc` files of the three row blocks: `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc`. These files are copied into new files with extension `.vco` (unless the `.vco` files are already present); the tool then computes a reordering of each block and generates a new set of file `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc` whose elements have been permuted using the designate heuristics. 
 All the `.vc` and `.vco` files are read from (and stored to) the same directory `somedir` containing the matrix file `covtype`.
@@ -64,8 +64,8 @@ The command
 ```bash 
 retest.py pc -d /data -b8
 ```
-uses *matrepair* to compute the CSRV representation of the input matrices and splits them into 8 row blocks. Then, applies the *PathCover* reordering algorithm to each block, and finally uses gain *matrepair* to computes the grammar compression of the permuted blocks applying the *re32*, *reiv* and *reans* algorithms. The output are two tables showing the compressed size (absolute and percentage) of the different algorithms. Used to generate tables and figures in Section 5.3 of the paper.
-The command `retest.py mwm ...` works as above using the *Maximum Weighted Matching* heuristics instead of *PathCover*. 
+uses *matrepair* to compute the CSRV representation of the input matrices and splits them into 8 row blocks. Then, applies the *PathCover* reordering algorithm to each block, and finally uses again *matrepair* to computes the grammar compression of the permuted blocks applying the *re32*, *reiv* and *reans* algorithms. The output are two tables showing the compressed size (absolute and percentage) of the different algorithms. Used to generate tables and figures in Section 5.3 of the paper. If the parameter `pc` is replaced by `mwm`, `lkh`, or `pc+` the reordering is done using the algorithm *Maximum Weighted Matching*, *Lin-Kernighan*, *PathCover+* respectively.
+
 
 ---
 

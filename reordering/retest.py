@@ -5,8 +5,11 @@ Description = """
 Split into row blocks and reorder a collection of files
 
 Currently supported algorithms:
-   pc: path cover
-  mwm: maximum weighted matching
+   pc:   path cover
+  mwm:   maximum weighted matching
+  lkh:   Lin-Kernighan
+  pc+:   PathCover+
+  
 """
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
@@ -28,8 +31,7 @@ def filext_multipart(n,i):
   return ".{tot}.{part}".format(tot=n,part=i)
 
 
-
-# execute command: return True is everything OK, False otherwise
+# execute command: return True if everything OK, False otherwise
 def execute_command(command,logfile):
   try:
     ris = subprocess.run(command.split(),stdout=logfile,
@@ -82,13 +84,17 @@ def show_command_line(f):
 def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('algo',  help='algorithm to test: pc|mwm', type=str)  
+  parser.add_argument('algo',  help='algorithm to test: pc|mwm|lkh|pc+', type=str)  
   parser.add_argument('-d',    help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-b',    help='number of row blocks (def 4)', default=4, type=int)
+  parser.add_argument('-k',    help='pruning parameter (default: 16)', type=int, default=16)
   args = parser.parse_args()
 
-  if args.algo!="pc" and args.algo!="mwm":
-    print("Unknown algorithm:  must be pc|mwm")
+  #params
+  algolist = ['pc', 'mwm', 'lkh', 'pc+']
+  if args.algo not in algolist :
+    algos_s = '|'.join(algolist)
+    print('Unknown algorithm: must be', algos_s)
     sys.exit(1)
      
   absdir = os.path.abspath(args.d)
@@ -98,8 +104,8 @@ def main():
     print("ERROR: Invalid data directory")
     sys.exit(2)
     
-  if args.b<2:
-    print("ERROR: Invalid number of blocks (must be >1)") 
+  if args.b<1:
+    print("ERROR: Invalid number of blocks (must be >0)") 
     sys.exit(3)    
 
   table_abs = ["### csrv and repair size; %d row-blocks\n" % args.b, 
@@ -123,9 +129,9 @@ def main():
         sys.exit(4)
         
       # --- apply permutation
-      command = "./{exe} {alg} {name} {r} {c} {blocks}".format(
-                  exe = "reorder", alg=args.algo, blocks = args.b, 
-                  name=name, r=rows, c=cols)
+      command = "./{exe} -b {blocks} -k {prun} {alg} {name} {r} {c}".format(
+                  exe = "reorder.py", alg=args.algo, blocks = args.b, 
+                  prun = args.k, name=name, r=rows, c=cols)
       if(not execute_command(command,logfile)):
         print("reorder failed")
         print("Check log file: " + logfile.name)

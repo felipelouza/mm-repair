@@ -87,7 +87,7 @@ def main():
   parser.add_argument('rows',  help='number of rows', type=int)
   parser.add_argument('cols',  help='number of columns', type=int)  
   parser.add_argument('-b', help='number of row blocks (default: 1)', type=int, default=1)
-  parser.add_argument('-k', default=16, help='pruning parameter (default: 16)', type=int)
+  parser.add_argument('-k', help='pruning parameter (default: 16)', type=int, default=16)
   args = parser.parse_args()
 
   #params
