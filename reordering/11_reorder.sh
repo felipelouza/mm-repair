@@ -27,15 +27,11 @@ pids=()
 # .vco are the original unpermuted .vc files 
 for (( i=0; i+1<$NB; ++i ))
 do
-    ln -sf $DATASET_PATH.$NB.$i.vco $DATASET_PATH.$NB.$i.vc &&
     ./vc_reorder.x $DATASET_PATH.$NB.$i $NR_FIRST $NC $DATASET_PATH.$NB.$i.pruned_local_$K_PAR.$ALGO.solution && 
-    ln -sf $DATASET_PATH.$NB.$i.pruned_local_$K_PAR.$ALGO.solution.vc $DATASET_PATH.$NB.$i.vc &&
     echo " --- block $i done." &
     pids+=($!)
 done
-ln -sf $DATASET_PATH.$NB.$NB_LAST.vco $DATASET_PATH.$NB.$NB_LAST.vc &&
 ./vc_reorder.x $DATASET_PATH.$NB.$NB_LAST $NR_LAST $NC $DATASET_PATH.$NB.$NB_LAST.pruned_local_$K_PAR.$ALGO.solution &&
-ln -sf $DATASET_PATH.$NB.$NB_LAST.pruned_local_$K_PAR.$ALGO.solution.vc $DATASET_PATH.$NB.$NB_LAST.vc &&
 echo " --- block $NB_LAST done." &
 pids+=($!)
 

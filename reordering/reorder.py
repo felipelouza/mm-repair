@@ -48,8 +48,7 @@ def execute_command_verbose(cmd, exit_code, msg='Something went wrong: please co
 
 # check that the input file and the corresponding .vco exist
 # note .vco files are obtained from .vc if necessary and possible 
-def check_input_files(datadir,name,n):
-  fullname = os.path.join(datadir,name)
+def check_input_files(fullname,n):
   if not os.path.isfile(fullname):
     print("ERROR File", fullname, "missing")
     return  False
@@ -98,15 +97,8 @@ def main():
     print('Unknown algorithm: must be', algos_s)
     sys.exit(1)
 
-  absdir = os.path.abspath(os.path.dirname(args.input))
-  fname = os.path.basename(args.input)
-     
-  if os.path.isdir(absdir):
-    print("OK     Data directory", absdir)
-  else:
-    print("ERROR: Invalid data directory")
-    sys.exit(2)
-    
+  fullname = os.path.abspath(args.input)
+         
   if args.b<1:
     print("ERROR: Invalid number of blocks (must be >0)") 
     sys.exit(3) 
@@ -115,16 +107,12 @@ def main():
     print("ERROR: Number of rows and columns must be positive") 
     sys.exit(4) 
      
-  if not check_input_files(absdir,fname,args.b):
+  if not check_input_files(fullname,args.b):
     sys.exit(5)
 
-  # number of rows in row blocks 
-  nr_first = None if args.b==1 else (args.rows + args.b - 1) // args.b
-  nr_last = None if args.b==1 else args.rows - ((args.b - 1) * nr_first)
-
   # arguments to be passed to reordering algorithms 
-  cr_args = {'a_descr':args.algo, 'a':algomap[args.algo], 'd':absdir, 'f':fname, 'r':args.rows, 'c':args.cols, 'b':args.b, 
-      'k':args.k, 'b_lst':args.b-1, 'r_fst':nr_first, 'r_lst':nr_last,
+  cr_args = {'a_descr':args.algo, 'a':algomap[args.algo],'f':args.input, 'r':args.rows, 'c':args.cols, 'b':args.b, 
+      'k':args.k, 'b_lst':args.b-1,
       'lkh_version':'LKH-3.0.7', 'lkh_link':'http://webhotel4.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz' }
 
   if args.b == 1 :
@@ -138,11 +126,11 @@ def main():
 # reorder a matrix taken as a single block
 def reorder_matrix(cr_args) :
   print('Transposing the matrix...')
-  cmd = 'python3 ./column_major.py {d}/{f}'.format(**cr_args)
+  cmd = 'python3 ./column_major.py {f}'.format(**cr_args)
   execute_command_verbose(cmd, 7)
 ##
   print('Generating the CSM...')
-  cmd = './build/tsp_generator_pruned_local {d}/{f} {r} {c} {k} '.format(**cr_args)
+  cmd = './build/tsp_generator_pruned_local {f} {r} {c} {k} '.format(**cr_args)
   execute_command_verbose(cmd, 8)
 ##
   if cr_args['a_descr'] == 'lkh' :
@@ -154,36 +142,32 @@ def reorder_matrix(cr_args) :
   if False :
     pass
   elif cr_args['a_descr']=='pc' :
-    cmd = 'python3 ./cover.py {d}/{f}.pruned_local_{k}.tsp '.format(**cr_args)
+    cmd = 'python3 ./cover.py {f}.pruned_local_{k}.tsp '.format(**cr_args)
     execute_command_verbose(cmd, 10)
   elif cr_args['a_descr']=='pc+' :
-    cmd = 'python3 ./cover2.py {d}/{f}.pruned_local_{k}.tsp '.format(**cr_args)
+    cmd = 'python3 ./cover2.py {f}.pruned_local_{k}.tsp '.format(**cr_args)
     execute_command_verbose(cmd, 10)
   elif cr_args['a_descr']=='mwm' :
-    cmd = './build/mwm {d}/{f} pruned_local_{k} '.format(**cr_args)
+    cmd = './build/mwm {f} pruned_local_{k} '.format(**cr_args)
     execute_command_verbose(cmd, 10)
-    cmd = 'python3 ./mwm_sol_from_pairs.py {d}/{f} pruned_local_{k} '.format(**cr_args)
+    cmd = 'python3 ./mwm_sol_from_pairs.py {f} pruned_local_{k} '.format(**cr_args)
     execute_command_verbose(cmd, 10)
   elif cr_args['a_descr']=='lkh' :
-    cmd = '{lkh_version}/LKH {d}/{f}.pruned_local_{k}.par'.format(**cr_args)
+    cmd = '{lkh_version}/LKH {f}.pruned_local_{k}.par'.format(**cr_args)
     execute_command_verbose(cmd, 10)
 ##
   print('Reordering the .vc file...')
-  cmd = 'ln -sf {d}/{f}.vco {d}/{f}.vc '.format(**cr_args)
-  execute_command_verbose(cmd, 11)
-  cmd = './vc_reorder.x {d}/{f} {r} {c} {d}/{f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
+  cmd = './vc_reorder.x {f} {r} {c} {f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
   execute_command_verbose(cmd, 12)
-  cmd = 'ln -sf {d}/{f}.pruned_local_{k}.{a}.solution.vc {d}/{f}.vc '.format(**cr_args)
-  execute_command_verbose(cmd, 13) 
 ##
   print('Cleaning...')
   cmd = 'rm -r '
-  cmd += '{d}/{f}_cols '.format(**cr_args)
-  cmd += '{d}/{f}.pruned_local_{k}.par '.format(**cr_args)
-  cmd += '{d}/{f}.pruned_local_{k}.tsp '.format(**cr_args)
-  cmd += '{d}/{f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
+  cmd += '{f}_cols '.format(**cr_args)
+  cmd += '{f}.pruned_local_{k}.par '.format(**cr_args)
+  cmd += '{f}.pruned_local_{k}.tsp '.format(**cr_args)
+  cmd += '{f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
   #if cr_args['a_descr'] == 'lkh' :
-  #  cmd += '{d}/{f}.pruned_local_{k}.log '.format(**cr_args)
+  #  cmd += '{f}.pruned_local_{k}.log '.format(**cr_args)
   
   execute_command_verbose(cmd, 14)
   return   
@@ -191,15 +175,15 @@ def reorder_matrix(cr_args) :
 # reoder a matrix splitted into b blocks
 def reorder_matrix_blocks(cr_args) :
   print('Dividing into row chunks...')
-  cmd ='python3 csv_splitter.py {d}/{f} {r} {b} '.format(**cr_args)
+  cmd ='python3 csv_splitter.py {f} {r} {b} '.format(**cr_args)
   execute_command_verbose(cmd, 6)
 ##
   print('Transposing each row block...')
-  cmd = 'bash 07_transpose.sh {d}/{f} {b} '.format(**cr_args)
+  cmd = 'bash 07_transpose.sh {f} {b} '.format(**cr_args)
   execute_command_verbose(cmd, 7)
 ##
   print('Generating the CSM for each row block...')
-  cmd = 'bash 08_generate_csm.sh {d}/{f} {r} {c} {b} {k}'.format(**cr_args)
+  cmd = 'bash 08_generate_csm.sh {f} {r} {c} {b} {k}'.format(**cr_args)
   execute_command_verbose(cmd, 8)
 ##
   if cr_args['a_descr'] == 'lkh' :
@@ -208,22 +192,22 @@ def reorder_matrix_blocks(cr_args) :
     execute_command_verbose(cmd, 9)
 ##
   print('Running', cr_args['a_descr'], 'upon each row block...')
-  cmd = 'bash 10_run_{a}.sh {d}/{f} {b} {k} {lkh_version} '.format(**cr_args)
+  cmd = 'bash 10_run_{a}.sh {f} {b} {k} {lkh_version} '.format(**cr_args)
   execute_command_verbose(cmd, 10)
 ##
   print('Reordering each .vc file...')
-  cmd = 'bash 11_reorder.sh {d}/{f} {r} {c} {b} {k} {a}'.format(**cr_args)
+  cmd = 'bash 11_reorder.sh {f} {r} {c} {b} {k} {a}'.format(**cr_args)
   execute_command_verbose(cmd, 11) 
 ##
   print('Cleaning...')
   for i in range(cr_args['b']) :
     cmd = 'rm -r '
-    cmd += '{d}/{f}.{b}.{i}_cols '.format(**cr_args, i=i)
-    cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.par '.format(**cr_args, i=i)
-    cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.tsp '.format(**cr_args, i=i)
-    cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.{a}.solution '.format(**cr_args, i=i)
+    cmd += '{f}.{b}.{i}_cols '.format(**cr_args, i=i)
+    cmd += '{f}.{b}.{i}.pruned_local_{k}.par '.format(**cr_args, i=i)
+    cmd += '{f}.{b}.{i}.pruned_local_{k}.tsp '.format(**cr_args, i=i)
+    cmd += '{f}.{b}.{i}.pruned_local_{k}.{a}.solution '.format(**cr_args, i=i)
     if cr_args['a_descr'] == 'lkh' :
-      cmd += '{d}/{f}.{b}.{i}.pruned_local_{k}.log '.format(**cr_args, i=i)
+      cmd += '{f}.{b}.{i}.pruned_local_{k}.log '.format(**cr_args, i=i)
     execute_command_verbose(cmd, 12)
   return     
 

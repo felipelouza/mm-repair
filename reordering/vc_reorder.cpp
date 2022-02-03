@@ -9,10 +9,12 @@
 int main(int argc, char** argv) {
     /******************
      * parameters are:
-     *  - dataset: requires that <dataset>.vc already exists
+     *  - dataset: requires that <dataset>.vco already exists
      *  - nrows: number of rows in the dataset
      *  - ncols: number of columns in the dataset
      *  - solution file: any .sol file prepresenting a column reordering
+     * output:
+     *   <dataset>.vc contains the reordered file
      ******************/
     if (argc!=4+1){
         std::cout << "Usage is: " << argv[0] << " <dataset> <nrows> <ncols> <solution_file>\n";
@@ -57,8 +59,9 @@ int main(int argc, char** argv) {
      *******************************/
     std::ifstream infile;
     std::ofstream outfile;
-    infile.open(dataset + ".vc");
-    outfile.open(solution_path + ".vc",std::ofstream::binary);
+    infile.open(dataset + ".vco");
+    outfile.open(dataset + ".vc",std::ofstream::binary);
+    // outfile.open(solution_path + ".vc",std::ofstream::binary);
 
     assert(infile.is_open());
     assert(outfile.is_open());
