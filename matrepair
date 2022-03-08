@@ -40,6 +40,7 @@ def main():
   parser.add_argument('-d', help='decompress',action='store_true')
   parser.add_argument('-c', help='decompress and check',action='store_true')
   parser.add_argument('-r', help='compression full report',action='store_true')
+  parser.add_argument('-p', help='number of repair procs (def. 1)',type=int, default=1)
   parser.add_argument('-m', help='force repair to use at most M MBs (def. 95%% of available RAM)',default=-1, type=int)
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
   # parser.add_argument('-k', help='keep intermediate files',action='store_true')
@@ -100,21 +101,37 @@ def main():
           return
           
       # now we have args.b different blocks 
+      # do grammar compressor possibily in parallel
+      # first create list of commands
       for bn in range(args.b):  
         basename = args.input + filext_multipart(args.b,bn)
+        clist = [] # list of compression commands to execute 
         # ---- apply irepair to the .vc file 
         if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
-          print("---- Skipping irepair")
+          print("---- Skipping irepair for", basename+".vc")
         else:
-          start = time.time()
           command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
                     exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+          clist.append(command)
+      # execute commands  
+      start = time.time()
+      if args.p>1 and len(clist)>1:
+        print("==== Repair paralell compression. Commands:")
+        for c in clist: print(c)
+        if execute_commands(clist,logfile,args.p)!=True:
+          sys.exit(3)
+        repair_time += time.time()-start
+      else:
+        for command in clist:
           print("==== Repair compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
-           sys.exit(3)
+            sys.exit(3)
           repair_time += time.time()-start
-          print("Repair time: {0:.4f}".format(repair_time))
-          
+      print("Repair time: {0:.4f}".format(repair_time))
+
+      # compress .C and .R files 
+      for bn in range(args.b):  
+        basename = args.input + filext_multipart(args.b,bn)          
         # ---- apply integer vector encoding to the .vc.C and vc.R files
         iv_time = 0 
         if args.y and not need_rebuild(basename+".vc.C", ".iv"):
@@ -164,6 +181,31 @@ def main():
           sys.exit(7)
 
   print("==== Done")
+
+# input must be a single parameter for the use in Pool
+def irepair0(atuple):
+  args = atuple[0]
+  bn = atuple[1]
+  logfile = atuple[2]
+  basename = args.input + filext_multipart(args.b,bn)
+  # ---- apply irepair to the .vc file 
+  if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
+    print("---- Skipping irepair for", basename+".vc")
+  else:
+    start = time.time()
+    command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
+              exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+  if args.p:
+    pass # parallel compression 
+  else:
+    print("==== Repair compression\nCommand:", command)
+    if(execute_command(command,logfile)!=True):
+     sys.exit(3)
+    repair_time += time.time()-start
+    print("Repair time: {0:.4f}".format(repair_time))
+
+  
+  
 
 def getsize_multipart(base,num,ext):
   tot = 0
@@ -227,11 +269,8 @@ def file_digest(name,logfile):
       
       
 # execute command: return True is everything OK, False otherwise
-def execute_command(command,logfile,outfile=None):
+def execute_command(command,logfile):
   try:
-    #subprocess.run(command.split(),stdout=logfile,stderr=logfile,check=True,env=env)
-    if not outfile:
-      outfile = logfile
     subprocess.check_call(command.split(),stdout=logfile,stderr=logfile)
   except subprocess.CalledProcessError:
     print("Error executing command line:")
@@ -239,6 +278,20 @@ def execute_command(command,logfile,outfile=None):
     print("Check log file: " + logfile.name)
     return False
   return True
+
+# add multiprocess here!
+def execute_commands(commands,logfile,p):
+  assert False, "To be written"
+  try:
+    subprocess.check_call(command.split(),stdout=logfile,stderr=logfile)
+  except subprocess.CalledProcessError:
+    print("Error executing command line:")
+    print("\t"+ command)
+    print("Check log file: " + logfile.name)
+    return False
+  return True
+
+
 
 # number of bits to represent integers from 0 up to n-1
 def bits(n):
