@@ -2,6 +2,7 @@
 
 import sys, time, argparse, subprocess, os.path, struct, datetime
 from psutil import virtual_memory
+from multiprocessing import Pool
 
 Description = """
 Compressed Sparse Row-Value representation + Repair compression
@@ -48,10 +49,13 @@ def main():
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
+  if args.p>args.b:
+    args.p = args.b # more process than blocks makes no sense
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
     args.m = max(4000,int(0.90*mem/2**20)) # assume at least 4GB in case virtual_memory() misbehaves
+    args.m = args.m//args.p # if repair is done in parallel divide memory equally 
   # init time counters 
   vc_time = repair_time = iv_time = ansf_time = 0
 
@@ -103,9 +107,9 @@ def main():
       # now we have args.b different blocks 
       # do grammar compressor possibily in parallel
       # first create list of commands
+      clist = [] # list of compression commands to execute 
       for bn in range(args.b):  
         basename = args.input + filext_multipart(args.b,bn)
-        clist = [] # list of compression commands to execute 
         # ---- apply irepair to the .vc file 
         if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
           print("---- Skipping irepair for", basename+".vc")
@@ -116,8 +120,7 @@ def main():
       # execute commands  
       start = time.time()
       if args.p>1 and len(clist)>1:
-        print("==== Repair paralell compression. Commands:")
-        for c in clist: print(c)
+        print("==== Repair paralell compression")
         if execute_commands(clist,logfile,args.p)!=True:
           sys.exit(3)
         repair_time += time.time()-start
@@ -279,18 +282,28 @@ def execute_command(command,logfile):
     return False
   return True
 
-# add multiprocess here!
-def execute_commands(commands,logfile,p):
-  assert False, "To be written"
-  try:
-    subprocess.check_call(command.split(),stdout=logfile,stderr=logfile)
-  except subprocess.CalledProcessError:
-    print("Error executing command line:")
-    print("\t"+ command)
-    print("Check log file: " + logfile.name)
-    return False
-  return True
+# execute command and return CompletedProcess 
+def local_execute(command):
+    return subprocess.run(command.split(),encoding="utf-8",
+                          stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
+def execute_commands(commands,logfile,p):
+  # execute in parallel 
+  print("---- Executing", p, "parallel processes")
+  with Pool(p) as pool:
+    completed = pool.map(local_execute,commands)
+  print("---- Parallel processing completed")
+  done  = True
+  for c,r in zip(commands,completed):
+    print("Command:", c, file=logfile)
+    print("Return code:", r.returncode, file=logfile) 
+    print("---stdout---\n",r.stdout,"\n--stderr--\n",r.stderr, file=logfile) 
+    if r.returncode!=0:
+      print("Error executing command line:")
+      print("\t"+ c)
+      print("Check log file: " + logfile.name)
+      done=False
+  return done
 
 
 # number of bits to represent integers from 0 up to n-1
