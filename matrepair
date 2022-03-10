@@ -49,13 +49,18 @@ def main():
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
+  if args.p < 1 or args.b <1:
+    print("Options -p and -b must be positive")
+    sys.exit(1) 
   if args.p>args.b:
-    args.p = args.b # more process than blocks makes no sense
+    args.p = args.b # more processes than blocks makes no sense
+    print("Setting number of parallel processes to", args.p)
   # if no max RAM provided on command line uses 90% of total 
   if(args.m<0):
     mem = virtual_memory().total
     args.m = max(4000,int(0.90*mem/2**20)) # assume at least 4GB in case virtual_memory() misbehaves
     args.m = args.m//args.p # if repair is done in parallel divide memory equally 
+    print("Setting memory for each repair instance to", args.m, "MBs")
   # init time counters 
   vc_time = repair_time = iv_time = ansf_time = 0
 

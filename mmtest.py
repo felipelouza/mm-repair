@@ -19,7 +19,6 @@ Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174)
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
          'airline78':(14462943, 29)}
 
-
 Algos = ['csrvmm', 're32mm','reivmm','reansmm']
 
 # name of files containing the input/output vectors
@@ -28,7 +27,7 @@ Xvname = "x1.dbl"
 Yvname = "y.dbl"
 Zvname = "z.dbl"
 Evname = "ein.dbl"
-Timelimit = 18000
+Timelimit = 36000
 TmpFilename = "tmp_mmtest"
 
 
@@ -114,8 +113,7 @@ def test_compress(args, logfile):
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "{exe} -r -y -b {blocks} {name} {r} {c}".format(
-                exe = exe_name, blocks = args.b, name=name, r=rows, c=cols)
+    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -255,6 +253,7 @@ def main():
   parser.add_argument('-d', help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
+  parser.add_argument('-p', help='number of parallel procs (def. 1)',type=int, default=1)
   args = parser.parse_args()
 
   # check data directory   
