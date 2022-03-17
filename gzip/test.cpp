@@ -8,8 +8,39 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/stream.hpp>
 
-using buffer_t = boost::iostreams::filtering_streambuf<boost::iostreams::input>;
+namespace bio = boost::iostreams;
+using buffer_t = bio::filtering_streambuf<bio::input>;
+using byte_t = unsigned char;
+
+std::vector<byte_t> &fetch_data(std::string &infilepath, std::vector<byte_t> &bytes)
+{
+    char byte;
+    bytes.clear();
+
+    std::ifstream input_file(infilepath);
+    if (!input_file.is_open()) {
+        std::cerr << "Could not open the file - '"
+             << infilepath << "'" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    while (input_file.get(byte)) {
+        bytes.push_back(byte);
+    }
+    bytes.reserve(bytes.size());
+    input_file.close();
+
+    return bytes;
+}
+
+buffer_t &build_inbuf(bio::array_source &arrs, buffer_t &inbuf) {
+    inbuf.push(boost::iostreams::gzip_decompressor());
+    inbuf.push(arrs);
+    return inbuf;
+}
+
 
 template <class T>
 struct gzip_reader_value {
@@ -17,12 +48,14 @@ struct gzip_reader_value {
     size_t r, c;
 };
 
-template <class T>
+template<class T>
 class gzip_reader {
     size_t r_curr, r_fst, r_lst, c, cols;
 
+    std::vector<byte_t> bytes;
+    bio::array_source arrs;
     std::string infilepath;
-    std::ifstream file;
+    //std::ifstream file;
     buffer_t inbuf;
     std::istream *istream;
 
@@ -33,21 +66,30 @@ public :
     {}
 
     gzip_reader(std::string &infilepath, const size_t fst_row, const size_t lst_row, const size_t cols)
-            : infilepath(infilepath), r_curr(fst_row), r_fst(fst_row), r_lst(lst_row), c(0), cols(cols), file(infilepath, std::ios_base::in | std::ios_base::binary)
+            : 
+            infilepath(infilepath),
+            r_curr(fst_row),
+            r_fst(fst_row),
+            r_lst(lst_row),
+            c(0),
+            cols(cols), 
+            bytes(fetch_data(infilepath, bytes)), 
+            arrs{reinterpret_cast<char const*>(&bytes[0]), bytes.size()}
     {
+        istream = new std::istream(&inbuf);
+        //this->arrs = bio::array_source;
         //std::cout << infilepath << std::endl;
-        assert(file.is_open());
-        inbuf.push(boost::iostreams::gzip_decompressor());
-        inbuf.push(file);
-        this->istream  = new std::istream(&inbuf);
+        //assert(file.is_open());
+
+        //this->istream  = new std::istream(&inbuf);
 
     }
 
     //gzip_reader() = delete;
 
-    gzip_reader(const gzip_reader<T> &) = delete;
+    gzip_reader(const gzip_reader &) = delete;
 
-    gzip_reader(gzip_reader<T> &&) = default;
+    gzip_reader(gzip_reader &&) = default;
 
     ~gzip_reader() {
         //if(rows != -1 and cols!= -1) delete this->istream;
@@ -57,16 +99,16 @@ public :
     }
 
     void reset() {
+        
         this->r_curr = this->r_fst;
         this->inbuf.reset();
-        this->file.close();
+        this->arrs = bio::array_source{reinterpret_cast<char const*>(&bytes[0]), bytes.size()};
+        build_inbuf(arrs, inbuf);
         delete this->istream;
+        this->istream = new std::istream(&inbuf);
 
-        this->file = std::ifstream(infilepath, std::ios_base::in | std::ios_base::binary);
-        assert(file.is_open());
-        inbuf.push(boost::iostreams::gzip_decompressor());
-        inbuf.push(file);
-        this->istream  = new std::istream(&inbuf);
+        //istream(&inbuf);
+        
     }
 
     bool has_value() {return this->r_curr < this->r_lst;}
