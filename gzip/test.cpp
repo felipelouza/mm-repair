@@ -2,27 +2,34 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <string.h>
 #include <thread>
 #include <vector>
 
+//#define GZIP_ENABLE 1
+
+#ifdef GZIP_ENABLE
+
 #include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/stream.hpp>
 
 namespace bio = boost::iostreams;
 using buffer_t = bio::filtering_streambuf<bio::input>;
+
+#endif
+
 using byte_t = unsigned char;
 
-std::vector<byte_t> &fetch_data(std::string &infilepath, std::vector<byte_t> &bytes)
+std::vector<byte_t> fetch_data(std::string &infilepath)
 {
     char byte;
-    bytes.clear();
+    std::vector<byte_t> bytes;
 
     std::ifstream input_file(infilepath);
     if (!input_file.is_open()) {
         std::cerr << "Could not open the file - '"
-             << infilepath << "'" << std::endl;
+                  << infilepath << "'" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -35,11 +42,16 @@ std::vector<byte_t> &fetch_data(std::string &infilepath, std::vector<byte_t> &by
     return bytes;
 }
 
-buffer_t &build_inbuf(bio::array_source &arrs, buffer_t &inbuf) {
+#ifdef GZIP_ENABLE
+void inline build_inbuf(
+        bio::array_source &arrs
+        ,buffer_t &inbuf
+) {
     inbuf.push(boost::iostreams::gzip_decompressor());
     inbuf.push(arrs);
-    return inbuf;
+    return;
 }
+#endif
 
 
 template <class T>
@@ -53,11 +65,13 @@ class gzip_reader {
     size_t r_curr, r_fst, r_lst, c, cols;
 
     std::vector<byte_t> bytes;
+#ifdef GZIP_ENABLE
     bio::array_source arrs;
-    std::string infilepath;
-    //std::ifstream file;
     buffer_t inbuf;
     std::istream *istream;
+#else
+    std::vector<byte_t>::iterator iter;
+#endif
 
 public :
 
@@ -66,23 +80,20 @@ public :
     {}
 
     gzip_reader(std::string &infilepath, const size_t fst_row, const size_t lst_row, const size_t cols)
-            : 
-            infilepath(infilepath),
-            r_curr(fst_row),
-            r_fst(fst_row),
-            r_lst(lst_row),
-            c(0),
-            cols(cols), 
-            bytes(fetch_data(infilepath, bytes)), 
-            arrs{reinterpret_cast<char const*>(&bytes[0]), bytes.size()}
-    {
+            :
+            r_curr(fst_row)
+            ,r_fst(fst_row)
+            ,r_lst(lst_row)
+            ,c(0)
+            ,cols(cols)
+            ,bytes(fetch_data(infilepath))
+#ifdef GZIP_ENABLE
+            ,arrs{reinterpret_cast<char const*>(&bytes[0]), bytes.size()} {
+        build_inbuf(arrs,inbuf);
         istream = new std::istream(&inbuf);
-        //this->arrs = bio::array_source;
-        //std::cout << infilepath << std::endl;
-        //assert(file.is_open());
-
-        //this->istream  = new std::istream(&inbuf);
-
+#else
+            ,iter(this->bytes.begin()) {
+#endif
     }
 
     //gzip_reader() = delete;
@@ -92,31 +103,33 @@ public :
     gzip_reader(gzip_reader &&) = default;
 
     ~gzip_reader() {
-        //if(rows != -1 and cols!= -1) delete this->istream;
-        //if(rows != -1 and cols!= -1) delete this->istream;
-        inbuf.auto_close();
-        this->file.close();
+        this->inbuf.auto_close();
+#ifdef GZIP_ENABLE
+        delete this->istream;
+#endif
     }
 
     void reset() {
-        
+
         this->r_curr = this->r_fst;
+#ifdef GZIP_ENABLE
         this->inbuf.reset();
         this->arrs = bio::array_source{reinterpret_cast<char const*>(&bytes[0]), bytes.size()};
         build_inbuf(arrs, inbuf);
         delete this->istream;
         this->istream = new std::istream(&inbuf);
-
+#else
+        this->iter = this->bytes.begin();
+#endif
         //istream(&inbuf);
-        
+
     }
 
     bool has_value() {return this->r_curr < this->r_lst;}
 
     gzip_reader_value<T> next() {
         assert(this->r_curr < this->r_lst);
-        constexpr size_t byte2read = sizeof(T);
-        uint32_t v = 0;
+#ifdef GZIP_ENABLE
         uint8_t b0 = this->istream->get();
         uint8_t b1 = this->istream->get();
         uint8_t b2 = this->istream->get();
@@ -125,9 +138,19 @@ public :
         uint8_t b5 = this->istream->get();
         uint8_t b6 = this->istream->get();
         uint8_t b7 = this->istream->get();
+#else
+        uint8_t b0 = *(this->iter++);
+        uint8_t b1 = *(this->iter++);
+        uint8_t b2 = *(this->iter++);
+        uint8_t b3 = *(this->iter++);
+        uint8_t b4 = *(this->iter++);
+        uint8_t b5 = *(this->iter++);
+        uint8_t b6 = *(this->iter++);
+        uint8_t b7 = *(this->iter++);
+#endif
         uint8_t b[8] = {b0,b1,b2,b3,b4,b5,b6,b7};
         T val;
-        memcpy(&val, &b, sizeof(val));
+        memcpy(&val, &b, sizeof(val)); 
         gzip_reader_value<T> grv = {val, this->r_curr, this->c };
         ++ this->c;
         if (this->c == this->cols) {
@@ -143,9 +166,10 @@ int main(int argc, char** argv) {
         std::cerr << "Usage: " << argv[0] << " <matrix base path> <y path> <rows> <cols> <par. degree>" << std::endl;
         exit(1);
     }
+
     //args
     std::string matrix_path(argv[1]), y_path(argv[2]);
-    const size_t rows = atoi(argv[3]), cols = atoi(argv[4]), blocks = atoi(argv[5]);
+    const size_t rows = strtol(argv[3], NULL, 10), cols = strtol(argv[4], NULL, 10), blocks = strtol(argv[5], NULL, 10);
 
     //params
     using T = double;
@@ -157,12 +181,18 @@ int main(int argc, char** argv) {
     std::vector<T> cs(cols), rs(rows, 0x0);
     {//cs
         std::ifstream y_file(y_path, std::ios_base::in | std::ios_base::binary);
-        assert(y_file.is_open());
+        if(!y_file.is_open()){
+            std::cerr << "y file not open." << std::endl;
+            exit(-1);
+        }
+#ifdef GZIP_ENABLE
         buffer_t inbuf;
         inbuf.push(boost::iostreams::gzip_decompressor());
         inbuf.push(y_file);
         std::istream istream(&inbuf);
+#endif
         for (size_t col = 0; col < cols; ++col) {
+#ifdef GZIP_ENABLE
             uint8_t b0 = istream.get();
             uint8_t b1 = istream.get();
             uint8_t b2 = istream.get();
@@ -171,13 +201,25 @@ int main(int argc, char** argv) {
             uint8_t b5 = istream.get();
             uint8_t b6 = istream.get();
             uint8_t b7 = istream.get();
+#else
+            uint8_t b0 = y_file.get();
+            uint8_t b1 = y_file.get();
+            uint8_t b2 = y_file.get();
+            uint8_t b3 = y_file.get();
+            uint8_t b4 = y_file.get();
+            uint8_t b5 = y_file.get();
+            uint8_t b6 = y_file.get();
+            uint8_t b7 = y_file.get();
+#endif
             uint8_t b[8] = {b0, b1, b2, b3, b4, b5, b6, b7};
             T val;
             memcpy(&val, &b, sizeof(val));
             cs[col] = val;
         }
         y_file.close();
+#ifdef GZIP_ENABLE
         inbuf.auto_close();
+#endif
     }
     std::vector<std::vector<T>> css; //map-reduce aux vects
     css.reserve(blocks);
@@ -193,12 +235,14 @@ int main(int argc, char** argv) {
         gzip_paths.emplace_back();
         gzip_paths.back() += matrix_path;
         gzip_paths.back() += ".";
-        gzip_paths.back() += std::to_string(block);
-        gzip_paths.back() += ".";
         gzip_paths.back() += std::to_string(blocks);
+        gzip_paths.back() += ".";
+        gzip_paths.back() += std::to_string(block);
+#ifdef GZIP_ENABLE
         gzip_paths.back() += ".gz";
+#endif
     }
-    for(std::string &s : gzip_paths ) std::cout << s << std::endl;
+    //for(std::string &s : gzip_paths ) std::cout << s << std::endl;
     T lambda = 1;
 
     //business-logic functions
@@ -217,6 +261,7 @@ int main(int argc, char** argv) {
             auto e = gr->next();
             assert(e.r < rs.size());
             assert(e.c < cs.size());
+            //std::cout << e.val << " (" << e.r << ", " << e.c << ")" << std::endl;
             rs[e.r] += e.val * cs[e.c];
         }
     };
@@ -256,6 +301,7 @@ int main(int argc, char** argv) {
 
     for(size_t i=0; i<ITERATIONS; ++i )
     {
+        std::cout << "iteration: " << i << std::endl;
         //normalisation
         for(size_t block=0; block<blocks; ++block )
         {
@@ -272,7 +318,6 @@ int main(int argc, char** argv) {
         }
         join_all(threads);
         reset_all(grs);
-
 
         //left multiplication
         for(size_t block=0; block<blocks; ++block)
