@@ -12,7 +12,7 @@ CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=re32mm csrvmm reansmm reivmm reans32mm
+EXECS=re32mm csrvmm reansmm reivmm reans32mm mat2csrv
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
@@ -25,9 +25,11 @@ endif
 # main target
 all: $(EXECS) brepair ansf sdsl
 
-# general rule for the targets in this directory
+# general rules for the targets in this directory
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $< 
+%: %.cpp
+	$(CXX) $(CXX_FLAGS) -o $@ $< 
 
 
 # left and right matrix vector multiplication, double entries

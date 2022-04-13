@@ -291,17 +291,29 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   assert(maxblock>=1);
   
   // read everything except values
+  #ifdef U_MATRIX
+  FILE *fum = fopen(base,"r");
+  if(fum==NULL) die("Unable to open matrix file")
+  #else
   char fname[PATH_MAX];
+  #endif  
   int remaining = rows;
   for(int i=0;i<n;i++) {
     assert(remaining>0);
-    snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
     int r = (remaining>maxblock? maxblock : remaining);
     assert(r>0);
+    #ifdef U_MATRIX
+    b[i] = umat_create(r,col,fum);
+    #else
+    snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
     b[i] = remat_create(r,cols,fname,false);// false=> do not read .val file
+    #endif
     remaining -= r;
   }
   assert(remaining==0);
+  #ifdef U_MATRIX
+  fclose(fum);
+  #endif
   
   // read values ad assign them to all matrices in  b[] 
   snprintf(fname,PATH_MAX,"%s%s",base,VFILE_EXT);
