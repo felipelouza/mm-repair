@@ -6,10 +6,10 @@ Tool to create a Latex table containing the results of a set of experiments
 
 Currently supported tests:
    mc: conversion to dense matrix format and compression with gz/xz for testing purposes
-   mz: conpression to CSRV format followed by RePair grammar compression
+   mz: compression to CSRV format followed by RePair grammar compression
    mm: test matrix-vector multiplication algorithms"""
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
 
 Data_dir = 'data/'
 Logfile_name = "errors.log"
@@ -17,7 +17,7 @@ Time_exe = "/usr/bin/time"
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
-         'airline78':(14462943, 29)}
+         'airline78':(14462943, 29),'imagenet':(1262102, 900) }
 
 Algos = ['csrvmm', 're32mm','reivmm','reansmm']
 
