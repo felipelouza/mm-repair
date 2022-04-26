@@ -7,7 +7,7 @@ We read a matrix stored in row-major order, and we store it
 using a sparse representation using a column-major order.
 """
 
-#check whether a string represent an integer or not
+#check whether a string represents an integer or not
 def check_int(s):
     if s[0] in ('-', '+'):
         return s[1:].isdigit()
@@ -21,6 +21,7 @@ def hash(s, separator='\.') :
     #check whether s represent 0
     regex = '^[+-]?([0-9]+)({separator}([0-9]+))?'.format(separator=separator)
     res = re.search(regex, s)
+    assert(res)
     
     is_zero = True
     for ch in res.group(1) :
@@ -28,11 +29,12 @@ def hash(s, separator='\.') :
             break
         if ch != '0' :
             is_zero = False
-    for ch in  res.group(3) :
-        if not is_zero :
-            break
-        if ch != '0' :
-            is_zero = False
+    if res.group(3) is not None :
+        for ch in  res.group(3) :
+            if not is_zero :
+                break
+            if ch != '0' :
+                is_zero = False
 
     if is_zero :
         #a zero remains a zero
