@@ -10,7 +10,7 @@ In this directory you’ll find the code for testing matrix-vector multiplicatio
 
 1) Given the covtype matrix in CSV format (581012 rows, 54 columns) we firstly obtain its block-wise dense representation with (assuming we want to use 8 threads)
 ```bash
-python3  csv2repr.py <path to covtype>/covtype 581012 8 unco
+python3 csv2repr.py <path to covtype>/covtype 581012 8 unco
 ```
 
 2) As for matrix-to-vector multiplications, you need to have a vector, of course; you can, e.g., generate a vector containing 54 entries equal to `1.0` and store it to the file `x54.dbl` using the `makevec.py` tool in the parent directory.
@@ -18,9 +18,9 @@ python3  csv2repr.py <path to covtype>/covtype 581012 8 unco
 makevec.py x54.dbl 54 1
 ```
 
-3) Lastly, execute the `unco` program
+3) Lastly, execute the `test_unco` program
 ```bash
-./unco <path to covtype>/covtype <path to x54.dbl>/x54.dbl 581012 54 8
+./test_unco <path to covtype>/covtype <path to x54.dbl>/x54.dbl 581012 54 8
 ```
 
 ## Gzip'ed representation
@@ -33,7 +33,7 @@ gzip <path to x54.dbl>/x54.dbl
 ```
 thereby generating the file `x54.dbl.gz`.
 
-3) Lastly, execute the `gzip` program
+3) Lastly, execute the `test_gzip` program
 ```bash
-./gzip <path to covtype>/covtype <path to x54.dbl.gz>/x54.dbl.gz 581012 54 8
+./test_gzip <path to covtype>/covtype <path to x54.dbl.gz>/x54.dbl.gz 581012 54 8
 ```
