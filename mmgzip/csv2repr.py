@@ -1,12 +1,37 @@
 import struct, sys
 import argparse
+import subprocess
 
 Description = """
 Convert a CSV into a block-wise dense representation.
   
 Example usage: 
-  reorder.py pc /data/mm/covtype 581012 16
+  reorder.py pc /data/mm/covtype 581012 16 unco
 """
+
+# execute command: return True if everything OK, False otherwise
+def execute_command(command):
+  Timelimit = 180000
+  try:
+    subprocess.check_call(command.split(),timeout=Timelimit)
+  except subprocess.TimeoutExpired:
+      # caso time out
+      print("ERROR: no result after %d seconds. Command:" % Timelimit)
+      print("\t"+ command)
+      return False
+  except subprocess.CalledProcessError:
+    print("Error executing command:")
+    print("\t"+ command)
+    return False
+  print("OK    ", command)
+  return True
+
+def execute_command_verbose(cmd, exit_code, msg='Something went wrong: please contact the maintainers') :
+  if execute_command(cmd):
+    print('All done.')
+  else:
+    print(msg)
+    sys.exit(exit_code)
 
 def get_nums(infilepath, sep=',') :
     infile = open(infilepath, 'r')
@@ -35,12 +60,13 @@ if __name__ == '__main__' :
     #args
     show_command_line(sys.stderr)
     parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('input', help='matrix file name (must be in csv format))', type=str)
+    parser.add_argument('input', help='matrix file name (must be in csv format)', type=str)
     parser.add_argument('rows',  help='number of rows', type=int)
     parser.add_argument('blocks', help='number of row blocks', type=int)
+    parser.add_argument('repr', help='representation (unco|gzip)', type=str)
     args = parser.parse_args()
-    if len(sys.argv) != 3 + 1 :
-        print('Usage is:', sys.argv[0], '<path to csv> <rows> <blocks>')
+    if args.repr not in ['unco','gzip'] :
+        print("The repr field must be either 'unco' or 'uncompressed'")
         exit(-1)
     
     infilepath = args.input 
@@ -64,5 +90,10 @@ if __name__ == '__main__' :
         b = to_byte(d)
         outfile.write(b)
     outfile.close()
-    print()
     assert(curr_block == blocks)
+
+    #gzip
+    if args.repr == 'gzip' :
+        for outfilepath in [f'{infilepath}_b.{blocks}.{bid}' for bid in range(blocks)] :
+            cmd = f'gzip -v {outfilepath}'
+            execute_command_verbose(cmd, 1)
