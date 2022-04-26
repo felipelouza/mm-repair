@@ -13,8 +13,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-add_executable(gzip gzip.cpp)
-add_executable(unco unco.cpp)
+add_executable(test_gzip test_gzip.cpp)
+add_executable(test_unco test_unco.cpp)
 
-target_link_libraries(gzip PRIVATE Threads::Threads ${Boost_LIBRARIES})
-target_link_libraries(unco PRIVATE Threads::Threads)
+target_link_libraries(test_gzip PRIVATE Threads::Threads ${Boost_LIBRARIES})
+target_link_libraries(test_unco PRIVATE Threads::Threads)

@@ -6,16 +6,12 @@
 #include <thread>
 #include <vector>
 
-
-
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/stream.hpp>
 
 namespace bio = boost::iostreams;
 using buffer_t = bio::filtering_streambuf<bio::input>;
-
-
 
 using byte_t = unsigned char;
 
