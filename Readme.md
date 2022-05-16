@@ -61,7 +61,7 @@ od -An -t f8 z.dbl | head
 
 ---
 
-## Paralell computation
+## Parallel computation
 
 The command 
 ```bash
@@ -140,7 +140,7 @@ The command
 ```bash 
 mmtest.py -b 8 -d /data -n num mm
 ```
-executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been aalready split into 8 row blocks and compressed as escribed above. Used for generating Table 2 in the paper.
+executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
 
 
 ---
