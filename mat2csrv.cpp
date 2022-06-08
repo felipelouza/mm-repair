@@ -2,15 +2,19 @@
 #include <iostream>
 // #include <vector>
 #include <unordered_map>
+#include <map>
 #include <cstring>
 #include <limits.h>
 #include <unistd.h>
 #include <time.h>
+#include <complex>
+#include <array>
 
 static void usage_and_exit(char *name)
 {
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols\n",name);
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
+    fprintf(stderr,"\t\t-c             input are complex numbers\n");
     fprintf(stderr,"\t\t-f             save entries as float\n");
     fprintf(stderr,"\t\t-i             save entries as int32\n");
     fprintf(stderr,"\t\t-v             verbose\n\n");
@@ -34,12 +38,15 @@ int bits (unsigned long n) {
   return b;
 }
 
-
+typedef struct {
+  double x;
+  double y;
+} dpair;
 
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,fvalues=0,ivalues=0;
+  int verbose=0,fvalues=0,ivalues=0,cvalues=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -47,7 +54,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:fiv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfiv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -56,6 +63,8 @@ int main (int argc, char **argv) {
         fvalues++; break;
       case 'i':
         ivalues++; break;
+      case 'c':
+        cvalues++; break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -108,10 +117,15 @@ int main (int argc, char **argv) {
   unsigned long   nonz = 0;        // total number of nonzeros  
   unsigned long  dnonz = 0;        // distinct nonzeros  
   unsigned long  maxcode = 0;      // largest code in a .vc file
-  // dictionary of nonzero values 
+  // variables for real input values
   std::unordered_map<double,unsigned long> values; // dictionary of distinct nonzero
-
-
+  double v;   // values read from file
+  // same for complex values
+  std::map<std::complex<double>,unsigned long, std::less<std::complex<double>>> covalues; // dictionary of distinct nonzero
+  std::complex<double> cov;
+  double re,im;
+  float x[2];
+  
   // main loop reading csv file 
   size_t n=0;
   char *buffer=NULL;
@@ -124,7 +138,7 @@ int main (int argc, char **argv) {
       // read csv file
       int e = getline(&buffer,&n,f);
       if(e<0) {
-        if(ferror(f)) quit("Error reding input file");
+        if(ferror(f)) quit("Error reading input file");
         break;
       }
       r += 1;
@@ -134,6 +148,7 @@ int main (int argc, char **argv) {
       } 
       // convert text numerical values
       char *s = strtok(buffer,",");
+      // loop over entries in current row
       for(int c=0;c<cols;c++) {
         // convert s into double and check
         if(s==NULL) {
@@ -141,22 +156,45 @@ int main (int argc, char **argv) {
           quit("Check input file");
         }
         char *tmp;
-        double v = strtod(s,&tmp);
-        if(tmp==s) {
-          fprintf(stderr,"Missing value in row %d column %d (one based)\n",r,c+1);
-          quit("Check input file");
+        // ---- read a value from file fouble or complex
+        if(!cvalues) { // plain real value
+          v = strtod(s,&tmp);
+          if(tmp==s) {
+            fprintf(stderr,"Missing value in row %d column %d (one based)\n",r,c+1);
+            quit("Check input file");
+          }
         }
+        else { // complex value
+          int e = sscanf(s,"(%lf%lfj)",&re,&im);
+          if(e!=2) {
+            fprintf(stderr,"Invalid complex entry in row %d column %d (one based)\n",r,c+1);
+            quit("Check input file");
+          }
+          v= (re==0 and im ==0) ? 0 : 1; // v==0 iff cov==0
+          cov.real(re); cov.imag(im);    // init cov
+        }
+        // ----- process element if nonzero 
         if(v!=0) { // process non zero value
           unsigned long id, code;
           nonz += 1;
-          if(values.count(v)==0) {
-            id = values[v] = dnonz++;
-            if(fwrite(&v,sizeof(v),1,fval)!=1)
-              quit("Error writing to .val file");
+          // get id of entry and possibly write new values to .val file
+          if(!cvalues) { // real entry
+            if(values.count(v)==0) {
+              id = values[v] = dnonz++;
+              if(fwrite(&v,sizeof(v),1,fval)!=1)
+                quit("Error writing to .val file");
+            } else id = values[v];
+          } else { // complex entry 
+            if(covalues.count(cov)==0) {
+              id = values[v] = dnonz++;
+              x[0] = (float) cov.real(); 
+              x[1] = (float) cov.imag();
+              if(fwrite(x,2*sizeof(*x),2,fval)!=2)
+                quit("Error writing to .val file");
+            } else id = covalues[v];
           }
-          else id = values[v];
           // generate code and write it to .vc file 
-          code = id*cols + c; 
+          code = id*cols + c;
           code += 1;                // shift by 1 to allow code for endrow code 0 
           if (code>= 1ul<<30) 
             quit("Code larger than 2**30. We are in trouble");
