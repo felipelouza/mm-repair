@@ -47,6 +47,7 @@ def main():
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
   # parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
+  parser.add_argument('--c64',  help='matrix entries are 32+32 complex floats (debug only)',action='store_true')
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   args = parser.parse_args()
@@ -98,9 +99,10 @@ def main():
       if args.noconv or (args.y and not files_changed):
         print("---- Skipping conversion dbl/csv->csrv")
       else:
-        command = "{exe} {opts} {mfile} {rows} {cols}".format(
+        command = "{exe} {opts} {c64} {mfile} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,mat2csrv_exe), mfile=args.input,
-          rows = args.rows, cols=args.cols, opts = "-b %d" % args.b);
+          rows = args.rows, cols=args.cols, opts = "-b %d" % args.b,
+          c64 = "-c -f" if args.c64 else "");
         print("==== Conversion dbl/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
           sys.exit(2)
