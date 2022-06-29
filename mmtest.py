@@ -59,7 +59,7 @@ def createx(cols,value=1):
 # convert a csv file to binary and compress it with gzip and xz
 def test_gzip(args,logfile):
   table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
-           " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
+           " file     & cols &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"mat2bin.py")
@@ -107,7 +107,7 @@ def test_gzip(args,logfile):
 # compress with matrepair obtaining CSRV and grammar representation
 def test_compress(args, logfile):
   table = ["### csrv and repair size; %d row-blocks\n" % args.b, 
-           " file     & rows &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
+           " file     & cols &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
@@ -165,7 +165,7 @@ def getsize_multipart(base,num,ext):
 def test_time(args,logfile):
   # build latex table containing the reuslts  
   table = ["### time x iteration and peak memory usage in kb for matrix multiplication; %d row-blocks\n" % args.b, 
-           " file     & rows "]
+           " file     & cols "]
   for a in Algos:
     table[1] += "& {name:12.9}&".format(name=a)         
   table[1] += "\\\\\n" 

@@ -10,8 +10,9 @@ Currently supported reordering algorithms:
   lkh:   Lin-Kernighan
   pc+:   PathCover+
   
-Example usage: 
-  reorder.py pc /data/mm/covtype 581012 54 -b 8 -k 16
+Usage examples: 
+  reorder.py pc  /data/mm/covtype 581012 54 -b 8 -k 16
+  reorder.py pcm /data/mm/covtype 581012 54 -b 8 -k 16
 """
 
 Timelimit = 180000
@@ -88,6 +89,8 @@ def main():
   parser.add_argument('cols',  help='number of columns', type=int)  
   parser.add_argument('-b', help='number of row blocks (default: 1)', type=int, default=1)
   parser.add_argument('-k', help='pruning parameter (default: 16)', type=int, default=16)
+  parser.add_argument('-m', help='memory limit', type=int, default=0)
+  parser.add_argument('-p', help='parallelism degree (default: 1)', type=int, default=1)
   args = parser.parse_args()
 
   #params
@@ -112,7 +115,7 @@ def main():
 
   # arguments to be passed to reordering algorithms 
   cr_args = {'a_descr':args.algo, 'a':algomap[args.algo],'f':args.input, 'r':args.rows, 'c':args.cols, 'b':args.b, 
-      'k':args.k, 'b_lst':args.b-1,
+      'k':args.k, 'b_lst':args.b-1, 'pardegree':args.p, 'memlim':args.m, 
       'lkh_version':'LKH-3.0.7', 'lkh_link':'http://webhotel4.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz' }
 
   if args.b == 1 :
@@ -125,13 +128,22 @@ def main():
 
 # reorder a matrix taken as a single block
 def reorder_matrix(cr_args) :
-  print('Transposing the matrix...')
-  cmd = 'python3 ./column_major.py {f}'.format(**cr_args)
-  execute_command_verbose(cmd, 7)
+
+  is_csm_multithreaded = (cr_args['memlim']!=0 or cr_args['pardegree']!=1)
+
+  if not is_csm_multithreaded :
+    print('Transposing the matrix...')
+    cmd = 'python3 ./column_major.py {f}'.format(**cr_args)
+    execute_command_verbose(cmd, 7)
 ##
   print('Generating the CSM...')
-  cmd = './build/tsp_generator_pruned_local {f} {r} {c} {k} '.format(**cr_args)
-  execute_command_verbose(cmd, 8)
+  if is_csm_multithreaded :
+    cmd = './build/tsp_generator_pruned_local_mt {f} {r} {c} {k} {pardegree} {memlim} '.format(**cr_args)
+    execute_command_verbose(cmd, 8)
+  else :
+    cmd = './build/tsp_generator_pruned_local {f} {r} {c} {k} '.format(**cr_args)
+    execute_command_verbose(cmd, 8)
+
 ##
   if cr_args['a_descr'] == 'lkh' :
     print('Checking LKH in local dir...')
@@ -141,7 +153,7 @@ def reorder_matrix(cr_args) :
   print('Running', cr_args['a_descr'], '...')
   if False :
     pass
-  elif cr_args['a_descr']=='pc' :
+  elif cr_args['a_descr'] == 'pc' :
     cmd = 'python3 ./cover.py {f}.pruned_local_{k}.tsp '.format(**cr_args)
     execute_command_verbose(cmd, 10)
   elif cr_args['a_descr']=='pc+' :
@@ -158,11 +170,13 @@ def reorder_matrix(cr_args) :
 ##
   print('Reordering the .vc file...')
   cmd = './vc_reorder.x {f} {r} {c} {f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
+  print(cmd)
   execute_command_verbose(cmd, 12)
 ##
   print('Cleaning...')
   cmd = 'rm -r '
-  cmd += '{f}_cols '.format(**cr_args)
+  if not is_csm_multithreaded :
+    cmd += '{f}_cols '.format(**cr_args)
   cmd += '{f}.pruned_local_{k}.par '.format(**cr_args)
   cmd += '{f}.pruned_local_{k}.tsp '.format(**cr_args)
   cmd += '{f}.pruned_local_{k}.{a}.solution '.format(**cr_args)
@@ -174,17 +188,25 @@ def reorder_matrix(cr_args) :
 
 # reoder a matrix splitted into b blocks
 def reorder_matrix_blocks(cr_args) :
+
+  is_csm_multithreaded = (cr_args['memlim']!=0 or cr_args['pardegree']!=1)
+
   print('Dividing into row chunks...')
   cmd ='python3 csv_splitter.py {f} {r} {b} '.format(**cr_args)
   execute_command_verbose(cmd, 6)
 ##
-  print('Transposing each row block...')
-  cmd = 'bash 07_transpose.sh {f} {b} '.format(**cr_args)
-  execute_command_verbose(cmd, 7)
+  if not is_csm_multithreaded :
+    print('Transposing each row block...')
+    cmd = 'bash 07_transpose.sh {f} {b} '.format(**cr_args)
+    execute_command_verbose(cmd, 7)
 ##
   print('Generating the CSM for each row block...')
-  cmd = 'bash 08_generate_csm.sh {f} {r} {c} {b} {k}'.format(**cr_args)
-  execute_command_verbose(cmd, 8)
+  if is_csm_multithreaded :
+    cmd = 'bash 08_generate_csm_multithread.sh {f} {r} {c} {k} {pardegree} {memlim} {b} '.format(**cr_args)
+    execute_command_verbose(cmd, 10)
+  else :
+    cmd = 'bash 08_generate_csm.sh {f} {r} {c} {b} {k}'.format(**cr_args)
+    execute_command_verbose(cmd, 8)
 ##
   if cr_args['a_descr'] == 'lkh' :
     print('Checking LKH in local dir...')
@@ -202,7 +224,8 @@ def reorder_matrix_blocks(cr_args) :
   print('Cleaning...')
   for i in range(cr_args['b']) :
     cmd = 'rm -r '
-    cmd += '{f}.{b}.{i}_cols '.format(**cr_args, i=i)
+    if not is_csm_multithreaded :
+      cmd += '{f}.{b}.{i}_cols '.format(**cr_args, i=i)
     cmd += '{f}.{b}.{i}.pruned_local_{k}.par '.format(**cr_args, i=i)
     cmd += '{f}.{b}.{i}.pruned_local_{k}.tsp '.format(**cr_args, i=i)
     cmd += '{f}.{b}.{i}.pruned_local_{k}.{a}.solution '.format(**cr_args, i=i)
