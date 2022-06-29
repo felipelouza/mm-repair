@@ -81,9 +81,9 @@ int MB;
 
 int did0 = 0; // did prepare0 or not
 
-// return true if this pairs of symbols sould never appeat
+// return true if this pair of symbols should never appear
 // as the left-hand side of a rule
-// Only for the case left==0 or right==0
+// Currently the only codition is  left==0 or right==0
 int forbidden_pair(int left, int right)
 {
   return (left==0) || (right==0);
