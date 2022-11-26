@@ -50,6 +50,7 @@ def main():
   parser.add_argument('--c64',  help='matrix entries are 32+32 complex floats (debug only)',action='store_true')
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
+  parser.add_argument('--split',  help='split vc file (debug only)',action='store_true')
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")

@@ -8,33 +8,13 @@
 #include <time.h>
 #include <complex>
 #include <array>
-
-// bit representing types of input/output values 
-#define INT32_OUTPUT 1
-#define FLOAT_OUTPUT 2
-#define COMPLEX_INPUT 4
-
-/* Note: the option to consider the input values as floats or int32s 
- * should be used only when the values can be represented exactly in
- * those data types. If this is not the case warnings are sent to stderr, 
- * since the csrv format is not the correct one: input values are always 
- * read as doubles, and they are considered equal only if they are equal 
- * as doubles, so values that become equal after the conversion are not 
- * considered equal in the csrv representation */ 
- 
  
 // integer unsigned type used to represent value/column values 
 typedef uint32_t vc_t;
 
-
-
 static void usage_and_exit(char *name)
 {
     fprintf(stderr,"Usage:\n\t  %s [options] vcfile\n",name);
-    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
-    fprintf(stderr,"\t\t-c             input are complex numbers\n");
-    fprintf(stderr,"\t\t-f             save entries as floats\n");
-    fprintf(stderr,"\t\t-i             save entries as int32s\n");
     fprintf(stderr,"\t\t-v             verbose\n\n");
     exit(1);
 }
@@ -47,13 +27,6 @@ static void quit(const char *s)
   else 
     perror(s);
   exit(1);
-}
-
-// number of bits to represent longs up to n
-int bits (unsigned long n) {
-  int b=1;
-  while (n>1) { n>>=1; b++; }
-  return b;
 }
 
 
@@ -95,20 +68,28 @@ int main (int argc, char **argv) {
   if(f==NULL) quit("Cannot open infile");
   // count number of occurrences of each values
   std::unordered_map<vc_t,uint32_t> occ;
+  vc_t maxv=0;  // largest int in the .vc file: we keep it in the vc2 file
   while(true) {
     vc_t v;  // int from the .vc file
-    size_t e = fread(&v,sizeof(v),1,f);
-    if(e==1) {
-      if(v!=0) nonz++;
+    size_t e = fread(&v,1,sizeof(v),f); // NOTE: this is the right way to check reading a vc_t
+    if(e==sizeof(v)) {
+      if(v!=0) {
+        nonz++;             // count nonzero
+        if(v>maxv) maxv=v;  // keep largest int
+      }
       if(occ.count(v)==0) // new value
         occ[v]=1;
       else
         occ[v] += 1;     // update count
     }
-    else if(feof(f)==0)  // e==0 not at end of file: error! 
+    else if(ferror(f))
+      quit("Error reading input file");
+    else if(e!=0)      // read partial vc_t error! 
       quit("Invalid input file");
-    else
-      break;             // e==0 and eof reached 
+    else {
+      assert(feof(f));
+      break;             // e==0 and eof reached
+    } 
   }
   // create files of singletons and multi-tons
   strncpy(fname,argv[1],PATH_MAX);
@@ -132,11 +113,12 @@ int main (int argc, char **argv) {
       // update # single/multi -tons
       if(v!=0) { if(occv==1)  singletons++; else multitons++;}
       // write v to the correct file (in both if v==0)  
-      if(v==0 || occv==1) {
+      if(v==0 || v==maxv || occv==1) {
         e = fwrite(&v,sizeof(v),1,fval1);
         if(e!=1) quit("Error writing to singletons valfile ");
       }
-      if(v==0 || occv>1) {
+      if(v==0 || (occv>1 && v!=maxv)  ) {
+        assert(v<maxv);
         e = fwrite(&v,sizeof(v),1,fval2);
         if(e!=1) quit("Error writing to multitons valfile ");
       }
