@@ -58,7 +58,7 @@ int main (int argc, char **argv) {
   }
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 2) usage_and_exit(argv[0]); 
+  if (argc-optind != 2) usage_and_exit(argv[0]);
   argv += optind; argc -= optind;
   
   
@@ -71,7 +71,7 @@ int main (int argc, char **argv) {
   vc_t maxv=0;  // largest int in the .vc file: we keep it in the vc2 file
   while(true) {
     vc_t v;  // int from the .vc file
-    size_t e = fread(&v,1,sizeof(v),f); // NOTE: this is the right way to check reading a vc_t
+    size_t e = fread(&v,1,sizeof(v),f); // NOTE: this is the right way to check reading a full vc_t
     if(e==sizeof(v)) {
       if(v!=0) {
         nonz++;             // count nonzero
@@ -108,17 +108,18 @@ int main (int argc, char **argv) {
     uint32_t occv=0;  // occ of v, if v!=0
     size_t e = fread(&v,sizeof(v),1,f);
     if(e==1) {
+      assert(maxv>=v);
       occv = occ[v];
       if(occv==0) quit("Unknown value: Something is seriously wrong");
       // update # single/multi -tons
       if(v!=0) { if(occv==1)  singletons++; else multitons++;}
       // write v to the correct file (in both if v==0)  
-      if(v==0 || v==maxv || occv==1) {
+      if(v==0 || (v!=maxv && occv==1) ) {
+        assert(v<maxv);
         e = fwrite(&v,sizeof(v),1,fval1);
         if(e!=1) quit("Error writing to singletons valfile ");
       }
-      if(v==0 || (occv>1 && v!=maxv)  ) {
-        assert(v<maxv);
+      if( v==0 || occv>1 || v==maxv ) {
         e = fwrite(&v,sizeof(v),1,fval2);
         if(e!=1) quit("Error writing to multitons valfile ");
       }

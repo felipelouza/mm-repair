@@ -19,6 +19,8 @@ Compressed Sparse Row-Value representation + Repair compression
 # path of the auxiliary tools
 # irepair with memory constraint (symbols are integers) 
 irepair_exe = "brepair/irepair0"
+# split+irepair+merge with memory constraint (symbols are integers) 
+splitrepair_exe = "splitRePair.py"
 # idespair
 idespair_exe = "brepair/idespair"
 # tool to compute the value-column representation of a csv matrix
@@ -119,13 +121,19 @@ def main():
       clist = [] # list of compression commands to execute 
       for bn in range(args.b):  
         basename = args.input + filext_multipart(args.b,bn)
-        # ---- apply irepair to the .vc file 
-        if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
-          print("---- Skipping irepair for", basename+".vc")
-        else:
-          command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
-                    exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+        if args.split:
+          command = "{exe} {mfile}.vc -m {mb}".format(mb=args.m,
+                      exe = os.path.join(args.main_dir,splitrepair_exe), mfile=basename)
           clist.append(command)
+        else:
+          # ---- apply irepair to the .vc file 
+          if args.y and not need_rebuild(basename+".vc", ".C", ".R"):
+            print("---- Skipping irepair for", basename+".vc")
+          else:
+            command = "{exe} {mfile}.vc {mb}".format(mb=args.m,
+                      exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+            clist.append(command)
+            
       # execute commands  
       start = time.time()
       if args.p>1 and len(clist)>1:
