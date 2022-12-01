@@ -113,7 +113,7 @@ def test_compress(args, logfile):
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {name} {rows} {cols}"
+    command = f"{exe_name} --split -r -y -b {args.b} -p {args.p} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
