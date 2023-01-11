@@ -171,11 +171,11 @@ def test_time(args,logfile):
   table[1] += "\\\\\n" 
   for f in Files:
     name  = os.path.join(args.d, f)
-    exe_name = os.path.join(args.main_dir,a)
     rows,cols = Sizes[f]
     createx(cols)  # create file containing x vector
     tablerow = []  # row of the results table
     for a in Algos:
+      exe_name = os.path.join(args.main_dir,a)
       # only save the eigenvalue
       command = "{exe} -n {num} -b {blocks} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
                 exe = exe_name, num=args.n, blocks=args.b, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
