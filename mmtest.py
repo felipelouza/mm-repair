@@ -12,7 +12,6 @@ Currently supported tests:
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
-Files = ['covtype', 'census']
 
 Data_dir = 'data/'
 Logfile_name = "errors.log"
@@ -269,6 +268,7 @@ def main():
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
   parser.add_argument('-p', help='number of parallel procs (def. 1)',type=int, default=1)
+  parser.add_argument('--files',help="colon separated list of file name",type=str,default=1)
   args = parser.parse_args()
 
   # check data directory   
@@ -279,7 +279,11 @@ def main():
   
   # get directory containing this file   
   args.main_dir = os.path.dirname(os.path.abspath(__file__))
-   
+  # get file list if available
+  global Files
+  if len(args.files)>0:
+    Files = args.files.split(':') 
+
   # run the task   
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:

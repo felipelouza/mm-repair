@@ -297,9 +297,9 @@ int main (int argc, char **argv) {
   if(wr!=rows)
     fprintf(stderr, "Warning! Written %d rows instead of %d\n", wr, rows);
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
-  fprintf(stderr,"Number of nonzeros: %ld Nonzero ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
+  fprintf(stderr,"Number of nonzeros: %ld   Nonzero ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
   fprintf(stderr, "%zd distinct nonzeros values\n", dnonz);
-  fprintf(stderr,"Largest codeword: %lu bits: %d\n", maxcode, bits(maxcode));
+  fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   fprintf(stderr,"==== Done\n");
   
   return EXIT_SUCCESS;

@@ -248,7 +248,7 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   nonzero = vcsize//4 - args.rows
   if args.nocol:
     isize = (bits(valsize//8)*args.rows*args.cols)//8
-    print(" >> matrix log(alpha)xEntry size:",isize, "bytes")
+    print(" >> matrix log(alpha)xNumEntries size:",isize, "bytes")
   else:
     isize = 8*args.rows*args.cols
     print(" >> matrix dense size:",isize, "bytes")
