@@ -5,11 +5,14 @@ Description = """
 Tool to create a Latex table containing the results of a set of experiments
 
 Currently supported tests:
-   mc: conversion to dense matrix format and compression with gz/xz for testing purposes
+   mc: conversion to dense matrix format and compression 
+       with gz/xz for testing purposes
    mz: compression to CSRV format followed by RePair grammar compression
+   mg: compression to CSRZ format followed by RePair grammar compression
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
+Files = ['covtype', 'census']
 
 Data_dir = 'data/'
 Logfile_name = "errors.log"
@@ -19,6 +22,7 @@ Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174)
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
          'airline78':(14462943, 29),'imagenet':(1262102, 900) }
 
+# matrix mutiplication algorithms to be tested
 Algos = ['csrvmm', 're32mm','reivmm','reansmm']
 
 # name of files containing the input/output vectors
@@ -105,15 +109,26 @@ def test_gzip(args,logfile):
 
 
 # compress with matrepair obtaining CSRV and grammar representation
-def test_compress(args, logfile):
-  table = ["### csrv and repair size; %d row-blocks\n" % args.b, 
-           " file     & cols &        crsv &        re32 &        reiv &       reans \\\\\n"]   # latex table containing the results 
+# if nocol is True discard column id from matrix entry representation 
+def test_compress(args, logfile, nocol=False):
+  # set different behavior for no-column-id option 
+  if nocol:
+    args.name = "csrz"
+    args.mext = ".vv"
+    args.extra = "--nocol"
+  else:
+    args.name = "csrv"           
+    args.mext = ".vc"
+    args.extra = ""
+  # init latex table containing the results
+  table = [f"### {args.name} and repair size; {args.b} row-blocks\n", 
+           f" file     & cols &        {args.name} &        re32 &        reiv &       reans \\\\\n"]  
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {name} {rows} {cols}"
+    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {args.extra} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -132,12 +147,12 @@ def test_compress(args, logfile):
       print(" Test failed:", str(ex))
       sys.exit(2)
     v = os.path.getsize(name+".val")
-    vcsize = getsize_multipart(name,args.b,".vc") 
-    csize = getsize_multipart(name,args.b,".vc.C") 
-    rsize = getsize_multipart(name,args.b,".vc.R") 
-    csizeiv = getsize_multipart(name,args.b,".vc.C.iv") 
-    rsizeiv = getsize_multipart(name,args.b,".vc.R.iv") 
-    ans_csize = getsize_multipart(name,args.b,".vc.C.ansf.1")
+    vcsize = getsize_multipart(name,args.b,args.mext) 
+    csize = getsize_multipart(name,args.b,args.mext+".C") 
+    rsize = getsize_multipart(name,args.b,args.mext+".R") 
+    csizeiv = getsize_multipart(name,args.b,args.mext+".C.iv") 
+    rsizeiv = getsize_multipart(name,args.b,args.mext+".R.iv") 
+    ans_csize = getsize_multipart(name,args.b,args.mext+".C.ansf.1")
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv))
     # tests for current file completed
@@ -249,7 +264,7 @@ def show_command_line(f):
 def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('op', help='operation to test: mm|mc|mz', type=str)
+  parser.add_argument('op', help='operation to test: mm|mc|mz|mg', type=str)
   parser.add_argument('-d', help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
@@ -275,12 +290,14 @@ def main():
       table = test_gzip(args, logfile)
     elif args.op=='mz':   # matrix compression
       table = test_compress(args,logfile)
+    elif args.op=='mg':   # matrix compression without column Id
+      table = test_compress(args,logfile,True)
     else: 
-      print("Unknown operation! Must be mc, mm, or mz",file=sys.stderr)
+      print("Unknown operation! Must be mc, mm, mg, or mz",file=sys.stderr)
       exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  if args.op=='mm' or args.op=='mc' or args.op=='mz':  
+  if args.op=='mm' or args.op=='mc' or args.op=='mg' or args.op=='mz':  
     for s in table:
       print(s,end="")
 
