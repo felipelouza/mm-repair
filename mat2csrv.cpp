@@ -1,3 +1,19 @@
+/*  mat2csrv
+    Convert a csv file contaning numerical entry into the 
+      csrv format (.vc & .val files) 
+    or the 
+      csrz format (.vv & val file)
+    In the CSRV format we only store nonzero entries and each entry
+    is represented by an id identifying the value in the .val file
+    and the column number (hence the .vc extension)
+    In the CSRZ format we store also zero entres and each entry is
+    represented by an id identifying it in the .val file 
+    (hence the .vv extension ) 
+    In both formats id's are different from zero and the zero value is used 
+    to mark the end of a line 
+    */
+
+
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -10,14 +26,18 @@
 #include <array>
 
 // bit representing types of input/output values 
+// and general options of teh algorithm 
 #define INT32_OUTPUT 1
 #define FLOAT_OUTPUT 2
 #define COMPLEX_INPUT 4
+#define NO_COL_ID 8
 
-/* Note: the option to consider the input values as floats or int32s 
+
+
+/* Note: the option to store the values in the .val file as floats or int32s 
  * should be used only when the values can be represented exactly in
  * those data types. If this is not the case warnings are sent to stderr, 
- * since the csrv format is not the correct one: input values are always 
+ * since the output will not be correct: input values are always 
  * read as doubles, and they are considered equal only if they are equal 
  * as doubles, so values that become equal after the conversion are not 
  * considered equal in the csrv representation */ 
@@ -30,10 +50,11 @@
 static void usage_and_exit(char *name)
 {
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols\n",name);
-    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
+    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");    
     fprintf(stderr,"\t\t-c             input are complex numbers\n");
     fprintf(stderr,"\t\t-f             save entries as floats\n");
     fprintf(stderr,"\t\t-i             save entries as int32s\n");
+    fprintf(stderr,"\t\t-n             don't store col id (crsz format)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
@@ -44,10 +65,8 @@ static void usage_and_exit(char *name)
 // write error message and exit
 static void quit(const char *s)
 {
-  if(errno==0) 
-     fprintf(stderr,"%s\n",s);
-  else 
-    perror(s);
+  if(errno==0) fprintf(stderr,"%s\n",s);
+  else  perror(s);
   exit(1);
 }
 
@@ -78,7 +97,7 @@ void write_bin(double x, int out_type, FILE *f)
   else // double
     e = fwrite(&x,sizeof(x),1,f);
     
-  if(e!=1) quit("Error writing to binary file");
+  if(e!=1) quit("Error writing to binary .val file");
 } 
 
 
@@ -117,6 +136,8 @@ int main (int argc, char **argv) {
         vtype |= INT32_OUTPUT; break;
       case 'c':
          vtype |= COMPLEX_INPUT; break;
+      case 'n':
+         vtype |= NO_COL_ID; break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -176,15 +197,17 @@ int main (int argc, char **argv) {
   std::unordered_map<std::complex<double>,unsigned long, ComplexHasher> covalues; // dictionary of distinct nonzero
   std::complex<double> cov;
   double re,im;
+  // extension of the matrix file .vc or .vv
+  const char *mext = (vtype &NO_COL_ID) ? ".vv" : ".vc";
   
   // main loop reading csv file 
   size_t n=0;
   char *buffer=NULL;
   for(int bn=0;bn<nblocks;bn++) {
-    if(nblocks==1) snprintf(fname,PATH_MAX,"%s.vc",argv[1]);
-    else snprintf(fname,PATH_MAX,"%s.%d.%d.vc",argv[1],nblocks,bn);
+    if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
+    else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
     FILE *fvc = fopen(fname,"w");
-    if(fvc==NULL) quit("Cannot open a .vc file");
+    if(fvc==NULL) quit("Cannot open a .vc/.vv file");
     while(true) {
       // read csv file
       int e = getline(&buffer,&n,f);
@@ -224,8 +247,8 @@ int main (int argc, char **argv) {
             quit("Check input file");
           }
         }
-        // ----- process element if nonzero 
-        if(v!=0) { // process non zero value
+        // ----- process element if nonzero or NO_COL_ID is set
+        if(v!=0 or (vtype&NO_COL_ID)) { // process non zero value
           unsigned long id, code;
           nonz += 1;
           // get id of entry and possibly write new values to .val file
@@ -242,7 +265,8 @@ int main (int argc, char **argv) {
             } else id = covalues[cov];
           }
           // generate code and write it to .vc file 
-          code = id*cols + c;
+          if (vtype&NO_COL_ID) code = id;
+          else code = id*cols + c;
           code += 1;                // shift by 1 to allow code for endrow code 0 
           if (code>= 1ul<<30) 
             quit("Code larger than 2**30. We are in trouble");
