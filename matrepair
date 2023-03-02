@@ -67,8 +67,12 @@ def main():
     args.m = args.m//args.p # if repair is done in parallel divide memory equally 
     print("Setting memory for each repair instance to", args.m, "MBs")
   # choose extension for the file containing the matrix entries
-  if args.nocol: args.mext = ".vv"   # csrz: no column id's and keep 0s and
-  else:          args.mext = ".vc"   # csrv: no 0s and entries encode columns id 
+  if args.nocol: 
+    args.mext = ".vv"   # csrz: no column id's and keep 0s and
+    args.name = "crsz"
+  else:          
+    args.mext = ".vc"   # csrv: no 0s and entries encode columns id 
+    args.name = "crsv"
   # init time counters 
   vc_time = repair_time = iv_time = ansf_time = 0
 
@@ -239,17 +243,19 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> integer vectors time: {0:.2f}".format(tiv))
   print(" >> ansf time: {0:.2f}".format(tans))
   print(" >> total time: {0:.2f}".format(ttot))  
-  isize = 8*args.rows*args.cols
-  print(" >> matrix dense size:",isize, "bytes")
-  #psize = os.path.getsize(args.input)
-  #print(" >> csv representation size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
   valsize = os.path.getsize(args.input + ".val")
   vcsize = getsize_multipart(args.input,args.b,args.mext) 
   nonzero = vcsize//4 - args.rows
+  if args.nocol:
+    isize = (bits(valsize//8)*args.rows*args.cols)//8
+    print(" >> matrix log(alpha)xEntry size:",isize, "bytes")
+  else:
+    isize = 8*args.rows*args.cols
+    print(" >> matrix dense size:",isize, "bytes")
   print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
   print(" >> number of distinct nonzero: {0}".format(valsize//8))
   psize = valsize+vcsize
-  print(" >> CSRV  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize))
+  print(" >> {2}  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize,args.name.upper()))
   csize = getsize_multipart(args.input,args.b,args.mext+".C") 
   rsize = getsize_multipart(args.input,args.b,args.mext+".R") 
   psize = valsize + csize+rsize

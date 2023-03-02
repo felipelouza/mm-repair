@@ -121,7 +121,7 @@ def test_compress(args, logfile, nocol=False):
     args.mext = ".vc"
     args.extra = ""
   # init latex table containing the results
-  table = [f"### {args.name} and repair size; {args.b} row-blocks\n", 
+  table = [f"### {args.name} + irepair0 size; {args.b} row-blocks\n", 
            f" file     & cols &        {args.name} &        re32 &        reiv &       reans \\\\\n"]  
   for f in Files:
     name  = os.path.join(args.d,f)
