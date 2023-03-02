@@ -125,7 +125,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfiv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfinv")) != -1) {
     switch (c) 
       {
       case 'v':
