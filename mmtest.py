@@ -268,8 +268,14 @@ def main():
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
   parser.add_argument('-p', help='number of parallel procs (def. 1)',type=int, default=1)
-  parser.add_argument('--files',help="colon separated list of file name",type=str,default=1)
+  parser.add_argument('--files',help="colon separated list of file names",type=str,default="")
+  parser.add_argument('--sizes',help="colon separated list of matrix sizes rowsxcols eg 1000x30:5000x20",type=str,default="")
   args = parser.parse_args()
+
+  #check --sizes was not given without --files
+  if len(args.sizes)>0 and len(args.files)==0:
+    print("Error: option --sizes requires --files")
+    sys.exit(1)
 
   # check data directory   
   if not  os.path.isdir(args.d):
@@ -280,9 +286,20 @@ def main():
   # get directory containing this file   
   args.main_dir = os.path.dirname(os.path.abspath(__file__))
   # get file list if available
-  global Files
+  global Files, Sizes
   if len(args.files)>0:
-    Files = args.files.split(':') 
+    Files = args.files.split(':')
+    # check if argument --size was given as well
+    if len(args.sizes)>0:
+      sizes = args.sizes.split(':')
+      if len(Files)!=len(sizes):
+        print("Error: --files and --sizes must have the same number of elements")
+        sys.exit(1)
+      # add sizes to global dictionary Sizes
+      for i in range(len(Files)):
+        Sizes[Files[i]] = tuple([int(x) for x in sizes[i].split('x')])
+      print("Sizes:",Sizes)
+      sys.exit(1)    
 
   # run the task   
   s1 = time.time()
