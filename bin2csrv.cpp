@@ -1,5 +1,5 @@
 /*  mat2csrv
-    Convert a csv file contaning numerical entries into the 
+    Convert a binary file contaning int32/float/double entries into the 
       csrv format (.vc & .val files) 
     or the 
       csrz format (.vv & val files)
@@ -12,8 +12,9 @@
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
     */
-
-
+    
+#define Type int32_t
+    
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -27,22 +28,13 @@
 
 // bit representing types of input/output values 
 // and general options of the algorithm 
-#define INT32_OUTPUT 1
-#define FLOAT_OUTPUT 2
+//#define INT32_OUTPUT 1
+//#define FLOAT_OUTPUT 2
 #define COMPLEX_INPUT 4
 #define NO_COL_ID 8
 
 
 
-/* Note: the option to store the values in the .val file as floats or int32s 
- * should be used only when the values can be represented exactly in
- * those data types. If this is not the case warnings are sent to stderr, 
- * since the output will not be correct: input values are always 
- * read as doubles, and they are considered equal only if they are equal 
- * as doubles, so values that become equal after the conversion are not 
- * considered equal in the csrv representation */ 
- 
- 
 
 static void usage_and_exit(char *name)
 {
@@ -55,7 +47,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
-    fprintf(stderr,"with two doubles.\n\n");
+    fprintf(stderr,"with two doubles.   Check this!!!!!\n\n");
     exit(1);
 }
 
@@ -75,38 +67,24 @@ int bits (unsigned long n) {
 }
 
 
-// write a double x as an int32/float/double in binary format  
+// write a x as an int32/float/double in binary format  
 // if there is loss of information a warning is sent to stderr
-void write_bin(double x, int out_type, FILE *f)
+void write_bin(Type x, FILE *f)
 {
-  int e;
-  
-  if(out_type & INT32_OUTPUT) {
-    int32_t y = (int32_t) lround(x);
-    if(y!=x) fprintf(stderr,"Warning: loss of information in int32 conversion (%d vs %lf)\n",y,x);
-    e = fwrite(&y,sizeof(y),1,f);
-  }
-  else if(out_type & FLOAT_OUTPUT) {
-    float y = (float) x;
-    if(y!=x) fprintf(stderr,"Warning: loss of information in vloat conversion (%f vs %lf)\n",y,x);
-    e = fwrite(&y,sizeof(y),1,f);
-  }
-  else // double
-    e = fwrite(&x,sizeof(x),1,f);
-    
+  int e = fwrite(&x,sizeof(x),1,f);
   if(e!=1) quit("Error writing to binary .val file");
 } 
 
 
-// provide hash function for a complex<double> 
+// provide hash function for a complex<Type> 
 struct ComplexHasher
 {
-  size_t operator()(const std::complex<double>& k) const
+  size_t operator()(const std::complex<Type>& k) const
   {
     using std::hash;
 
-    return ((hash<double>()(k.real())
-             ^ (hash<double>()(k.imag()) << 1)) >> 1);
+    return ((hash<Type>()(k.real())
+             ^ (hash<Type>()(k.imag()) << 1)) >> 1);
   }
 };
 
@@ -127,10 +105,6 @@ int main (int argc, char **argv) {
       {
       case 'v':
         verbose++; break;
-      case 'f':
-        vtype |= FLOAT_OUTPUT; break;
-      case 'i':
-        vtype |= INT32_OUTPUT; break;
       case 'c':
          vtype |= COMPLEX_INPUT; break;
       case 'n':
@@ -153,10 +127,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Error! Option -b must be at least one\n");
     usage_and_exit(argv[0]);
   }  
-  if( (vtype&INT32_OUTPUT) && (vtype&FLOAT_OUTPUT) ) {
-    fprintf(stderr,"Error! Options -f and -i are mutually exclusive\n");
-    usage_and_exit(argv[0]);
-  }  
+
 
   // virtually get rid of options from the command line 
   optind -=1;
@@ -168,36 +139,48 @@ int main (int argc, char **argv) {
   if(rows<1) quit("Invalid number of rows");
   cols  = atoi(argv[3]);
   if(cols<1) quit("Invalid number of columns");
-  
+  size_t rowsize = cols*(vtype&COMPLEX_INPUT?2:1);
+
+
   if(nblocks>rows) quit("Too many row blocks!");
   // compute size of each block 
   int block_size = (rows+nblocks-1)/nblocks;
   fprintf(stderr,"Block size: %d\n", block_size);
 
-  // open file and init
+  // open input file and check number of rows/cols
   FILE *f = fopen(argv[1],"r");
   if(f==NULL) quit("Cannot open infile");
+  // check input file size 
+  if(fseek(f,0,SEEK_END)!=0) quit("Cannot seek input file");
+  size_t fsize = ftell(f);
+  if(fsize<0) quit("Cannot tell input file size");
+  if(fsize=!sizeof(Type)*rowsize*cols) quit("Invalid input file size");
+  rewind(f);
+  // open output .val file
   strncpy(fname,argv[1],PATH_MAX);
   strcat(fname,".val");
   FILE *fval = fopen(fname,"w");
   if(fval==NULL) quit("Cannot open valfile");
+
   // init counters
-  int  r = 0;   // number of read rows
   int  wr = 0;  // number of written rows
-  unsigned long    nonz = 0;      // total number of nonzeros  
-  unsigned long   dnonz = 0;      // distinct nonzeros  
+  unsigned long    nonz = 0;      // total number of processed values (nonzeros for crsv format)  
+  unsigned long   dnonz = 0;      // distinct values in .val file (nonzeros for crsv format)  
   unsigned long maxcode = 0;      // largest code in a .vc file
-  // variables for real input values
-  std::unordered_map<double,unsigned long> values; // dictionary of distinct nonzero
-  double v;   // values read from file
+  // dictionaty for storing input values
+  std::unordered_map<Type,unsigned long> values; // dictionary of distinct nonzero
+  Type v;   // values read from file
   // same for complex values
-  std::unordered_map<std::complex<double>,unsigned long, ComplexHasher> covalues; // dictionary of distinct nonzero
-  std::complex<double> cov;
-  double re,im;
+  std::unordered_map<std::complex<Type>,unsigned long, ComplexHasher> covalues; // dictionary of distinct nonzero
+  std::complex<Type> cov;
+  Type re,im;
   // extension of the matrix file .vc or .vv
   const char *mext = (vtype &NO_COL_ID) ? ".vv" : ".vc";
-  
-  // main loop reading csv file 
+  // array cointaining a single row of the matrix
+  Type *row = new Type[rowsize];
+
+
+  // main loop reading binary file 
   size_t n=0;
   char *buffer=NULL;
   for(int bn=0;bn<nblocks;bn++) {
@@ -206,59 +189,31 @@ int main (int argc, char **argv) {
     FILE *fvc = fopen(fname,"w");
     if(fvc==NULL) quit("Cannot open a .vc/.vv file");
     while(true) {
-      // read csv file
-      int e = getline(&buffer,&n,f);
-      if(e<0) {
-        if(ferror(f)) quit("Error reading input file");
-        break;
-      }
-      r += 1;
-      if (wr>= rows) {
-        fprintf(stderr,"Warning: more matrix rows than expected\n");
-        break;
-      } 
-      // convert text numerical values
-      char *s = strtok(buffer,",");
-      // loop over entries in current row
-      for(int c=0;c<cols;c++) {
-        // convert s into double and check
-        if(s==NULL) {
-          fprintf(stderr,"Missing value in row %d column %d (one based)\n",r,c+1);
-          quit("Check input file");
+      // read binary file one row at a time
+      size_t e = fread(row,sizeof(Type),rowsize,f);
+      if(e!=rowsize) quit("Error reading input file");
+      for(int c=0;c<rows;c++) {
+        if(vtype&COMPLEX_INPUT) {
+          cov.real(row[2*c]);
+          cov.imag(row[2*c+1]);
+          v= (cov.real()==0 and cov.imag()==0) ? 0 : 1; // v==0 iff cov==0
         }
-        char *tmp;
-        // ---- read a value from file either a double or a complex<double>
-        if(vtype&COMPLEX_INPUT) { // complex value
-          int e = sscanf(s," (%lf%lfj)",&re,&im);
-          if(e!=2) {
-            fprintf(stderr,"Invalid or missing complex entry in row %d column %d (one based)\n",r,c+1);
-            quit("Check input file");
-          }
-          v= (re==0 and im ==0) ? 0 : 1; // v==0 iff cov==0
-          cov.real(re); cov.imag(im);    // init cov          
-        }
-        else { // plain real value
-          v = strtod(s,&tmp);
-          if(tmp==s) {
-            fprintf(stderr,"Missing value in row %d column %d (one based)\n",r,c+1);
-            quit("Check input file");
-          }
-        }
-        // ----- process element if nonzero or NO_COL_ID is set
+        else v = row[c];
+        // process element if nonzero or NO_COL_ID is set
         if(v!=0 or (vtype&NO_COL_ID)) { // process non zero value
           unsigned long id, code;
-          nonz += 1;
+          nonz += 1;      // note: v could be 0 so nonz is technically the wrong name
           // get id of entry and possibly write new values to .val file
           if(!(vtype&COMPLEX_INPUT)) { // real entry
             if(values.count(v)==0) {
               id = values[v] = dnonz++;
-              write_bin(v,vtype,fval);
+              write_bin(v,fval);
             } else id = values[v];
           } else { // complex entry 
             if(covalues.count(cov)==0) {
               id = covalues[cov] = dnonz++;
-              write_bin(cov.real(),vtype,fval);
-              write_bin(cov.imag(),vtype,fval);
+              write_bin(cov.real(),fval);
+              write_bin(cov.imag(),fval);
             } else id = covalues[cov];
           }
           // generate code and write it to .vc file 
@@ -270,18 +225,13 @@ int main (int argc, char **argv) {
           if (code>maxcode) maxcode=code;
           wcode = (uint32_t) code; // convert to 32 bit value
           if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-            quit("Error writing to .vc file");
+            quit("Error writing to .vc/.vv file");
         }
-        s = strtok(NULL,","); // scan next value
-      }
-      if(s!=NULL) {
-        fprintf(stderr,"Extra value in row %d (one based)\n",r);
-        quit("Check input file");
       }
       // end row
       wcode=0;
       if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-        quit("Error writing to .vc file");
+        quit("Error writing to .vc/.vv file");
       wr += 1;
       // if a block is full, stop and start the next 
       if ((wr%block_size) == 0) break; // end while true
@@ -294,8 +244,8 @@ int main (int argc, char **argv) {
   if(wr!=rows)
     fprintf(stderr, "Warning! Written %d rows instead of %d\n", wr, rows);
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
-  fprintf(stderr,"Number of nonzeros: %ld   Nonzero ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
-  fprintf(stderr, "%zd distinct nonzeros values\n", dnonz);
+  fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
+  fprintf(stderr, "%zd distinct values in .val file (nonzeros in crsv format) \n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   fprintf(stderr,"==== Done\n");
   
