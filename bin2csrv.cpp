@@ -1,20 +1,29 @@
-/*  mat2csrv
+/*  bin2csrv[if]
+    (here and in the following [if] stands for either nothing, i or f)
     Convert a binary file contaning int32/float/double entries into the 
-      csrv format (.vc & .val files) 
+      csrv format (.vc & .[if]val files) 
     or the 
-      csrz format (.vv & val files)
+      csrz format (.vv & .[if]val files)
     In the CSRV format we only store nonzero entries and each entry
-    is represented by an id identifying the value in the .val file
+    is represented by an id identifying the value in the .[if]val file
     and the column number (hence the .vc extension)
     In the CSRZ format we store also zero entries and each entry is
-    represented by an id identifying it in the .val file 
+    represented by an id identifying it in the .[if]val file 
     (hence the .vv extension) 
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
+
+    This source file is compiled in 3 versions:
+      bin2csrv  (default),     matrix entries are 8 byte doubles 
+      bin2csrvi (Typecode==1), matrix entries are 4 byte ints 
+      bin2csrvf (Typecode==2), matrix entries are 4 byte floats 
+    By default the output values stored in the [if]val file are in the same 
+    type as in the input file, if option -d is used, output values are 
+    stored as doubles. The extension [if]val is chosen accordingly.  
+    The option -c can be used to specify that the input values are complex
+    with the real and immaginary parts int/float or double
+    The type of the matrix entries does not affect the format of the .vc/vv file  
     */
-    
-#define Type int32_t
-    
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -26,13 +35,25 @@
 #include <complex>
 #include <array>
 
+#if Typecode==1  // int32_t    
+#define Type int32_t
+#define valext ".ival"
+#elif Typecode==2 // float
+#define Type float
+#define valext ".fval"
+#else            // default is double 
+#define Type double
+#define valext ".val"
+#endif
+
+
 // bit representing types of input/output values 
 // and general options of the algorithm 
 //#define INT32_OUTPUT 1
 //#define FLOAT_OUTPUT 2
 #define COMPLEX_INPUT 4
 #define NO_COL_ID 8
-
+#define DOUBLE_OUTPUT 16
 
 
 
@@ -41,13 +62,10 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols\n",name);
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");    
     fprintf(stderr,"\t\t-c             input are complex numbers\n");
-    fprintf(stderr,"\t\t-f             save entries as floats\n");
-    fprintf(stderr,"\t\t-i             save entries as int32s\n");
+    fprintf(stderr,"\t\t-d             save matrix entries as doubles\n");
     fprintf(stderr,"\t\t-n             don't store col id (crsz format)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
-    fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
-    fprintf(stderr,"if they are not present each complex entry is represented\n");
-    fprintf(stderr,"with two doubles.   Check this!!!!!\n\n");
+    fprintf(stderr,"The option -c can be combined with -d,\n\n");
     exit(1);
 }
 
@@ -69,11 +87,21 @@ int bits (unsigned long n) {
 
 // write a x as an int32/float/double in binary format  
 // if there is loss of information a warning is sent to stderr
-void write_bin(Type x, FILE *f)
+void write_bin(Type x, int out_type, FILE *f)
 {
-  int e = fwrite(&x,sizeof(x),1,f);
-  if(e!=1) quit("Error writing to binary .val file");
-} 
+  int e;
+  if(out_type&DOUBLE_OUTPUT) {
+    double xd = x;
+    e = fwrite(&xd,sizeof(xd),1,f);
+    if(e!=1) 
+      quit("Error writing to binary .val file");
+  }
+  else {
+    fwrite(&x,sizeof(x),1,f);
+    if(e!=1) 
+      quit("Error writing to binary " valext " file");
+  }
+}
 
 
 // provide hash function for a complex<Type> 
@@ -100,13 +128,15 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfinv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cdnv")) != -1) {
     switch (c) 
       {
       case 'v':
         verbose++; break;
       case 'c':
          vtype |= COMPLEX_INPUT; break;
+      case 'd':
+         vtype |= DOUBLE_OUTPUT; break;
       case 'n':
          vtype |= NO_COL_ID; break;
       case 'b':
@@ -158,9 +188,9 @@ int main (int argc, char **argv) {
   rewind(f);
   // open output .val file
   strncpy(fname,argv[1],PATH_MAX);
-  strcat(fname,".val");
+  strcat(fname,valext);
   FILE *fval = fopen(fname,"w");
-  if(fval==NULL) quit("Cannot open valfile");
+  if(fval==NULL) quit("Cannot open " valext " file for writing");
 
   // init counters
   int  wr = 0;  // number of written rows
@@ -207,13 +237,13 @@ int main (int argc, char **argv) {
           if(!(vtype&COMPLEX_INPUT)) { // real entry
             if(values.count(v)==0) {
               id = values[v] = dnonz++;
-              write_bin(v,fval);
+              write_bin(v,vtype,fval);
             } else id = values[v];
           } else { // complex entry 
             if(covalues.count(cov)==0) {
               id = covalues[cov] = dnonz++;
-              write_bin(cov.real(),fval);
-              write_bin(cov.imag(),fval);
+              write_bin(cov.real(),vtype, fval);
+              write_bin(cov.imag(),vtype, fval);
             } else id = covalues[cov];
           }
           // generate code and write it to .vc file 
@@ -245,7 +275,7 @@ int main (int argc, char **argv) {
     fprintf(stderr, "Warning! Written %d rows instead of %d\n", wr, rows);
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
-  fprintf(stderr, "%zd distinct values in .val file (nonzeros in crsv format) \n", dnonz);
+  fprintf(stderr, "%zd distinct values in .[if]val file (nonzeros in crsv format) \n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   fprintf(stderr,"==== Done\n");
   
