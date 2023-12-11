@@ -166,11 +166,16 @@ Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the 
 Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *matrepair* to generate the `.ansf.1` files.
 
 
-### mat2bin.py
-Tool to convert a matrix in csv format into binary float or double format (possibly removing some trailing or leading rows/columns). All entries are represented so the outfile has size `rows*cols*sizeof(double/float)`. With the option `--strip` the tool simply strips trailing or leading columns, or leading rows maintaining the csv format. Used by the *mmtest* tool.
+### csvmat2bin.py
+Tool to convert a matrix in csv format into binary int32/float32/double64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32
+output format some infomation will be lost if the input values are not of the right type.
+
 
 
 ### makevec.py
 Tool to create a vector of a given length and write it to a file in binary format (default 8-byte doubles). The vector is specified giving a set of values which are repeated cyclically.
 
 
+### stripcsvmat.py
+
+Tool to strip the initial or final columns and/or the initial rows from a csv matrix producing a smaller csv matrix. Used to remove unwanted data when preparing the testing set.
