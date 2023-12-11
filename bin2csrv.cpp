@@ -94,10 +94,10 @@ void write_bin(Type x, int out_type, FILE *f)
     double xd = x;
     e = fwrite(&xd,sizeof(xd),1,f);
     if(e!=1) 
-      quit("Error writing to binary .val file");
+      quit("Error writing to binary .val file (DOUBLE_OUTPUT)");
   }
   else {
-    fwrite(&x,sizeof(x),1,f);
+    e = fwrite(&x,sizeof(x),1,f);
     if(e!=1) 
       quit("Error writing to binary " valext " file");
   }
@@ -209,7 +209,6 @@ int main (int argc, char **argv) {
   // array cointaining a single row of the matrix
   Type *row = new Type[rowsize];
 
-
   // main loop reading binary file 
   size_t n=0;
   char *buffer=NULL;
@@ -222,7 +221,7 @@ int main (int argc, char **argv) {
       // read binary file one row at a time
       size_t e = fread(row,sizeof(Type),rowsize,f);
       if(e!=rowsize) quit("Error reading input file");
-      for(int c=0;c<rows;c++) {
+      for(int c=0;c<cols;c++) {
         if(vtype&COMPLEX_INPUT) {
           cov.real(row[2*c]);
           cov.imag(row[2*c+1]);
@@ -268,6 +267,7 @@ int main (int argc, char **argv) {
     }
     fclose(fvc);
   }
+  delete[] row; // deallocate row array
   fclose(fval);
   if(vtype&COMPLEX_INPUT) assert(dnonz==covalues.size());
   else assert(dnonz==values.size());

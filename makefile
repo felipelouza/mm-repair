@@ -12,7 +12,7 @@ CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=re32mm csrvmm reansmm reivmm reans32mm mat2csrv bin2csrv
+EXECS=re32mm csrvmm reansmm reivmm reans32mm mat2csrv bin2csrv bin2csrvf bin2csrvi
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
@@ -30,6 +30,12 @@ all: $(EXECS) brepair ansf sdsl
 	$(CC) $(CFLAGS) -o $@ $< 
 %: %.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< 
+
+# special rules for the bin2csrv variants
+bin2csrvf: bin2csrv.cpp
+	$(CXX) $(CXX_FLAGS) -o $@ $< -DTypecode=2
+bin2csrvi: bin2csrv.cpp
+	$(CXX) $(CXX_FLAGS) -o $@ $< -DTypecode=1
 
 
 # left and right matrix vector multiplication, double entries
