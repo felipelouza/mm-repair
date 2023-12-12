@@ -22,16 +22,11 @@ irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
 # tool to compute the value-column representation of a csv matrix
-mat2csrv_exe = "mat2csrv"
+mat2csrv_exe = "csvmat2csrv"
 # tool to compress a sequence of int32 unsing ans-fold  
 ansf_exe = "ans/encode.x"
 # tool to compress a sequence of int32 unsing an integer vector from sdsl   
 iv_exe = "sdsl/encode.x"
-
-## Python version of mat2csrv (no longer used)  
-## note: if file names ends with .dbl then the matrix is assumed to be 
-## in dense binary format (see mat2csrv.py help) 
-## mat2csrv_exe = "mat2csrv.py"
 
 
 def main():

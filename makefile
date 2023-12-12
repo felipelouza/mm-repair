@@ -12,7 +12,7 @@ CXX_FLAGS=-std=c++17 -g -DNDEBUG -O3 -msse4.2
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=re32mm csrvmm reansmm reivmm reans32mm mat2csrv bin2csrv bin2csrvf bin2csrvi
+EXECS=re32mm csrvmm reansmm reivmm reans32mm csvmat2csrv bin2csrv bin2csrvf bin2csrvi
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS

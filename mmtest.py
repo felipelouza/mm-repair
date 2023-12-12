@@ -65,7 +65,7 @@ def test_gzip(args,logfile):
            " file     & cols &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
-    exe_name = os.path.join(args.main_dir,"mat2bin.py")
+    exe_name = os.path.join(args.main_dir,"csvmat2bin.py")
 
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table

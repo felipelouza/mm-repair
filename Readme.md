@@ -105,7 +105,7 @@ The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm
 ## Tools
 
 ### matrepair
-Tool to compute the CSRV representation of a matrix and to grammar-compress it. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. With option `-r` the tool shows a nice report detailing running times and compression ratios.
+Tool to compute the CSRV representation of a matrix and to grammar-compress it. The input matrix must be in `csv` format. With option `-r` the tool shows a nice report detailing running times and compression ratios.
 
 ### re32mm
 Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file and an integer parameter *n* and computes *n* times the operation *y=Mx*, *z=y^t M*, *x = z/|z|*.
@@ -153,8 +153,12 @@ For the column reordering algorithms, take a look at the `reordering` subfolder.
 
 ## Internal tools 
 
-### mat2csrv.py
-Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. Used by *matrepair*. Outputs the `.vc` and `.val` files.
+### csvmat2csrv
+Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format. Used by *matrepair*. Outputs the `.vc` and `.val` files. 
+
+### csvmat2bin.py
+Tool to convert a matrix in csv format into binary int32/float32/double64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
+
 
 ### brepair/irepair0
 Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *matrepair* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
@@ -166,16 +170,13 @@ Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the 
 Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *matrepair* to generate the `.ansf.1` files.
 
 
-### csvmat2bin.py
-Tool to convert a matrix in csv format into binary int32/float32/double64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32
-output format some infomation will be lost if the input values are not of the right type.
-
-
-
 ### makevec.py
 Tool to create a vector of a given length and write it to a file in binary format (default 8-byte doubles). The vector is specified giving a set of values which are repeated cyclically.
 
 
 ### stripcsvmat.py
 
-Tool to strip the initial or final columns and/or the initial rows from a csv matrix producing a smaller csv matrix. Used to remove unwanted data when preparing the testing set.
+Tool to strip the initial or final columns and/or the initial rows from a csv matrix, producing a smaller csv matrix. Used to remove unwanted data when preparing the test dataset.
+
+### mat2csrv.py
+Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by 'csvmat2csrv'. 
