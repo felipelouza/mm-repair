@@ -228,26 +228,26 @@ def main():
   print("==== Done")
 
 # input must be a single parameter for the use in Pool
-def irepair0(atuple):
-  args = atuple[0]
-  bn = atuple[1]
-  logfile = atuple[2]
-  basename = args.input + filext_multipart(args.b,bn)
-  # ---- apply irepair to the .vc file 
-  if args.y and not need_rebuild(basename+args.vc_ext, ".C", ".R"):
-    print("---- Skipping irepair for", basename+args.vc_ext)
-  else:
-    start = time.time()
-    command = "{exe} {mfile}{ext} {mb}".format(mb=args.m, ext=args.vc_ext,
-              exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
-  if args.p:
-    pass # parallel compression 
-  else:
-    print("==== Repair compression\nCommand:", command)
-    if(execute_command(command,logfile)!=True):
-     sys.exit(3)
-    repair_time += time.time()-start
-    print("Repair time: {0:.4f}".format(repair_time))
+# def irepair0(atuple):
+  # args = atuple[0]
+  # bn = atuple[1]
+  # logfile = atuple[2]
+  # basename = args.input + filext_multipart(args.b,bn)
+  # # ---- apply irepair to the .vc file 
+  # if args.y and not need_rebuild(basename+args.vc_ext, ".C", ".R"):
+    # print("---- Skipping irepair for", basename+args.vc_ext)
+  # else:
+    # start = time.time()
+    # command = "{exe} {mfile}{ext} {mb}".format(mb=args.m, ext=args.vc_ext,
+              # exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
+  # if args.p:
+    # pass # parallel compression 
+  # else:
+    # print("==== Repair compression\nCommand:", command)
+    # if(execute_command(command,logfile)!=True):
+     # sys.exit(3)
+    # repair_time += time.time()-start
+    # print("Repair time: {0:.4f}".format(repair_time))
 
   
   

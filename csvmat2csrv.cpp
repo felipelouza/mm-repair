@@ -155,7 +155,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Error! Options -f and -i are mutually exclusive\n");
     usage_and_exit(argv[0]);
   }  
-  char *valext = ".val";
+  const char *valext = ".val";
   if (vtype&INT32_OUTPUT) valext = ".ival";
   if (vtype&FLOAT_OUTPUT) valext = ".fval";
   
@@ -212,6 +212,8 @@ int main (int argc, char **argv) {
       int e = getline(&buffer,&n,f);
       if(e<0) {
         if(ferror(f)) quit("Error reading input file");
+        assert(bn==nblock-1);
+        assert(bn==nblock-1);
         break;
       }
       r += 1;

@@ -5,11 +5,15 @@ Description = """
 Tool to create a Latex table containing the results of a set of experiments
 
 Currently supported tests:
-   mc: conversion to dense matrix format and compression 
-       with gz/xz for testing purposes
+   mg: compression with gzip/xz
    mz: compression to CSRV format followed by RePair grammar compression
-   mg: compression to DRV  format followed by RePair grammar compression
-   mm: test matrix-vector multiplication algorithms"""
+   md: compression to DRV  format followed by RePair grammar compression
+   mm: test matrix-vector multiplication algorithms (only for f64 matrices)
+
+By default the input matrix is assumed to contains doubles in csv format,
+the options --i32, --f32, and --f64 signal that the input is in binary
+format with entries of type int32, float32 and float64.
+"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
 
@@ -61,6 +65,7 @@ def createx(cols,value=1):
 
 # convert a csv file to binary and compress it with gzip and xz
 def test_gzip(args,logfile):
+  global TmpFilename
   table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
            " file     & cols &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
@@ -69,18 +74,20 @@ def test_gzip(args,logfile):
 
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = "{exe} {name} -o {temp} {r} {c}".format(
-                exe = exe_name, temp=TmpFilename, name=name, r=rows, c=cols)
-    command2 = "{exe} -kf {name}".format(exe = "gzip",  name=TmpFilename)            
-    command3 = "{exe} -kf {name}".format(exe = "xz",  name=TmpFilename)            
     try:
+      # convert csv matrix to binary if necessary
+      if not (args.i32 or args.f32 or args.f64):
+        command = f"{exe_name} {name} -o {TmpFilename} {rows} {cols}"
+        ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+      else:
+        TmpFilename = name
+      # run gzip and xz
+      command = f"gzip -kf {args.extra} {TmpFilename}"            
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
-      #print(command2)
-      ris = subprocess.run(command2.split(),stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE,timeout=Timelimit,check=True)
-      #print(command3)
-      ris = subprocess.run(command3.split(),stdout=subprocess.PIPE,
+      command = f"xz   -kf {args.extra} {TmpFilename}"            
+      ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
       # handle time out
@@ -102,13 +109,13 @@ def test_gzip(args,logfile):
     # peakmem = int(ris.stderr.split()[3])
     # tablerow.append((a, elapsed/n,peakmem, e))
     # tests for current file completed
-    table.append(makerow_mc(f, tablerow))
+    table.append(makerow_mgzip(args,f, tablerow))
   # all files processed
   return table
 
 
 # compress with matrepair obtaining CSRV and grammar representation
-# if nocol is True discard column id from matrix entry representation 
+# if nocol is True use the drv representation
 def test_compress(args, logfile, nocol=False):
   # set different behavior for no-column-id option 
   if nocol:
@@ -119,14 +126,14 @@ def test_compress(args, logfile, nocol=False):
     args.name = "csrv"           
     args.mext = ".vc"
   # init latex table containing the results
-  table = [f"### {args.name} + irepair0 size; {args.b} row-blocks\n", 
+  table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
            f" file     & cols &        {args.name} &        re32 &        reiv &       reans \\\\\n"]  
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {args.extra} {name} {rows} {cols}"
+    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -144,7 +151,7 @@ def test_compress(args, logfile, nocol=False):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    v = os.path.getsize(name+".val")
+    v = os.path.getsize(name+args.val_ext)
     vcsize = getsize_multipart(name,args.b,args.mext) 
     csize = getsize_multipart(name,args.b,args.mext+".C") 
     rsize = getsize_multipart(name,args.b,args.mext+".R") 
@@ -242,6 +249,17 @@ def makerow_mc(f, a):
   s += "\\\\\n"
   return s
 
+def makerow_mgzip(args,f, a):
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
+  for p in a:
+    s += "&{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f}".format(
+          p[0],p[0]/d,p[1],p[1]/d,p[2],p[2]/d)
+  s += "\\\\\n"
+  return s
+
+
+
 
 def makerow_mz(f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
@@ -267,11 +285,33 @@ def main():
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
   parser.add_argument('-p', help='number of parallel procs (def. 1)',type=int, default=1)
+  parser.add_argument('--i32', help='input contains int32 entries in binary format',action='store_true')
+  parser.add_argument('--f32', help='input contains float32 entries in binary format',action='store_true')
+  parser.add_argument('--f64', help='input contains float64 entries in binary format',action='store_true')
   parser.add_argument('--files',help="colon separated list of file names",type=str,default="")
   parser.add_argument('--sizes',help="colon separated list of matrix sizes rowsxcols eg 1000x30:5000x20",type=str,default="")
   parser.add_argument('--extra',help="extra options to pass to the tested tool",type=str,default="")
   args = parser.parse_args()
 
+  if (args.i32 and args.f32) or (args.i32 and args.f64) or (args.f64 and args.f32):
+    print("Options --i32 --f32 and --f64 are incompatible")
+    sys.exit(1)
+  args.entry_size = 8
+  args.val_ext = ".val"
+  args.bin = ""
+  if args.i32:
+    args.val_ext = ".ival"
+    args.bin = "--i32" 
+    args.entry_size = 4   # size in byte of a int32
+  elif args.f32:
+    args.val_ext = ".fval"
+    args.bin = "--f32"
+    args.entry_size = 4   # size in byte of a float32
+  elif args.f64:
+    args.bin = "--f64" # matrix of doubles in binary form
+  
+    
+    
   #check --sizes was not given without --files
   if len(args.sizes)>0 and len(args.files)==0:
     print("Error: option --sizes requires --files")
@@ -304,19 +344,19 @@ def main():
   # run the task   
   s1 = time.time()
   with open(Logfile_name,"a") as logfile:
-    if args.op=='mm':    # matrix multiplication 
+    if args.op=='mm':    # matrix multiplication (supported only for f64)
       check_testfiles(args,[".val"])
       table = test_time(args, logfile)
-    elif args.op=='mc':   # matrix conversion
+    elif args.op=='mg':   # matrix gzip/compression
       table = test_gzip(args, logfile)
-    elif args.op=='mz' or args.op=='mg':   # matrix compression
-      table = test_compress(args,logfile, args.op=='mg')
+    elif args.op=='mz' or args.op=='md':   # matrix compression
+      table = test_compress(args,logfile, args.op=='md')
     else: 
-      print("Unknown operation! Must be mc, mm, mg, or mz",file=sys.stderr)
+      print("Unknown operation! Must be mg, mz, md, or mm",file=sys.stderr)
       exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  if args.op=='mm' or args.op=='mc' or args.op=='mg' or args.op=='mz':  
+  if args.op=='mm' or args.op=='mg' or args.op=='mz' or args.op=='md':  
     for s in table:
       print(s,end="")
 

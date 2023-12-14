@@ -107,7 +107,7 @@ The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `
 ## Tools
 
 ### matrepair
-Tool to compute the CSRV representation of a matrix and to grammar-compress it. The input matrix must be in `csv` format. With option `-r` the tool shows a nice report detailing running times and compression ratios.
+Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default aassumes the input matrix be in `csv` format; use options `--i32`, `--f32` or `--f64` too specify that the imput matrix is in binary format. With option `-r` the tool shows a nice report detailing running times and compression ratios.
 
 ### re32mm
 Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file and an integer parameter *n* and computes *n* times the operation *y=Mx*, *z=y^t M*, *x = z/|z|*.
@@ -115,8 +115,8 @@ Tool to compute a series of left and right matrix-vector multiplications reporti
 ### csrvmm
 Analogous to *re32mm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (files `.val` and `.vc` see below) 
 
-### reivmm, reansmm, reans32mm
-Analogous to *re32mm* except that the input matrix is expected to be in the format ReIV, ReANS, and  ReANS32
+### reivmm, reansmm 
+Analogous to *re32mm* except that the input matrix is expected to be in the format ReIV or ReANS.
 
 ---
 
@@ -182,7 +182,7 @@ Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from 
 
 
 ### makevec.py
-Tool to create a vector of a given length and write it to a file in binary format (default 8-byte doubles). The vector is specified giving a set of values which are repeated cyclically.
+Tool to create a vector of a given length and write it to a file in binary format (default 8 byte doubles). The vector is specified giving a set of values which are repeated cyclically.
 
 
 ### stripcsvmat.py
@@ -191,4 +191,4 @@ Tool to strip the initial or final columns and/or the initial rows from a csv ma
 
 
 ### mat2csrv.py
-Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by 'csvmat2csrv'. 
+Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8 byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by 'csvmat2csrv'. 

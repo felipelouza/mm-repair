@@ -222,7 +222,11 @@ int main (int argc, char **argv) {
     while(true) {
       // read binary file one row at a time
       size_t e = fread(row,sizeof(Type),rowsize,f);
-      if(e!=rowsize) quit("Error reading input file");
+      if(e!=rowsize) {
+        if(ferror(f)) quit("Error reading input file");
+        assert(e==0 and bn==nblock-1);
+        break;
+      }
       for(int c=0;c<cols;c++) {
         if(vtype&COMPLEX_INPUT) {
           cov.real(row[2*c]);
