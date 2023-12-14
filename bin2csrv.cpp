@@ -1,28 +1,30 @@
 /*  bin2csrv[if]
     (here and in the following [if] stands for either nothing, i or f)
     Convert a binary file contaning int32/float/double entries into the 
-      csrv format (.vc & .[if]val files) 
+      CSRV format (.vc & .[if]val files) 
     or the 
-      csrz format (.vv & .[if]val files)
+      DRV  format (.dv & .[if]val files)
     In the CSRV format we only store nonzero entries and each entry
     is represented by an id identifying the value in the .[if]val file
     and the column number (hence the .vc extension)
-    In the CSRZ format we store also zero entries and each entry is
+    In the DRV format we store zero and nonzero entries and each entry is
     represented by an id identifying it in the .[if]val file 
-    (hence the .vv extension) 
+    (hence the .dv extension) 
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
 
     This source file is compiled in 3 versions:
-      bin2csrv  (default),     matrix entries are 8 byte doubles 
+      bin2csrv  (default),     matrix entries are 8 byte floats (eg doubles) 
       bin2csrvi (Typecode==1), matrix entries are 4 byte ints 
       bin2csrvf (Typecode==2), matrix entries are 4 byte floats 
     By default the output values stored in the [if]val file are in the same 
     type as in the input file, if option -d is used, output values are 
-    stored as doubles. The extension [if]val is chosen accordingly.  
+    stored as doubles. The extension [if]val is chosen according to the 
+    type of the file values.  
     The option -c can be used to specify that the input values are complex
-    with the real and immaginary parts int/float or double
-    The type of the matrix entries does not affect the format of the .vc/vv file  
+    with the real and immaginary parts either int/float or double.
+    The type of the matrix entries does not affect the format of the 
+    .vc/dv file  
     */
 #include <cassert>
 #include <iostream>
@@ -41,7 +43,7 @@
 #elif Typecode==2 // float
 #define Type float
 #define valext ".fval"
-#else            // default is double 
+#else            // default type is double 
 #define Type double
 #define valext ".val"
 #endif
@@ -63,9 +65,9 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");    
     fprintf(stderr,"\t\t-c             input are complex numbers\n");
     fprintf(stderr,"\t\t-d             save matrix entries as doubles\n");
-    fprintf(stderr,"\t\t-n             don't store col id (crsz format)\n");
+    fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
-    fprintf(stderr,"The option -c can be combined with -d,\n\n");
+    fprintf(stderr,"The option -c can be combined with -d\n\n");
     exit(1);
 }
 
@@ -188,15 +190,15 @@ int main (int argc, char **argv) {
   rewind(f);
   // open output .val file
   strncpy(fname,argv[1],PATH_MAX);
-  strcat(fname,valext);
+  strncat(fname,DOUBLE_OUTPUT ? ".val" : valext, PATH_MAX - 10);
   FILE *fval = fopen(fname,"w");
-  if(fval==NULL) quit("Cannot open " valext " file for writing");
+  if(fval==NULL) quit("Cannot open values file for writing");
 
   // init counters
   int  wr = 0;  // number of written rows
   unsigned long    nonz = 0;      // total number of processed values (nonzeros for crsv format)  
   unsigned long   dnonz = 0;      // distinct values in .val file (nonzeros for crsv format)  
-  unsigned long maxcode = 0;      // largest code in a .vc file
+  unsigned long maxcode = 0;      // largest code in a .vc/.dv file
   // dictionaty for storing input values
   std::unordered_map<Type,unsigned long> values; // dictionary of distinct nonzero
   Type v;   // values read from file
@@ -204,8 +206,8 @@ int main (int argc, char **argv) {
   std::unordered_map<std::complex<Type>,unsigned long, ComplexHasher> covalues; // dictionary of distinct nonzero
   std::complex<Type> cov;
   Type re,im;
-  // extension of the matrix file .vc or .vv
-  const char *mext = (vtype &NO_COL_ID) ? ".vv" : ".vc";
+  // extension of the matrix file .vc or .dv
+  const char *mext = (vtype &NO_COL_ID) ? ".dv" : ".vc";
   // array cointaining a single row of the matrix
   Type *row = new Type[rowsize];
 
@@ -216,7 +218,7 @@ int main (int argc, char **argv) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
     else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
     FILE *fvc = fopen(fname,"w");
-    if(fvc==NULL) quit("Cannot open a .vc/.vv file");
+    if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
       // read binary file one row at a time
       size_t e = fread(row,sizeof(Type),rowsize,f);
@@ -254,13 +256,13 @@ int main (int argc, char **argv) {
           if (code>maxcode) maxcode=code;
           wcode = (uint32_t) code; // convert to 32 bit value
           if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-            quit("Error writing to .vc/.vv file");
+            quit("Error writing to .vc/.dv file");
         }
       }
       // end row
       wcode=0;
       if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-        quit("Error writing to .vc/.vv file");
+        quit("Error writing to .vc/.dv file");
       wr += 1;
       // if a block is full, stop and start the next 
       if ((wr%block_size) == 0) break; // end while true

@@ -4,15 +4,16 @@ import sys, argparse, subprocess, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into binary form, ie rows x cols double64 or float32 (option -f) 
+into binary form, ie rows x cols float64 or float32 (option -f) 
 or int32 (option -i).
 Optionally, a set of leading rows and/or columns can be removed before 
 the conversion. If the number of columns to remove is negative, 
 minus that number of trailing columns are removed. 
 
-All matrix entries are represented so the outfile has size rows*cols*sizeof(entry). 
-Note that when using the int32 or float32 output format some infomation will be 
-lost if the input values are not of the right type.
+All matrix entries are represented so the outfile has size 
+    rows*cols*sizeof(entry). 
+Note that when using the int32 or float32 output format some information 
+will be lost if the input values are not of the right type.
 """
 
 shasum_exe = "sha1sum"
@@ -64,8 +65,11 @@ def main():
               print(i,a[i])
             print("row", r,"has", len(a), "elements")
             sys.exit(1);
-          ## convert all string values to float 
-          b = [float(x) for x in a]
+          ## convert all string values to float
+          if args.i: 
+            b = [int(x) for x in a]
+          else:
+            b = [float(x) for x in a]
           for x in b:
             if x!=0:
               nonz +=1

@@ -8,7 +8,7 @@ Currently supported tests:
    mc: conversion to dense matrix format and compression 
        with gz/xz for testing purposes
    mz: compression to CSRV format followed by RePair grammar compression
-   mg: compression to CSRZ format followed by RePair grammar compression
+   mg: compression to DRV  format followed by RePair grammar compression
    mm: test matrix-vector multiplication algorithms"""
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
@@ -112,13 +112,12 @@ def test_gzip(args,logfile):
 def test_compress(args, logfile, nocol=False):
   # set different behavior for no-column-id option 
   if nocol:
-    args.name = "csrz"
-    args.mext = ".vv"
-    args.extra = "--nocol"
+    args.name = "drv"
+    args.mext = ".dv"
+    args.extra += " --nocol"
   else:
     args.name = "csrv"           
     args.mext = ".vc"
-    args.extra = ""
   # init latex table containing the results
   table = [f"### {args.name} + irepair0 size; {args.b} row-blocks\n", 
            f" file     & cols &        {args.name} &        re32 &        reiv &       reans \\\\\n"]  
@@ -270,6 +269,7 @@ def main():
   parser.add_argument('-p', help='number of parallel procs (def. 1)',type=int, default=1)
   parser.add_argument('--files',help="colon separated list of file names",type=str,default="")
   parser.add_argument('--sizes',help="colon separated list of matrix sizes rowsxcols eg 1000x30:5000x20",type=str,default="")
+  parser.add_argument('--extra',help="extra options to pass to the tested tool",type=str,default="")
   args = parser.parse_args()
 
   #check --sizes was not given without --files
@@ -309,10 +309,8 @@ def main():
       table = test_time(args, logfile)
     elif args.op=='mc':   # matrix conversion
       table = test_gzip(args, logfile)
-    elif args.op=='mz':   # matrix compression
-      table = test_compress(args,logfile)
-    elif args.op=='mg':   # matrix compression without column Id
-      table = test_compress(args,logfile,True)
+    elif args.op=='mz' or args.op=='mg':   # matrix compression
+      table = test_compress(args,logfile, args.op=='mg')
     else: 
       print("Unknown operation! Must be mc, mm, mg, or mz",file=sys.stderr)
       exit(1)

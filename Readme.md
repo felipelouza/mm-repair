@@ -3,6 +3,8 @@
 
 ## Prerequisites 
 
+* Python version 3.8 or later
+
 * [sdsl-lite](https://github.com/simongog/sdsl-lite) (`git clone https://github.com/simongog/sdsl-lite.git` + 
 `cd sdsl-lite` + `./install.sh`)
 
@@ -79,25 +81,25 @@ re32mm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
 ## Available Matrix Compression Formats
 
 ### CSRV
-Compressed Sparse Row/Value format. The encoding consists of the files with extensions `.val` and `.vc`. The `.val` file contains the *distinct* nonzero entries of the input matrix represented as 8-byte doubles. The `.vc` file contains for each nonzero element *a = A[i][j]* an encoding of the pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. 
+Compressed Sparse Row/Value format. The encoding consists of the files with extensions `.[if]val` and `.vc` where `.[if]val` can be either `.ival`, `.fval`, or `.val` according to the type of the input matrix entries (respectively int32, float32 or float64)
+
+
+The `.[if]val` file contains the *distinct* nonzero entries of the input matrix represented as 8 byte doubles or 4 byte float32 or int32. The `.vc` file contains for each nonzero element *a = A[i][j]* an encoding of the pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. 
 
 
 ### Re32
-The `.vc` file of the CSRV format is grammar compressed with RePair. All symbols are represented by 32 bit unsigned integers. The encoding consists of the files with extensions `.val`, `.vc.R`, and `vc.C`
+The `.vc` file of the CSRV format is grammar compressed with RePair. All symbols are represented by 32 bit unsigned integers. The encoding consists of the files with extensions `.[if]val`, `.vc.R`, and `vc.C`
 
 
 ### ReIV
 The `.vc.C` and `vc.R` files of the Re32 format are represented as packed arrays with the minimum number of bits per entry using the `int_vector` class from SDSL-lite.
-The encoding consists of the files with extensions `.val`, `.vc.R.iv`, and `vc.C.iv`
+The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.iv`
 
 
 ### ReANS
 The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array.
-The encoding consists of the files with extensions `.val`, `.vc.R.iv`, and `vc.C.ansf.1`
+The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.ansf.1`
 
-
-### ReANS32
-The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The encoding consists of the files with extensions `.val`, `.vc.R`, and `vc.C.ansf.1`
 
 
 ---
@@ -153,11 +155,20 @@ For the column reordering algorithms, take a look at the `reordering` subfolder.
 
 ## Internal tools 
 
+
 ### csvmat2csrv
-Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format. Used by *matrepair*. Outputs the `.vc` and `.val` files. 
+Tool to compute the CSRV representation of a matrix. The input matrix is assumed to consists of `float64` (doubles) stored in `csv` format (one row per line). 
+Used by *matrepair*. Outputs the `.vc` and `.val` files. 
+
+
+### bin2csrv, bin2csrvf, bin2csrvi
+Tools to compute the CSRV representation of a matrix stored in binary form. 
+The three versions assume that the matrix entries are stored respectivley as float64 (double), float32, int32 and write such entries in the '[if]val' file in the same format. 
+Used by *matrepair*. Outputs the `.vc` and `.[if]val` files. 
+
 
 ### csvmat2bin.py
-Tool to convert a matrix in csv format into binary int32/float32/double64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
+Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
 
 
 ### brepair/irepair0
@@ -177,6 +188,7 @@ Tool to create a vector of a given length and write it to a file in binary forma
 ### stripcsvmat.py
 
 Tool to strip the initial or final columns and/or the initial rows from a csv matrix, producing a smaller csv matrix. Used to remove unwanted data when preparing the test dataset.
+
 
 ### mat2csrv.py
 Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8-byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by 'csvmat2csrv'. 

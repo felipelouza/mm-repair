@@ -1,19 +1,17 @@
-/*  mat2csrv
-    Convert a csv file contaning numerical entries into the 
-      csrv format (.vc & .val files) 
+/*  csvmat2csrv
+    Convert a amtrix written in text csv format (one line per row) into the 
+      CSRV format (.vc & .val files) 
     or the 
-      csrz format (.vv & val files)
+      DRV format (.dv & val files)
     In the CSRV format we only store nonzero entries and each entry
     is represented by an id identifying the value in the .val file
     and the column number (hence the .vc extension)
-    In the CSRZ format we store also zero entries and each entry is
-    represented by an id identifying it in the .val file 
-    (hence the .vv extension) 
+    In the DRV format we store zero and nonzero entries and each entry is
+    represented by an id identifying it in the .[if]val file 
+    (hence the .dv extension) 
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
     */
-
-
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -40,7 +38,7 @@
  * since the output will not be correct: input values are always 
  * read as doubles, and they are considered equal only if they are equal 
  * as doubles, so values that become equal after the conversion are not 
- * considered equal in the csrv representation */ 
+ * considered equal in the csrv representation. */ 
  
  
 
@@ -49,9 +47,9 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols\n",name);
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");    
     fprintf(stderr,"\t\t-c             input are complex numbers\n");
-    fprintf(stderr,"\t\t-f             save entries as floats\n");
-    fprintf(stderr,"\t\t-i             save entries as int32s\n");
-    fprintf(stderr,"\t\t-n             don't store col id (crsz format)\n");
+    fprintf(stderr,"\t\t-f             save entries as floats (debug only)\n");
+    fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
+    fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
@@ -157,6 +155,10 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Error! Options -f and -i are mutually exclusive\n");
     usage_and_exit(argv[0]);
   }  
+  char *valext = ".val";
+  if (vtype&INT32_OUTPUT) valext = ".ival";
+  if (vtype&FLOAT_OUTPUT) valext = ".fval";
+  
 
   // virtually get rid of options from the command line 
   optind -=1;
@@ -178,7 +180,7 @@ int main (int argc, char **argv) {
   FILE *f = fopen(argv[1],"r");
   if(f==NULL) quit("Cannot open infile");
   strncpy(fname,argv[1],PATH_MAX);
-  strcat(fname,".val");
+  strncat(fname,valext,PATH_MAX - 10);
   FILE *fval = fopen(fname,"w");
   if(fval==NULL) quit("Cannot open valfile");
   // init counters
@@ -194,8 +196,8 @@ int main (int argc, char **argv) {
   std::unordered_map<std::complex<double>,unsigned long, ComplexHasher> covalues; // dictionary of distinct nonzero
   std::complex<double> cov;
   double re,im;
-  // extension of the matrix file .vc or .vv
-  const char *mext = (vtype &NO_COL_ID) ? ".vv" : ".vc";
+  // extension of the matrix file .vc or .dv
+  const char *mext = (vtype &NO_COL_ID) ? ".dv" : ".vc";
   
   // main loop reading csv file 
   size_t n=0;
@@ -204,7 +206,7 @@ int main (int argc, char **argv) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
     else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
     FILE *fvc = fopen(fname,"w");
-    if(fvc==NULL) quit("Cannot open a .vc/.vv file");
+    if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
       // read csv file
       int e = getline(&buffer,&n,f);

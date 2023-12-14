@@ -9,11 +9,19 @@ Compressed Sparse Row-Value representation + Repair compression
 
   Compression:
      {exe} file [options]
-  creates compressed files file.val file.vc.C and file.vc.R
+  creates compressed files file.[if]val file.vc.C and file.vc.R
 
   Decompression: (not yet implemented)
      {exe} -d file [options]
-  decompresses file.val file.vc.C and file.vc.R to file.out          
+  decompresses file.[if]val file.vc.C and file.vc.R to file.out 
+  
+where [if] is either 'i', 'f' or '' and denotes the type of the
+values in the .[if]val file: i=int32, f=float32, ''=float64 
+  
+By default the input matrix is assumed to contains doubles in csv format,
+the options --i32, --f32, and --f64 signal that the input is in binary
+format with entries of type int32, float32 and float64. The .[if]val
+file will contain entries of the same type as the input matrix.
 """
 
 # path of the auxiliary tools
@@ -21,18 +29,18 @@ Compressed Sparse Row-Value representation + Repair compression
 irepair_exe = "brepair/irepair0"
 # idespair
 idespair_exe = "brepair/idespair"
-# tool to compute the value-column representation of a csv matrix
+# default tool to compute the csrv/csrz representation of a csv matrix
 mat2csrv_exe = "csvmat2csrv"
-# tool to compress a sequence of int32 unsing ans-fold  
+# tool to compress a sequence of int32 using ans-fold  
 ansf_exe = "ans/encode.x"
-# tool to compress a sequence of int32 unsing an integer vector from sdsl   
+# tool to compress a sequence of int32 using an integer vector from sdsl   
 iv_exe = "sdsl/encode.x"
 
 
 def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description.format(exe=sys.argv[0]), formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('input', help='matrix csv file name', type=str)
+  parser.add_argument('input', help='matrix file name', type=str)
   parser.add_argument('rows',  help='number of rows', type=int)
   parser.add_argument('cols', help='number of columns', type=int)
   parser.add_argument('-b', help='number of row blocks (def. 1)', type=int, default=1)
@@ -42,12 +50,15 @@ def main():
   parser.add_argument('-p', help='number of repair procs (def. 1)',type=int, default=1)
   parser.add_argument('-m', help='force repair to use at most M MBs (def. 95%% of available RAM)',default=-1, type=int)
   parser.add_argument('-y', help='lazy rebuild makefile style',action='store_true')
+  parser.add_argument('--i32', help='input contains int32 entries in binary format',action='store_true')
+  parser.add_argument('--f32', help='input contains float32 entries in binary format',action='store_true')
+  parser.add_argument('--f64', help='input contains float64 entries in binary format',action='store_true')
+  parser.add_argument('--complex',  help='matrix entries have an imaginary part',action='store_true')
   # parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
-  parser.add_argument('--c64',  help='matrix entries are 32+32 complex floats (debug only)',action='store_true')
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
-  parser.add_argument('--nocol',  help="keep 0s and don't store column id (debug only)",action='store_true')
+  parser.add_argument('--nocol',  help="keep 0s and don't store column id (DRV format, debug only)",action='store_true')
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -63,11 +74,29 @@ def main():
     print("Setting memory for each repair instance to", args.m, "MBs")
   # choose extension for the file containing the matrix entries
   if args.nocol: 
-    args.mext = ".vv"   # csrz: no column id's and keep 0s and
+    args.vc_ext = ".vv"   # csrz: no column id's and keep 0s
     args.name = "crsz"
   else:          
-    args.mext = ".vc"   # csrv: no 0s and entries encode columns id 
+    args.vc_ext = ".vc"   # csrv: no 0s and entries encode also columns id 
     args.name = "crsv"
+  if (args.i32 and args.f32) or (args.i32 and args.f64) or (args.f64 and args.f32):
+    print("Options --i32 --f32 and --f64 are incompatible")
+    sys.exit(1)
+  # default csv matrix of doubles, otherwise change exe and extension
+  args.val_ext = ".val"
+  args.csrv_exe = "csvmat2csrv"
+  args.entry_size = 8   # size in byte of a double 
+  if args.i32:
+    args.val_ext = ".ival"
+    args.csrv_exe = "bin2csrvi" 
+    args.entry_size = 4   # size in byte of a int32
+  elif args.f32:
+    args.val_ext = ".fval"
+    args.csrv_exe = "bin2csrvf"
+    args.entry_size = 4   # size in byte of a float32
+  elif args.f64:
+    args.csrv_exe = "bin2csrv" # matrix of doubles in binary form
+  
   # init time counters 
   vc_time = repair_time = iv_time = ansf_time = 0
 
@@ -100,15 +129,15 @@ def main():
                   
     else:       # mat2csrv + irepair
       # ----------conversion to the CSRV format 
-      files_changed = need_rebuild_multipart(args.input, args.b, args.mext) or need_rebuild(args.input,".val")
+      files_changed = need_rebuild_multipart(args.input, args.b, args.vc_ext) or need_rebuild(args.input,args.val_ext)
       if args.noconv or (args.y and not files_changed):
-        print("---- Skipping conversion dbl/csv->csrv")
+        print("---- Skipping conversion bin/csv->csrv")
       else:
         command = "{exe} {opts} {nocol} {c64} {mfile} {rows} {cols}".format(
-          exe = os.path.join(args.main_dir,mat2csrv_exe), mfile=args.input,
-          rows = args.rows, cols=args.cols, opts = "-b %d" % args.b,
-          c64 = "-c -f" if args.c64 else "",nocol = "-n" if args.nocol else "");
-        print("==== Conversion dbl/csv->csrv\nCommand:", command)
+          exe = os.path.join(args.main_dir,args.csrv_exe), mfile=args.input,
+          rows = args.rows, cols=args.cols, opts = f"-b {args.b}",
+          c64 = "-c" if args.complex else "",nocol = "-n" if args.nocol else "");
+        print("==== Conversion bin/csv->csrv\nCommand:", command)
         if(execute_command(command,logfile)!=True):
           sys.exit(2)
         vc_time = time.time()-start
@@ -124,10 +153,10 @@ def main():
       for bn in range(args.b):  
         basename = args.input + filext_multipart(args.b,bn)
         # ---- apply irepair to the .vc file 
-        if args.y and not need_rebuild(basename+args.mext, ".C", ".R"):
-          print("---- Skipping irepair for", basename+args.mext)
+        if args.y and not need_rebuild(basename+args.vc_ext, ".C", ".R"):
+          print("---- Skipping irepair for", basename+args.vc_ext)
         else:
-          command = "{exe} {mfile}{ext} {mb}".format(mb=args.m,ext=args.mext,
+          command = "{exe} {mfile}{ext} {mb}".format(mb=args.m,ext=args.vc_ext,
                     exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
           clist.append(command)
       # execute commands  
@@ -150,21 +179,21 @@ def main():
         basename = args.input + filext_multipart(args.b,bn)          
         # ---- apply integer vector encoding to the .vc.C and vc.R files
         iv_time = 0 
-        if args.y and not need_rebuild(basename+args.mext+".C", ".iv"):
+        if args.y and not need_rebuild(basename+args.vc_ext+".C", ".iv"):
           print("---- Skipping iv(C)")
         else:
           start = time.time()
-          command = "{exe} {mfile}{ext}.C ".format(ext=args.mext,
+          command = "{exe} {mfile}{ext}.C ".format(ext=args.vc_ext,
                     exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
           print("==== Integer vector .C compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
            sys.exit(4)
           iv_time += time.time()-start
-        if args.y and not need_rebuild(basename+args.mext+".R", ".iv"):
+        if args.y and not need_rebuild(basename+args.vc_ext+".R", ".iv"):
           print("---- Skipping iv(R)")
         else:
           start = time.time()
-          command = "{exe} {mfile}{ext}.R ".format(ext=args.mext,
+          command = "{exe} {mfile}{ext}.R ".format(ext=args.vc_ext,
                     exe = os.path.join(args.main_dir,iv_exe), mfile=basename)
           print("==== Integer vector .R compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
@@ -173,11 +202,11 @@ def main():
           print("Integer vector compression time: {0:.4f}".format(iv_time))
         
         # ---- apply ans_fold-1 to the .vc.C file 
-        if args.y and not need_rebuild(basename+args.mext+".C", ".ansf.1"):
+        if args.y and not need_rebuild(basename+args.vc_ext+".C", ".ansf.1"):
           print("---- Skipping ans-fold")
         else:
           start = time.time()
-          command = "{exe} {mfile}{ext}.C ".format(ext=args.mext,
+          command = "{exe} {mfile}{ext}.C ".format(ext=args.vc_ext,
                     exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
           print("==== Ans-fold compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
@@ -192,7 +221,7 @@ def main():
       
       # DISABLED: delete temporary .vc file
       if False and not args.k: # temporarily disabled 
-        command = f"rm -f {basename}{args.mext}"
+        command = f"rm -f {basename}{args.vc_ext}"
         if(execute_command(command,logfile)!=True):
           sys.exit(7)
 
@@ -205,11 +234,11 @@ def irepair0(atuple):
   logfile = atuple[2]
   basename = args.input + filext_multipart(args.b,bn)
   # ---- apply irepair to the .vc file 
-  if args.y and not need_rebuild(basename+args.mext, ".C", ".R"):
-    print("---- Skipping irepair for", basename+args.mext)
+  if args.y and not need_rebuild(basename+args.vc_ext, ".C", ".R"):
+    print("---- Skipping irepair for", basename+args.vc_ext)
   else:
     start = time.time()
-    command = "{exe} {mfile}{ext} {mb}".format(mb=args.m, ext=args.mext,
+    command = "{exe} {mfile}{ext} {mb}".format(mb=args.m, ext=args.vc_ext,
               exe = os.path.join(args.main_dir,irepair_exe), mfile=basename)
   if args.p:
     pass # parallel compression 
@@ -238,28 +267,28 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> integer vectors time: {0:.2f}".format(tiv))
   print(" >> ansf time: {0:.2f}".format(tans))
   print(" >> total time: {0:.2f}".format(ttot))  
-  valsize = os.path.getsize(args.input + ".val")
-  vcsize = getsize_multipart(args.input,args.b,args.mext) 
+  valsize = os.path.getsize(args.input + args.val_ext)
+  vcsize = getsize_multipart(args.input,args.b,args.vc_ext) 
   nonzero = vcsize//4 - args.rows
   if args.nocol:
-    isize = (bits(valsize//8)*args.rows*args.cols)//8
+    isize = (bits(valsize//args.entry_size)*args.rows*args.cols)//8
     print(" >> matrix log(alpha)xNumEntries size:",isize, "bytes")
   else:
-    isize = 8*args.rows*args.cols
+    isize = args.entry_size*args.rows*args.cols
     print(" >> matrix dense size:",isize, "bytes")
   print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
-  print(" >> number of distinct nonzero: {0}".format(valsize//8))
+  print(" >> number of distinct nonzero: {0}".format(valsize//args.entry_size))
   psize = valsize+vcsize
   print(" >> {2}  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize,args.name.upper()))
-  csize = getsize_multipart(args.input,args.b,args.mext+".C") 
-  rsize = getsize_multipart(args.input,args.b,args.mext+".R") 
+  csize = getsize_multipart(args.input,args.b,args.vc_ext+".C") 
+  rsize = getsize_multipart(args.input,args.b,args.vc_ext+".R") 
   psize = valsize + csize+rsize
   print(" >> RE32  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  csizeiv = getsize_multipart(args.input,args.b,args.mext+".C.iv") 
-  rsizeiv = getsize_multipart(args.input,args.b,args.mext+".R.iv") 
+  csizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".C.iv") 
+  rsizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".R.iv") 
   psize = valsize + csizeiv+rsizeiv
   print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  ans_csize = getsize_multipart(args.input,args.b,args.mext+".C.ansf.1")
+  ans_csize = getsize_multipart(args.input,args.b,args.vc_ext+".C.ansf.1")
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
