@@ -2,12 +2,12 @@
     Convert a amtrix written in text csv format (one line per row) into the 
       CSRV format (.vc & .val files) 
     or the 
-      DRV format (.dv & val files)
+      DRV format (.dv & vald files)
     In the CSRV format we only store nonzero entries and each entry
     is represented by an id identifying the value in the .val file
     and the column number (hence the .vc extension)
     In the DRV format we store zero and nonzero entries and each entry is
-    represented by an id identifying it in the .[if]val file 
+    represented by an id identifying it in the .[if]vald file 
     (hence the .dv extension) 
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
@@ -176,11 +176,13 @@ int main (int argc, char **argv) {
   int block_size = (rows+nblocks-1)/nblocks;
   fprintf(stderr,"Block size: %d\n", block_size);
 
-  // open file and init
+  // open files and init
   FILE *f = fopen(argv[1],"r");
   if(f==NULL) quit("Cannot open infile");
-  strncpy(fname,argv[1],PATH_MAX);
-  strncat(fname,valext,PATH_MAX - 10);
+  // open output .[if]val[d] file
+  strncpy(fname,argv[1],PATH_MAX-10);
+  strncat(fname, valext,6);
+  if(vtype & NO_COL_ID) strncat(fname,"d",2);
   FILE *fval = fopen(fname,"w");
   if(fval==NULL) quit("Cannot open valfile");
   // init counters

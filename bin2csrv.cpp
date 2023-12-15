@@ -188,9 +188,10 @@ int main (int argc, char **argv) {
   if(fsize<0) quit("Cannot tell input file size");
   if(fsize=!sizeof(Type)*rowsize*cols) quit("Invalid input file size");
   rewind(f);
-  // open output .val file
-  strncpy(fname,argv[1],PATH_MAX);
-  strncat(fname,DOUBLE_OUTPUT ? ".val" : valext, PATH_MAX - 10);
+  // open output .[if]val[d] file
+  strncpy(fname,argv[1],PATH_MAX-10);
+  strncat(fname,vtype & DOUBLE_OUTPUT ? ".val" : valext,6);
+  if(vtype & NO_COL_ID) strncat(fname,"d",2);
   FILE *fval = fopen(fname,"w");
   if(fval==NULL) quit("Cannot open values file for writing");
 

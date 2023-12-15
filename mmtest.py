@@ -82,6 +82,10 @@ def test_gzip(args,logfile):
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
       else:
         TmpFilename = name
+      # check number of rows and colums
+      if os.path.getsize(TmpFilename)!=rows*cols*args.entry_size:
+        print(f"# of rows/columns and entry size don't match with {TmpFilename} file size")
+        sys.exit(1)
       # run gzip and xz
       command = f"gzip -kf {args.extra} {TmpFilename}"            
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
@@ -116,18 +120,18 @@ def test_gzip(args,logfile):
 
 # compress with matrepair obtaining CSRV and grammar representation
 # if nocol is True use the drv representation
-def test_compress(args, logfile, nocol=False):
+def test_compress(args, logfile, drv=False):
   # set different behavior for no-column-id option 
-  if nocol:
+  if drv:
     args.name = "drv"
     args.mext = ".dv"
-    args.extra += " --nocol"
+    args.extra += " --drv"
   else:
     args.name = "csrv"           
     args.mext = ".vc"
   # init latex table containing the results
   table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
-           f" file     & cols &        {args.name} &        re32 &        reiv &       reans \\\\\n"]  
+           f" file     & cols &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
@@ -259,13 +263,11 @@ def makerow_mgzip(args,f, a):
   return s
 
 
-
-
 def makerow_mz(f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
   d = 8*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
-    s += "&{:>12} &{:12} &{:>12} &{:>12} ".format(p[0],p[1],p[2],p[3])
+    s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
   s += "\\\\\n"
   return s
 
@@ -280,7 +282,7 @@ def show_command_line(f):
 def main():
   show_command_line(sys.stderr)
   parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('op', help='operation to test: mm|mc|mz|mg', type=str)
+  parser.add_argument('op', help='operation to test: mg|mz|md|mm', type=str)
   parser.add_argument('-d', help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-n', help='number of iterations (def 3)', default=3, type=int)  
   parser.add_argument('-b', help='number of row blocks (def 1)', default=1, type=int)    
@@ -338,8 +340,8 @@ def main():
       # add sizes to global dictionary Sizes
       for i in range(len(Files)):
         Sizes[Files[i]] = tuple([int(x) for x in sizes[i].split('x')])
-      print("Sizes:",Sizes)
-      sys.exit(1)    
+      # print("Sizes:",Sizes)
+      # sys.exit(1)   
 
   # run the task   
   s1 = time.time()
