@@ -123,7 +123,7 @@ def test_gzip(args,logfile):
 def test_compress(args, logfile, drv=False):
   # set different behavior for no-column-id option 
   if drv:
-    args.name = "drv"
+    args.name = "drv "
     args.mext = ".dv"
     args.extra += " --drv"
   else:
@@ -165,7 +165,7 @@ def test_compress(args, logfile, drv=False):
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv))
     # tests for current file completed
-    table.append(makerow_mz(f, tablerow))
+    table.append(makerow_mz(args,f, tablerow))
   # all files processed
   return table
 
@@ -244,15 +244,6 @@ def makerow_mm(f, a):
   s += "\\\\\n"
   return s
 
-def makerow_mc(f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
-  d = 8*Sizes[f][0]*Sizes[f][1]/100
-  for p in a:
-    s += "&{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f}".format(
-          p[0],p[0]/d,p[1],p[1]/d,p[2],p[2]/d)
-  s += "\\\\\n"
-  return s
-
 def makerow_mgzip(args,f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
@@ -263,9 +254,9 @@ def makerow_mgzip(args,f, a):
   return s
 
 
-def makerow_mz(f, a):
+def makerow_mz(args,f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
-  d = 8*Sizes[f][0]*Sizes[f][1]/100
+  d = args.entry_size**Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
   s += "\\\\\n"

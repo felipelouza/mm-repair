@@ -92,8 +92,8 @@ def main():
     args.csrv_exe = "bin2csrv" # matrix of doubles in binary form
   # take care of the drv option   
   if args.drv: 
-    args.vc_ext = ".dv"   # csrz: no column id's and keep 0s
-    args.name = "drv"
+    args.vc_ext = ".dv"   # drv: no column id's and keep 0s
+    args.name = "drv "
     args.val_ext += "d"
   else:          
     args.vc_ext = ".vc"   # csrv: no 0s and entries encode also columns id 
