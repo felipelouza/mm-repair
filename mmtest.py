@@ -125,6 +125,7 @@ def test_compress(args, logfile, drv=False):
   if drv:
     args.name = "drv "
     args.mext = ".dv"
+    args.val_ext += "d"
     args.extra += " --drv"
   else:
     args.name = "csrv"           
