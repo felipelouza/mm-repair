@@ -67,7 +67,7 @@ def createx(cols,value=1):
 def test_gzip(args,logfile):
   global TmpFilename
   table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
-           " file     & cols &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
+           " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"csvmat2bin.py")
@@ -119,7 +119,7 @@ def test_gzip(args,logfile):
 
 
 # compress with matrepair obtaining CSRV and grammar representation
-# if nocol is True use the drv representation
+# if drv is True use the drv representation
 def test_compress(args, logfile, drv=False):
   # set different behavior for no-column-id option 
   if drv:
@@ -132,7 +132,7 @@ def test_compress(args, logfile, drv=False):
     args.mext = ".vc"
   # init latex table containing the results
   table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
-           f" file     & cols &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
+           f" file     & rows &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
@@ -246,7 +246,7 @@ def makerow_mm(f, a):
   return s
 
 def makerow_mgzip(args,f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][0])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f} &{:11.0f} &{:6.2f}".format(
@@ -256,7 +256,7 @@ def makerow_mgzip(args,f, a):
 
 
 def makerow_mz(args,f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][0])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
