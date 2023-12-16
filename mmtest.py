@@ -256,7 +256,7 @@ def makerow_mgzip(args,f, a):
 
 def makerow_mz(args,f, a):
   s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
-  d = args.entry_size**Sizes[f][0]*Sizes[f][1]/100
+  d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
   s += "\\\\\n"
