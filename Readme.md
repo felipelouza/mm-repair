@@ -73,7 +73,7 @@ splits the input matrix into three blocks of rows which are compressed separatel
 
 Next, we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ in parallel using the above row blocks with the command:
 ```bash
-re32mm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
+reansmm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
 ```
 
 ---
@@ -101,19 +101,19 @@ The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm
 The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.ansf.1`
 
 
-
 ---
 
 ## Tools
 
 ### matrepair
-Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default aassumes the input matrix be in `csv` format; use options `--i32`, `--f32` or `--f64` too specify that the imput matrix is in binary format. With option `-r` the tool shows a nice report detailing running times and compression ratios.
+Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` too specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
+The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
 
 ### re32mm
 Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file and an integer parameter *n* and computes *n* times the operation *y=Mx*, *z=y^t M*, *x = z/|z|*.
 
 ### csrvmm
-Analogous to *re32mm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (files `.val` and `.vc` see below) 
+Analogous to *re32mm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (just the files `.val` and `.vc`) 
 
 ### reivmm, reansmm 
 Analogous to *re32mm* except that the input matrix is expected to be in the format ReIV or ReANS.
@@ -143,6 +143,13 @@ The command
 mmtest.py -b 8 -d /data -n num mm
 ```
 executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
+
+
+---
+
+## Experimental: the DRV format
+
+The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id.
 
 
 ---

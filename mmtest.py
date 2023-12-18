@@ -36,7 +36,11 @@ Zvname = "z.dbl"
 Evname = "ein.dbl"
 Timelimit = 36000
 TmpFilename = "tmp_mmtest"
-
+# name (and options and extension) for zip-like compression
+zip1 = "gzip"
+zip1ext = ".gz"
+zip2 = "xz --lzma2=dict=1GiB"
+zip2ext = ".xz"
 
 # check that the test files exist and sizes are defined
 def check_testfiles(args,sufxs):
@@ -66,8 +70,8 @@ def createx(cols,value=1):
 # convert a csv file to binary and compress it with gzip and xz
 def test_gzip(args,logfile):
   global TmpFilename
-  table = ["### gzip and xz size vs dense uncompressed size (absolute and percentage)\n", 
-           " file     & rows &   dense size    % &&     gzip size   % &&     xz size    % &\\\\\n"]
+  table = [f"### {zip1} and {zip2} size vs dense uncompressed size (absolute and percentage)\n", 
+           f" file     & rows &   dense size % &&     {zip1} % &&   {zip2} % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"csvmat2bin.py")
@@ -87,10 +91,10 @@ def test_gzip(args,logfile):
         print(f"# of rows/columns and entry size don't match with {TmpFilename} file size")
         sys.exit(1)
       # run gzip and xz
-      command = f"gzip -kf {args.extra} {TmpFilename}"            
+      command = f"{zip1} -kf {args.extra} {TmpFilename}"            
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
-      command = f"xz   -kf {args.extra} {TmpFilename}"            
+      command = f"{zip2} -kf {args.extra} {TmpFilename}"            
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
@@ -107,8 +111,8 @@ def test_gzip(args,logfile):
     except Exception as ex:
       print(" Test failed:", str(ex))
       sys.exit(2)
-    tablerow.append((os.path.getsize(TmpFilename),os.path.getsize(TmpFilename+".gz"),
-                     os.path.getsize(TmpFilename+".xz")))
+    tablerow.append((os.path.getsize(TmpFilename),os.path.getsize(TmpFilename+zip1ext),
+                     os.path.getsize(TmpFilename+zip2ext)))
     # elapsed = int(ris.stdout.split()[-2])
     # peakmem = int(ris.stderr.split()[3])
     # tablerow.append((a, elapsed/n,peakmem, e))
@@ -341,7 +345,7 @@ def main():
     if args.op=='mm':    # matrix multiplication (supported only for f64)
       check_testfiles(args,[".val"])
       table = test_time(args, logfile)
-    elif args.op=='mg':   # matrix gzip/compression
+    elif args.op=='mg':   # matrix zip-like compression
       table = test_gzip(args, logfile)
     elif args.op=='mz' or args.op=='md':   # matrix compression
       table = test_compress(args,logfile, args.op=='md')
