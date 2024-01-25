@@ -286,8 +286,9 @@ def main():
   parser.add_argument('--i32', help='input contains int32 entries in binary format',action='store_true')
   parser.add_argument('--f32', help='input contains float32 entries in binary format',action='store_true')
   parser.add_argument('--f64', help='input contains float64 entries in binary format',action='store_true')
-  parser.add_argument('--files',help="colon separated list of file names",type=str,default="")
-  parser.add_argument('--sizes',help="colon separated list of matrix sizes rowsxcols eg 1000x30:5000x20",type=str,default="")
+  parser.add_argument('--files',help="colon separated list of file names eg matA:matB",type=str,default="")
+  parser.add_argument('--sizes',help="colon separated list of matrix sizes eg. 1000x30:5000x20\n"
+                                     "SIZES must contain the sizes of the matrices in FILES",type=str,default="")
   parser.add_argument('--extra',help="extra options to pass to the tested tool",type=str,default="")
   args = parser.parse_args()
 

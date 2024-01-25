@@ -122,25 +122,29 @@ Analogous to *re32mm* except that the input matrix is expected to be in the form
 
 ## Bulk testing 
 
-The tool *mmtest.py* can be used to test compression and (parallel) matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The matrices tested with this script must be in *csv* format.
+The tool *mmtest.py* can be used to test compression and (parallel) matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The default content of the variables `Files` and `Sizes` can be overriden by the options `--files` and `-sizes`.
+By default the input matrix is assumed to contains doubles in csv format,
+the options `--i32`, `--f32`, and `--f64` signal that the input is in binary
+format with entries of type `int32`, `float32` and `float64`. Type `mmtest.py -h` for usage help. 
+
 
 The command
 ```bash 
-mmtest.py -d /data mc
+mmtest.py mg -d /data
 ```
 converts the input matrices from the `/data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
 
 
 The command
 ```bash 
-mmtest.py -b 8 -d /data mz
+mmtest.py mz -b 8 -d /data
 ```
 computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks. Used for generating Table 1 in the paper.
 
 
 The command
 ```bash 
-mmtest.py -b 8 -d /data -n num mm
+mmtest.py mm -b 8 -d /data -n num
 ```
 executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
 
@@ -149,7 +153,10 @@ executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re3
 
 ## Experimental: the DRV format
 
-The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. At the moment matrix vector multiplication is not supported for the DRV format. 
+The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. At the moment matrix vector multiplication is not supported for the DRV format. To bulk test compression in the DRV format use `mmtest.py` with option `md`, for example:
+```bash 
+mmtest.py md -d /data
+```
 
 
 ---
