@@ -149,7 +149,7 @@ executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re3
 
 ## Experimental: the DRV format
 
-The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id.
+The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. At the moment matrix vector multiplication is not supported for the DRV format. 
 
 
 ---
