@@ -4,10 +4,10 @@ import sys, argparse, subprocess, struct
 
 Description = """
 Tool to convert a matrix written in text csv format (one line per row)
-into binary form, ie rows x cols float64 or float32 (option -f) 
+into binary form, ie rows x cols float64 (default) or float32 (option -f) 
 or int32 (option -i).
 Optionally, a set of leading rows and/or columns can be removed before 
-the conversion. If the number of columns to remove is negative, 
+the conversion. If the number of columns to be removed is negative, 
 minus that number of trailing columns are removed. 
 
 All matrix entries are represented so the outfile has size 
@@ -36,8 +36,7 @@ def main():
     print("Error: Options -f and -i are mutually exclusive");
     return 
   
-    
-  # report input file name and input file hash digest, commented out
+  # report input file name and input file hash digest
   if args.sum:
     print("SHA1  Infile:", file_digest(args.input), args.input);
   with open(args.input,"rt") as f:

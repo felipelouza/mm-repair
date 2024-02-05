@@ -1,5 +1,5 @@
 /*  csvmat2csrv
-    Convert a amtrix written in text csv format (one line per row) into the 
+    Convert a matrix written in text csv format (one line per row) into the 
       CSRV format (.vc & .val files) 
     or the 
       DRV format (.dv & vald files)

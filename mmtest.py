@@ -12,7 +12,7 @@ Currently supported tests:
 
 By default the input matrix is assumed to contains doubles in csv format,
 the options --i32, --f32, and --f64 signal that the input is in binary
-format with entries of type int32, float32 and float64.
+format with entries respectively of type int32, float32 and float64.
 """
 
 Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
@@ -29,7 +29,7 @@ Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174)
 Algos = ['csrvmm', 're32mm','reivmm','reansmm']
 
 # name of files containing the input/output vectors
-# these are created by this script so you don't have to worry
+# these files are created by this script at each execution
 Xvname = "x1.dbl"
 Yvname = "y.dbl"
 Zvname = "z.dbl"
@@ -39,7 +39,8 @@ TmpFilename = "tmp_mmtest"
 # name (and options and extension) for zip-like compression
 zip1 = "gzip"
 zip1ext = ".gz"
-zip2 = "xz --lzma2=dict=1GiB"
+# zip2 = "xz --lzma2=dict=1GiB" works but requires more than 10GiB RAM ...
+zip2 = "xz --lzma2=dict=128MiB" # require approx 1.2GiB RAM
 zip2ext = ".xz"
 
 # check that the test files exist and sizes are defined
@@ -61,6 +62,7 @@ def check_testfiles(args,sufxs):
 
 
 # write to file a vector cointaining cols copies of value
+# in big-endian float64 format
 def createx(cols,value=1):
   with open(Xvname,"wb") as f:
     for i in range(cols):
@@ -86,7 +88,7 @@ def test_gzip(args,logfile):
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
       else:
         TmpFilename = name
-      # check number of rows and colums
+      # check number of rows and columns
       if os.path.getsize(TmpFilename)!=rows*cols*args.entry_size:
         print(f"# of rows/columns and entry size don't match with {TmpFilename} file size")
         sys.exit(1)
@@ -99,16 +101,19 @@ def test_gzip(args,logfile):
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
       # handle time out
+      print("Command:", command)      
       print(" Test failed: no result after %d seconds" % Timelimit)
       continue
     except subprocess.CalledProcessError as ex:
+      print("Command:", command)
       print(" Test failed: non-zero exit code ", ex.returncode)
       # write stdout/stderr to a separate logfile
       print("## Error executing:", command,file=logfile);
-      print("## stdout:\n", ex.stdout ,file=logfile);
-      print("## stderr:\n", ex.stderr ,file=logfile);
+      print("## stdout:\n", ex.stdout.decode() ,file=logfile);
+      print("## stderr:\n", ex.stderr.decode() ,file=logfile);
       sys.exit(2)
     except Exception as ex:
+      print("Command:", command)      
       print(" Test failed:", str(ex))
       sys.exit(2)
     tablerow.append((os.path.getsize(TmpFilename),os.path.getsize(TmpFilename+zip1ext),
@@ -148,16 +153,19 @@ def test_compress(args, logfile, drv=False):
                            stderr=logfile,timeout=Timelimit,check=True)
     except subprocess.TimeoutExpired:
       # caso time out
+      print("Command:", command)
       print(" Test failed: no result after %d seconds" % Timelimit)
       continue
     except subprocess.CalledProcessError as ex:
+      print("Command:", command)
       print(" Test failed: non-zero exit code ", ex.returncode)
       # write stdout/stderr to a separate logfile
       print("## Error executing:", command,file=logfile);
-      print("## stdout:\n", ex.stdout ,file=logfile);
-      print("## stderr:\n", ex.stderr ,file=logfile);
+      print("## stdout:\n", ex.stdout.decode() ,file=logfile);
+      print("## stderr:\n", ex.stderr.decode() ,file=logfile);
       sys.exit(2)
     except Exception as ex:
+      print("Command:", command)
       print(" Test failed:", str(ex))
       sys.exit(2)
     v = os.path.getsize(name+args.val_ext)
@@ -214,16 +222,19 @@ def test_time(args,logfile):
               stdout=subprocess.PIPE,stderr=subprocess.PIPE)
       except subprocess.TimeoutExpired:
         # caso time out
+        print("Command:", command)
         print(" Test failed: no result after %d seconds" % Timelimit)
         continue
       except subprocess.CalledProcessError as ex:
+        print("Command:", command)
         print(" Test failed: non-zero exit code ", ex.returncode)
         # write stdout/stderr to a separate logfile
         print("## Error executing:", command,file=logfile);
-        print("## stdout:\n", ex.stdout ,file=logfile);
-        print("## stderr:\n", ex.stderr ,file=logfile);
+        print("## stdout:\n", ex.stdout.decode() ,file=logfile);
+        print("## stderr:\n", ex.stderr.decode() ,file=logfile);
         sys.exit(2)
       except Exception as ex:
+        print("Command:", command)
         print(" Test failed:", str(ex))
         sys.exit(2)
       # convert /bin/time output to elapsed, peak memory   
@@ -309,8 +320,6 @@ def main():
   elif args.f64:
     args.bin = "--f64" # matrix of doubles in binary form
   
-    
-    
   #check --sizes was not given without --files
   if len(args.sizes)>0 and len(args.files)==0:
     print("Error: option --sizes requires --files")
@@ -337,12 +346,11 @@ def main():
       # add sizes to global dictionary Sizes
       for i in range(len(Files)):
         Sizes[Files[i]] = tuple([int(x) for x in sizes[i].split('x')])
-      # print("Sizes:",Sizes)
-      # sys.exit(1)   
 
   # run the task   
   s1 = time.time()
-  with open(Logfile_name,"a") as logfile:
+  print("Sending logging messages to file:", Logfile_name)  
+  with open(Logfile_name,"a", 1) as logfile: # 1 for line buffering: keeps the logs ordered
     if args.op=='mm':    # matrix multiplication (supported only for f64)
       check_testfiles(args,[".val"])
       table = test_time(args, logfile)
@@ -352,7 +360,7 @@ def main():
       table = test_compress(args,logfile, args.op=='md')
     else: 
       print("Unknown operation! Must be mg, mz, md, or mm",file=sys.stderr)
-      exit(1)
+      sys.exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
   if args.op=='mm' or args.op=='mg' or args.op=='mz' or args.op=='md':  
