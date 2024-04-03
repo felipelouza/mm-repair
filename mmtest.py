@@ -10,7 +10,7 @@ Currently supported tests:
    md: compression to DRV  format followed by RePair grammar compression
    mm: test matrix-vector multiplication algorithms (only for f64 matrices)
 
-By default the input matrix is assumed to contains doubles in csv format,
+By default the input matrix is assumed to contain doubles in csv format,
 the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """

@@ -186,7 +186,7 @@ int main (int argc, char **argv) {
   if(fseek(f,0,SEEK_END)!=0) quit("Cannot seek input file");
   size_t fsize = ftell(f);
   if(fsize<0) quit("Cannot tell input file size");
-  if(fsize=!sizeof(Type)*rowsize*cols) quit("Invalid input file size");
+  if(fsize!=sizeof(Type)*rowsize*rows) quit("Invalid input file size");
   rewind(f);
   // open output .[if]val[d] file
   strncpy(fname,argv[1],PATH_MAX-10);
@@ -278,8 +278,10 @@ int main (int argc, char **argv) {
   fclose(fval);
   if(vtype&COMPLEX_INPUT) assert(dnonz==covalues.size());
   else assert(dnonz==values.size());
-  if(wr!=rows)
-    fprintf(stderr, "Warning! Written %d rows instead of %d\n", wr, rows);
+  if(wr!=rows) {
+    fprintf(stderr, "Error! Written %d rows instead of %d\n", wr, rows);
+    exit(1);
+  }
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
   fprintf(stderr, "%zd distinct values in .[if]val file (nonzeros in crsv format) \n", dnonz);

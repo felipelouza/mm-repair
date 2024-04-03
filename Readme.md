@@ -106,7 +106,7 @@ The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `
 ## Tools
 
 ### matrepair
-Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` too specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
+Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` to specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
 The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
 
 ### re32mm

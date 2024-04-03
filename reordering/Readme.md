@@ -43,16 +43,16 @@ reorder.py -b 3 -k 8  pc somedir/covtype 581012 54
 ```
 applies the *PathCover* reordering algorithm independently to each one of the three row blocks of matrix `covtype`. The option`-k` specifies the pruning parameter used to build the CSM matrix. If the parameter `pc` is replaced by `mwm`, `lkh`, or `pc+` the reordering is done using the algorithm *Maximum Weighted Matching*, *Lin-Kernighan*, *PathCover+* respectively.
 
-In the example above the `reorder` tool takes as input the `covtype` matrix (in csv format) and the `.vc` files of the three row blocks: `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc`. These files are copied into new files with extension `.vco` (unless the `.vco` files are already present); the tool then computes a reordering of each block and generates a new set of file `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc` whose elements have been permuted using the designate heuristics. 
+In the example above the `reorder` tool takes as input the `covtype` matrix (in csv format) and the `.vc` files of the three row blocks: `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc`. These files are copied into new files with extension `.vco` (unless the `.vco` files are already present); the tool then computes a reordering of each block and generates a new set of files `covtype.3.0.vc`, `covtype.3.1.vc` and `covtype.3.2.vc` whose elements have been permuted using the designate heuristics. 
 All the `.vc` and `.vco` files are read from (and stored to) the same directory `somedir` containing the matrix file `covtype`.
 
 To compute the grammar compression of the reordered files go back to the main directory and use the command
 
-```
+```bash
 ../matrepair -r --noconv -b3 -r somedir/covtype 581012 54
 ``` 
 
-the `--noconv` option skips the recomputation of the `.vc` files, so the grammar compression is applied to the reoderd files. Note that any previous grammar compressed `.vc.C`, `.vc.R`, etc. is overwritten. As an alternative to using `matrepair` one can compte the reordering for each test file and then use `mmtest.py` again with option `-y`. 
+the `--noconv` option skips the recomputation of the `.vc` files, so the grammar compression is applied to the reoderd files. Note that any previous grammar compressed `.vc.C`, `.vc.R`, etc. is overwritten. As an alternative to using `matrepair` one can compte the reordering for each test file and then use `mmtest.py` with option `-y`. 
 
 ---
 
