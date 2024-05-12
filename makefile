@@ -4,9 +4,9 @@ LIB_DIR = ${HOME}/lib
 INC_DIR = ${HOME}/include
 
 # Compilation flags
-CFLAGS=-g -Wall -std=c99 -O2
+CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
-CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
+CXX_FLAGS=-std=c++17 -g -pg -O3 -msse4.2
 
 # comment out this definition to get rid of malloc_count 
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
