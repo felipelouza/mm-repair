@@ -3,12 +3,12 @@
     Convert a binary file contaning int32/float/double entries into the 
       CSRV format (.vc & .[if]val files) 
     or the 
-      DRV  format (.dv & .[if]val files)
+      DRV  format (.dv & .[if]vald files)
     In the CSRV format we only store nonzero entries and each entry
     is represented by an id identifying the value in the .[if]val file
     and the column number (hence the .vc extension)
     In the DRV format we store zero and nonzero entries and each entry is
-    represented by an id identifying it in the .[if]val file 
+    represented by an id identifying it in the .[if]vald file 
     (hence the .dv extension) 
     In both formats id's are different from zero and the zero value is used 
     to mark the end of a matrix row 
@@ -151,6 +151,7 @@ void read_sparse_bool_row(int rindex, int cols, Type *row, FILE *f)
         quit("Error! Duplicate entry in sparse input file\n");
       }
       row[c]=1;  // set element to 1  
+      r=c=-1;      // reset r,c pair
     }
     else {
       if(r<rindex) quit("Error! Sparse input file is not in row-major order");
@@ -227,7 +228,7 @@ int main (int argc, char **argv) {
   // open input file and check number of rows/cols
   FILE *f = fopen(argv[1],"r");
   if(f==NULL) quit("Cannot open infile");
-  if(!vtype&BOOLEAN_INPUT) {// binary input: check file size 
+  if(! (vtype&BOOLEAN_INPUT)) {// binary input: check file size 
     if(fseek(f,0,SEEK_END)!=0) quit("Cannot seek input file");
     size_t fsize = ftell(f);
     if(fsize<0) quit("Cannot tell input file size");
@@ -318,8 +319,9 @@ int main (int argc, char **argv) {
       if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
         quit("Error writing to .vc/.dv file");
       wr += 1;
+      // if(wr%1000==0) fprintf(stdout,"Block %d/%d: row %d/%d\n",bn+1,nblocks,wr,rows);
       // if a block is full, stop and start the next 
-      if (wr>=rows or (wr%block_size) == 0) 
+      if (wr>=rows or ((wr%block_size) == 0) )
         break; // end while true
     }
     fclose(fvc);
@@ -331,7 +333,7 @@ int main (int argc, char **argv) {
   else assert(dnonz==values.size());
 
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
-  fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
+  fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, (nonz/((double) wr*cols)));  
   fprintf(stderr, "%zd distinct values in .[if]val file (nonzeros in crsv format) \n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   fprintf(stderr,"==== Done\n");
