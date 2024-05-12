@@ -56,6 +56,7 @@
 #define COMPLEX_INPUT 4
 #define NO_COL_ID 8
 #define DOUBLE_OUTPUT 16
+#define BOOLEAN_INPUT 32
 
 
 
@@ -64,6 +65,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols\n",name);
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");    
     fprintf(stderr,"\t\t-c             input are complex numbers\n");
+    fprintf(stderr,"\t\t-B             input is a boolean matrix in sparse format\n");
     fprintf(stderr,"\t\t-d             save matrix entries as doubles\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
@@ -118,11 +120,50 @@ struct ComplexHasher
   }
 };
 
+// read row :rindex from a sparse boolean matrix file :f
+// the row is initialized to zero and the elements are set to 1
+// every time a pair (r,c) is read from the file with r=rindex
+// row indexes must be non-decreasing, some rows can be empty
+// for convenience we require that entries are in row-major order
+// and without duplicates
+void read_sparse_bool_row(int rindex, int cols, Type *row, FILE *f)
+{
+  // keep track of last pair read
+  static int r=-1, c = -1;
+  // set all row elements to zero
+  for(int i=0;i<cols;i++) row[i]=0;
+  while (true) {
+    if(r<0) {
+      assert(c<0);
+      int e = fscanf(f,"%d %d",&r,&c);
+      if(e!=2) {
+        if(feof(f)) return;    // from now on nothing to read, all elements are 0
+        quit("Error reading sparse input file: invalid data format");
+      }
+      if(r<0 or c<0) quit("Error! Sparse input file has negative row or column index");
+    }
+    // now we have a row and a column (either from previous iteration or from fscanf)
+    if(r==rindex) {
+      if(c<0 or c>=cols) quit("Error! Sparse input file has column index out of range");
+      if(row[c]!=0) {
+        assert(row[c]==1);
+        fprintf(stderr,"Warning! Duplicate entry \"%d %d\" in sparse input file\n",r,c);
+        quit("Error! Duplicate entry in sparse input file\n");
+      }
+      row[c]=1;  // set element to 1  
+    }
+    else {
+      if(r<rindex) quit("Error! Sparse input file is not in row-major order");
+      return;    // row completed, save r,c pair for next row
+    }
+  }
+}
+
 
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0;
+  int verbose=0,vtype=0; 
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -130,11 +171,13 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cdnv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cdnvB")) != -1) {
     switch (c) 
       {
       case 'v':
         verbose++; break;
+      case 'B':
+        vtype |= BOOLEAN_INPUT; break;
       case 'c':
          vtype |= COMPLEX_INPUT; break;
       case 'd':
@@ -158,8 +201,11 @@ int main (int argc, char **argv) {
   if(nblocks < 1) {
     fprintf(stderr,"Error! Option -b must be at least one\n");
     usage_and_exit(argv[0]);
-  }  
-
+  }
+  if((vtype & BOOLEAN_INPUT) and (vtype & COMPLEX_INPUT)) {
+    fprintf(stderr,"Error! Boolean input cannot be complex\n");
+    usage_and_exit(argv[0]);
+  }
 
   // virtually get rid of options from the command line 
   optind -=1;
@@ -173,7 +219,6 @@ int main (int argc, char **argv) {
   if(cols<1) quit("Invalid number of columns");
   size_t rowsize = cols*(vtype&COMPLEX_INPUT?2:1);
 
-
   if(nblocks>rows) quit("Too many row blocks!");
   // compute size of each block 
   int block_size = (rows+nblocks-1)/nblocks;
@@ -182,12 +227,13 @@ int main (int argc, char **argv) {
   // open input file and check number of rows/cols
   FILE *f = fopen(argv[1],"r");
   if(f==NULL) quit("Cannot open infile");
-  // check input file size 
-  if(fseek(f,0,SEEK_END)!=0) quit("Cannot seek input file");
-  size_t fsize = ftell(f);
-  if(fsize<0) quit("Cannot tell input file size");
-  if(fsize!=sizeof(Type)*rowsize*rows) quit("Invalid input file size");
-  rewind(f);
+  if(!vtype&BOOLEAN_INPUT) {// binary input: check file size 
+    if(fseek(f,0,SEEK_END)!=0) quit("Cannot seek input file");
+    size_t fsize = ftell(f);
+    if(fsize<0) quit("Cannot tell input file size");
+    if(fsize!=sizeof(Type)*rowsize*rows) quit("Invalid input file size");
+    rewind(f);
+  }
   // open output .[if]val[d] file
   strncpy(fname,argv[1],PATH_MAX-10);
   strncat(fname,vtype & DOUBLE_OUTPUT ? ".val" : valext,6);
@@ -221,13 +267,16 @@ int main (int argc, char **argv) {
     FILE *fvc = fopen(fname,"w");
     if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
-      // read binary file one row at a time
-      size_t e = fread(row,sizeof(Type),rowsize,f);
-      if(e!=rowsize) {
-        if(ferror(f)) quit("Error reading input file");
-        assert(e==0 and bn==nblock-1);
-        break;
+      // read input file one row at a time
+      if(vtype & BOOLEAN_INPUT) 
+        read_sparse_bool_row(wr,cols,row,f);
+      else {
+        size_t e = fread(row,sizeof(Type),rowsize,f);
+        if(e!=rowsize)
+          if(ferror(f)) quit("Error reading input file");
+          else quit("Error reading input file: unexpected end of file");
       }
+      // process row regardless of type bool/real/complex
       for(int c=0;c<cols;c++) {
         if(vtype&COMPLEX_INPUT) {
           cov.real(row[2*c]);
@@ -270,18 +319,17 @@ int main (int argc, char **argv) {
         quit("Error writing to .vc/.dv file");
       wr += 1;
       // if a block is full, stop and start the next 
-      if ((wr%block_size) == 0) break; // end while true
+      if (wr>=rows or (wr%block_size) == 0) 
+        break; // end while true
     }
     fclose(fvc);
   }
   delete[] row; // deallocate row array
   fclose(fval);
+  fclose(f);
   if(vtype&COMPLEX_INPUT) assert(dnonz==covalues.size());
   else assert(dnonz==values.size());
-  if(wr!=rows) {
-    fprintf(stderr, "Error! Written %d rows instead of %d\n", wr, rows);
-    exit(1);
-  }
+
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   fprintf(stderr,"Number of stored values: %ld   Stored ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
   fprintf(stderr, "%zd distinct values in .[if]val file (nonzeros in crsv format) \n", dnonz);
