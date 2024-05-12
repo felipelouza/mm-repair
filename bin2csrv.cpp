@@ -258,6 +258,17 @@ int main (int argc, char **argv) {
   const char *mext = (vtype &NO_COL_ID) ? ".dv" : ".vc";
   // array cointaining a single row of the matrix
   Type *row = new Type[rowsize];
+  // special case of boolean input and csrv format 
+  if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID)) {
+    // since we only store 1 in fval and values[] we do it there
+    // experimentally this optimization is not that effective
+    // the real problem is that we are "expanding" each row to cols values
+    // and therefore the running time is quadratic in the matrix size
+    values[1] = dnonz++;
+    write_bin(1,vtype,fval);
+    // similarly for drv matrices we could write also 0 to fval and avoid checking values[]
+  } 
+
 
   // main loop reading binary file 
   size_t n=0;
@@ -290,17 +301,21 @@ int main (int argc, char **argv) {
           unsigned long id, code;
           nonz += 1;      // note: v could be 0 so nonz is technically the wrong name
           // get id of entry and possibly write new values to .val file
-          if(!(vtype&COMPLEX_INPUT)) { // real entry
-            if(values.count(v)==0) {
-              id = values[v] = dnonz++;
-              write_bin(v,vtype,fval);
-            } else id = values[v];
-          } else { // complex entry 
-            if(covalues.count(cov)==0) {
-              id = covalues[cov] = dnonz++;
-              write_bin(cov.real(),vtype, fval);
-              write_bin(cov.imag(),vtype, fval);
-            } else id = covalues[cov];
+          if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID))
+             id = 0; // csrv of boolean matrices: there is only a nonzero element
+          else {
+            if(!(vtype&COMPLEX_INPUT)) { // real entry
+              if(values.count(v)==0) {
+                id = values[v] = dnonz++;
+                write_bin(v,vtype,fval);
+              } else id = values[v];
+            } else { // complex entry 
+              if(covalues.count(cov)==0) {
+                id = covalues[cov] = dnonz++;
+                write_bin(cov.real(),vtype, fval);
+                write_bin(cov.imag(),vtype, fval);
+              } else id = covalues[cov];
+            }
           }
           // generate code and write it to .vc file 
           if (vtype&NO_COL_ID) code = id;
