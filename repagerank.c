@@ -57,11 +57,13 @@
 #include "tools/malloc_count.h"
 #endif
 #include <time.h>
+#define DETAILED_TIMING 1
 #ifdef DETAILED_TIMING
 #include <sys/times.h>
 #endif
 #include <pthread.h>
 #include <semaphore.h>
+#include <math.h>
 #include "tools/xerrors.h"
 
 // input/output data for each thread 
@@ -93,18 +95,18 @@ static void usage_and_exit(char *name)
     exit(1);
 }
 
+
+
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
   int verbose=0;
-  FILE *f;
   int size,c;
-  xmatval lambda=0;
   time_t start_wc = time(NULL);
   #ifdef DETAILED_TIMING
   struct tms ignored;
-  clock_t t1,t2,t3;
-  long m1=0,m2=0;
+  clock_t t1,t2;
+  long m1=0;
   #endif
   // default values for command line parameters 
   int maxiter=1,nblocks=1,topk=3;
@@ -151,19 +153,19 @@ int main (int argc, char **argv) {
   
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 5) usage_and_exit(argv[0]); 
+  if (argc-optind != 4) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
   // ----------- read and check matrix size 
   size  = atoi(argv[2]);
   if(size<1) die("Invalid matrix size");
   // ----------- inint outdegree vector from file
-  int32_t *outd = malloc(size*sizeof(*outd));
+  u_int32_t *outd = malloc(size*sizeof(*outd));
   {
     FILE *ccol_file  = fopen(argv[3],"rb");
     if(ccol_file==NULL) die("Cannot open col_count_file");
     if(outd==NULL) die("Cannot allocate out_degree vector");
-    size_t e = fread(outf,sizeof(*outd),size,ccol_file);
+    size_t e = fread(outd,sizeof(*outd),size,ccol_file);
     if(e!=size) die("cannot read out_degree vector from col_count_file");
     if(fclose(ccol_file)!=0) die("Error closing col_count_file");
   }
@@ -172,23 +174,17 @@ int main (int argc, char **argv) {
   rematrix *m = NULL;
   rematrix **rblocks = NULL; 
   if(nblocks==1)
-    m = remat_create(rows,cols,argv[1],true); 
+    m = remat_create(size,size,argv[1],true); 
   else 
-    rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+    rblocks = remat_create_multipart(size,size,argv[1],nblocks);
     
-    
-  // ------------ init rank vector
-  vector *x = vector_create();
-  vector_create_value(size,(double 1)/size);
+  // ------------ init rank and aux vectors
+  vector *x = vector_create_value(size,1.0/size);
+  vector *y = vector_create_value(size,0);
+  vector *z = vector_create_value(size,0);
   
-  // create auxiliary vectors 
-  vector *y = vector_create();
-  vector_set_zero(y,rows);
-  vector *z = vector_create();
-  vector_set_zero(z,cols);
-
   // data structures for multithread computation (nblocks>1)
-  vector *yv = NULL;  // array of subvectors
+  vector *zv = NULL;  // array of subvectors of z initialized below
   tdata td[nblocks];
   pthread_t t[nblocks];
   sem_t tsem_in[nblocks];
@@ -196,8 +192,8 @@ int main (int argc, char **argv) {
   
   // initialize thread data
   if(nblocks>1) {
-    // yv entries coincide with those of y  
-    yv = vector_split(y,nblocks);
+    // zv entries coincide with those of z  
+    zv = vector_split(z,nblocks);
     for(int i=0;i<nblocks;i++) {
       td[i].m = rblocks[i];
       td[i].in = &tsem_in[i];
@@ -209,62 +205,46 @@ int main (int argc, char **argv) {
   }
     
   // compute products  
-  if(nblocks==1) {
-    remat_mult(m,x,y);    // y = Mx
-    remat_left_mult(y,m,z);   // z = y^t M
-  }
-  else {
-    remat_mult_mth(m,x,yv,td,nblocks);    // y = Mx
-    remat_left_mult_mth(yv,m,z,td,nblocks);   // z = y^t M
-  }
-  #ifdef DETAILED_TIMING
-  t3 = times(&ignored);
-  #endif
-  for(int i=1;i<iter;i++) {
+  int iter=0;
+  double delta=1+eps;
+  while(iter<maxiter && delta>eps) {
+    // normalize rank vector and compute dandling nodes rank
+    double dnr = 0;
+    for(int i=0;i<size;i++) {
+      if(outd[i]==0) dnr += x->v[i];
+      else y->v[i] = x->v[i]/outd[i];
+    }
     #ifdef DETAILED_TIMING
-    t1 = t3;
+    t1 = times(&ignored);
     #endif 
-    memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
-    lambda = vector_normalize(x); 
-    if(nblocks==1) remat_mult(m,x,y);
-    else remat_mult_mth(m,x,yv,td,nblocks);
+    if(nblocks==1) remat_mult(m,y,z);       // z = M*y
+    else remat_mult_mth(m,y,zv,td,nblocks); // z = M*y with each thread computing a portion of z
     #ifdef DETAILED_TIMING
     t2 = times(&ignored);
-    m1 += (t2-t1);
+    m1 += (t2-t1);       // measure time for matrix multiplication only
     #endif
-    if(nblocks==1) remat_left_mult(y,m,z);
-    else remat_left_mult_mth(yv,m,z,td,nblocks);
-    #ifdef DETAILED_TIMING
-    t3 = times(&ignored);
-    m2 += (t3-t2);
-    #endif
+    // compute contribution of teleporting and dandling nodes
+    double teleport = (dnr*dampf+1-dampf)/size;
+    // compute new rank vector and L1 norm of the difference
+    delta = 0;
+    for(int i=0;i<size;i++) {
+      double nextri = dampf*z->v[i] + teleport;
+      delta += fabs(nextri-x->v[i]);
+      x->v[i] = nextri;
+    }
+    iter++; // iteration complete
+    if(verbose>1) fprintf(stderr,"Iteration %d, delta=%lf\n",iter,delta);
   }
-  // last eigenvalue approximation
+  // retrieve topk nodes
+  if(topk>size) topk = size;
+  int *top = malloc(topk*sizeof(*top));
+  if(top==NULL) die("Cannot allocate topk array");
+    
+  
+  
+  
   if(verbose)
-    fprintf(stderr, "Eigenvalue approximation after %d iterations: %lf\n",iter,(double) lambda);
-  if(ein_filename!=NULL) {
-    FILE *f = fopen(ein_filename,"wb");
-    double ein = (double) lambda;
-    if(fwrite(&ein,sizeof(double),1,f)!=1)
-      die("Eigenvalue write error");
-    fclose(f);
-  }
-  // --- open output y vector file
-  if(yvec!=NULL) { 
-    f = fopen (yvec,"w");
-    if (f == NULL) die("Cannot open y output vector file");
-    size_t e = fwrite(y->v,sizeof(matval),y->size,f);
-    if(e!=y->size) die("Cannot write to y output file");
-    if(fclose(f)!=0) die("Cannot close y output file");
-  }
-  // --- open output z vector file
-  if(zvec!=NULL) { 
-    f = fopen (zvec,"w");
-    if (f == NULL) die("Cannot open z output vector file");
-    size_t e = fwrite(z->v,sizeof(matval),z->size,f);
-    if(e!=z->size) die("Cannot write to z output file");
-    if(fclose(f)!=0) die("Cannot close z output file");
-  }
+    fprintf(stderr, "Pagerank computation took %d iterations\n",iter);
   
   // destroy 
   vector_destroy(z);
@@ -273,7 +253,7 @@ int main (int argc, char **argv) {
   if(nblocks==1) 
     remat_destroy(m,true);
   else {
-    free(yv);
+    free(zv);
     remat_destroy_multipart(rblocks,nblocks);
     for(int i=0;i<nblocks;i++) {
       td[i].op = -1; // stop thread
@@ -289,7 +269,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
   #endif
   #ifdef DETAILED_TIMING
-  fprintf(stderr,"Average mult time (secs) Ax: %lf  xA: %lf\n", ((double)m1/iter)/sysconf(_SC_CLK_TCK), ((double)m2/iter)/sysconf(_SC_CLK_TCK));
+  fprintf(stderr,"Total mult time (secs): %lf  Average: %lf\n", ((double)m1)/sysconf(_SC_CLK_TCK), ((double)m1/iter)/sysconf(_SC_CLK_TCK));
   #endif 
   printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
@@ -390,7 +370,8 @@ static void remat_destroy_multipart(rematrix **b,int n)
   free(b);
 }
 
-
+// note: x is a pointer to the left operand, yz is an array of n vectors 
+// which are subvectors of the result
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
 {
   // start the block multiplications

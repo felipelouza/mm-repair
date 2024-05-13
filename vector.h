@@ -43,7 +43,7 @@ vector *vector_create_value(int n, matval v)
 }
 
 
-// split a vector into and array of n subvectors
+// split a vector into an array of n subvectors
 // since these subvectors share the same storage
 // and do not have independent life, they are not  
 // vector pointers, but just elements of an array 
