@@ -83,7 +83,7 @@ static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t  %s [options] matrix msize colcount\n",name);
+    fprintf(stderr,"Usage:\n\t  %s [options] matrix msize col_count_file\n",name);
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
     fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
@@ -122,11 +122,11 @@ int main (int argc, char **argv) {
       case 'b':
         nblocks=atoi(optarg); break;
       case 'e':
-        ein_filename=optarg; break;
-      case 'y':
-        yvec=optarg; break;
-      case 'z':
-        zvec=optarg; break;
+        eps=atof(optarg); break;
+      case 'd':
+        dampf=atof(optarg); break;
+      case 'k':
+        topk=atoi(optarg); break;
       case '?':
         fprintf(stderr,"Unknown option: %c\n", optopt);
         exit(1);
@@ -139,20 +139,34 @@ int main (int argc, char **argv) {
     fputs("\n",stderr);  
   }
   // check command line
-  if(iter<1 || nblocks < 1) {
-    fprintf(stderr,"Error! Options -b and -n must be at least one\n");
+  if(maxiter<1 || nblocks < 1 || topk<1) {
+    fprintf(stderr,"Error! Options -b -m and -k must be at least one\n");
     usage_and_exit(argv[0]);
-  }  
+  }
+  if(dampf<0 || dampf>1) {
+    fprintf(stderr,"Error! Options -d must be in the range [0,1]\n");
+    usage_and_exit(argv[0]);
+  }
+  
+  
   // virtually get rid of options from the command line 
   optind -=1;
   if (argc-optind != 5) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
-  // ----------- read and check # rows and cols 
-  rows  = atoi(argv[2]);
-  if(rows<1) die("Invalid number of rows");
-  cols  = atoi(argv[3]);
-  if(cols<1) die("Invalid number of columns");
+  // ----------- read and check matrix size 
+  size  = atoi(argv[2]);
+  if(size<1) die("Invalid matrix size");
+  // ----------- inint outdegree vector from file
+  int32_t *outd = malloc(size*sizeof(*outd));
+  {
+    FILE *ccol_file  = fopen(argv[3],"rb");
+    if(ccol_file==NULL) die("Cannot open col_count_file");
+    if(outd==NULL) die("Cannot allocate out_degree vector");
+    size_t e = fread(outf,sizeof(*outd),size,ccol_file);
+    if(e!=size) die("cannot read out_degree vector from col_count_file");
+    if(fclose(ccol_file)!=0) die("Error closing col_count_file");
+  }
   
   // ------------ read matrix or row blocks
   rematrix *m = NULL;
@@ -162,13 +176,10 @@ int main (int argc, char **argv) {
   else 
     rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
     
-  // ------------ read input vector
-  f = fopen(argv[4],"rb");
-  if(f==NULL) die("Cannot open input vector file");
+    
+  // ------------ init rank vector
   vector *x = vector_create();
-  x->v = read_vals(f,&x->size);
-  if(x->size!=cols) die("Input vector size should be equal to # of columns");
-  fclose(f);
+  vector_create_value(size,(double 1)/size);
   
   // create auxiliary vectors 
   vector *y = vector_create();

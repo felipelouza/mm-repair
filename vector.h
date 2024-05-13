@@ -10,7 +10,7 @@ typedef struct {
 
 
 vector *vector_create();
-vector *vector_create_zero(int n);
+vector *vector_create_value(int n,matval v);
 void vector_set_zero(vector *v,int n);
 vector *vector_split(vector *v,int n);
 xmatval vector_normalize(vector *v);
@@ -29,16 +29,19 @@ vector *vector_create()
   return w;
 }
 
-// return a pointer to a zero vector of a given size 
-vector *vector_create_zero(int n)
+// return a pointer to a vector of a given size with constant value
+vector *vector_create_value(int n, matval v)
 {
   vector *w = vector_create();
   assert(w!=NULL);
   w->size=n;
   w->v = (matval *) malloc(n*sizeof(matval));
   if(w->v==NULL) die("malloc failed");
+  for(int i=0;i<n;i++) 
+    w->v[i]=v;
   return w;
 }
+
 
 // split a vector into and array of n subvectors
 // since these subvectors share the same storage
@@ -93,7 +96,7 @@ void vector_update(vector *v, xmatval t, vector *w)
     v->v[i] += t*w->v[i];
 }
 
-// set v = tv + tw
+// set v = tv
 void vector_scalar_update(vector *v, xmatval t)
 {
   assert(v->v!=NULL);
