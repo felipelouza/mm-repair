@@ -39,8 +39,19 @@
  * We start the iterations with X = (1/N ... 1/N)^T
  * we stop after maxiter (from the command line) iterations or
  * when the sum of the abs differences of the ranks between two
- * consecutive iterazions is smaller eps (from the command line)   
+ * consecutive iterations is smaller than eps (from the command line)   
  *  
+ * Note: it is possible to use only two vectors X and Y ate the expense
+ * of some loss of accuracy in the error computation, the trick is
+ * that in Y there is enough information to retrieve the previous X:
+ *   1. when computing Y if col_count[i]==0 set Y[i] = X[i]
+ *   2. instead of computing the new rank Z store it in X
+ *   3. compute the error and Y for the next iteration as follows:
+ *      error = 0
+ *      for i in range(N):
+ *        if col_count[i]==0: error += abs(X[i]-Y[i]); Y[i] = X[i]
+ *        else error += abs(X[i]-Y[i]*col_count[i]);    Y[i] = X[i]/col_count[i]   
+ * 
  * Copyright 2024- giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #ifndef _GNU_SOURCE
@@ -57,7 +68,6 @@
 #include "tools/malloc_count.h"
 #endif
 #include <time.h>
-#define DETAILED_TIMING 1
 #ifdef DETAILED_TIMING
 #include <sys/times.h>
 #endif
@@ -80,6 +90,8 @@ static rematrix **remat_create_multipart(int, int,const char *, int blocks);
 static void remat_destroy_multipart(rematrix **b,int n);
 static void *block_main(void *v);
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
+static void minHeapify(double v[], int arr[], int n, int i);
+static void kLargest(double v[], int arr[], int n, int k);
 
 
 
@@ -109,7 +121,7 @@ int main (int argc, char **argv) {
   long m1=0;
   #endif
   // default values for command line parameters 
-  int maxiter=1,nblocks=1,topk=3;
+  int maxiter=100,nblocks=1,topk=3;
   double dampf = 0.9, eps = 1e-7;
   
   /* ------------- read options from command line ----------- */
@@ -169,7 +181,18 @@ int main (int argc, char **argv) {
     if(e!=size) die("cannot read out_degree vector from col_count_file");
     if(fclose(ccol_file)!=0) die("Error closing col_count_file");
   }
-  
+  if(verbose>0) {
+    fprintf(stderr,"Number of nodes: %d\n",size);
+    long dn=0,arcs=0;
+    for(int i=0;i<size;i++) {
+      if(outd[i]==0) dn++;
+      else arcs += outd[i];
+    }
+    fprintf(stderr,"Number of dandling nodes: %ld\n",dn);
+    fprintf(stderr,"Number of arcs: %ld\n",arcs);
+  }
+
+
   // ------------ read matrix or row blocks
   rematrix *m = NULL;
   rematrix **rblocks = NULL; 
@@ -233,22 +256,43 @@ int main (int argc, char **argv) {
       x->v[i] = nextri;
     }
     iter++; // iteration complete
-    if(verbose>1) fprintf(stderr,"Iteration %d, delta=%lf\n",iter,delta);
+    if(verbose>1) fprintf(stderr,"Iteration %d, delta=%lf \n",iter,delta);
   }
+  if(verbose>0) {
+    if (delta>eps) fprintf(stderr,"Stopped after %d iterations, delta=%lf\n",iter,delta);
+    else           fprintf(stderr,"Converged after %d iterations\n",iter);
+    double sum=0;
+    for(int i=0;i<size;i++) sum += x->v[i];
+    fprintf(stderr,"Sum of ranks: %lf (should be 1)\n",sum);
+  }
+  // deallocate y, z and outd: we may need space for the topk array
+  vector_destroy(z);
+  vector_destroy(y);
+  free(outd);
+
   // retrieve topk nodes
   if(topk>size) topk = size;
   int *top = malloc(topk*sizeof(*top));
-  if(top==NULL) die("Cannot allocate topk array");
-    
-  
-  
-  
-  if(verbose)
-    fprintf(stderr, "Pagerank computation took %d iterations\n",iter);
-  
-  // destroy 
-  vector_destroy(z);
-  vector_destroy(y);
+  int *aux = malloc(topk*sizeof(*top));
+  if(top==NULL || aux==NULL) die("Cannot allocate topk/aux array");
+  kLargest(x->v,aux,size,topk);
+  // get sorted nodes in top
+  for(int i=topk-1;i>=0;i--) {
+    top[i] = aux[0];
+    aux[0] = aux[i];
+    minHeapify(x->v,aux,i,0);
+  }  
+  // report topk nodes sorted by decreasing rank
+  if (verbose>0) {
+    fprintf(stderr, "Top %d ranks:\n",topk);
+    for(int i=0;i<topk;i++) fprintf(stderr,"  %d %lf\n",top[i],x->v[top[i]]);
+  }
+  // report topk nodes id's only on stdout
+  fprintf(stdout,"Top:");
+  for(int i=0;i<topk;i++) fprintf(stdout," %d",top[i]);
+  fprintf(stdout,"\n");
+  // destroy everything
+  free(top); free(aux);
   vector_destroy(x);
   if(nblocks==1) 
     remat_destroy(m,true);
@@ -270,7 +314,7 @@ int main (int argc, char **argv) {
   #endif
   #ifdef DETAILED_TIMING
   fprintf(stderr,"Total mult time (secs): %lf  Average: %lf\n", ((double)m1)/sysconf(_SC_CLK_TCK), ((double)m1/iter)/sysconf(_SC_CLK_TCK));
-  #endif 
+  #endif
   printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }
@@ -384,5 +428,62 @@ static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
   // wait for all blocks
   for(int i=0;i<n;i++)
     xsem_wait(td[i].out, __LINE__,__FILE__); 
+}
+
+
+
+// heap based algorithm for finding the k largest ranks
+// in heap order
+
+// A utility function to swap two elements
+static void swap(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+// Heapify a subtree rooted with node i which is an index in arr[]. 
+// n is size of heap. the key associated to entry arr[i] is v[arr[i]]  
+static void minHeapify(double v[], int arr[], int n, int i) {
+    int smallest = i;  // Initialize smallest as root
+    int left = 2*i + 1;
+    int right = 2*i + 2;
+
+    // If left child is smaller than root
+    if (left < n && v[arr[left]] < v[arr[smallest]])
+        smallest = left;
+
+    // If right child is smaller than smallest so far
+    if (right < n && v[arr[right]] < v[arr[smallest]])
+        smallest = right;
+
+    // If smallest is not root
+    if (smallest != i) {
+        swap(&arr[i], &arr[smallest]);
+        // Recursively heapify the affected sub-tree
+        minHeapify(v, arr, n, smallest);
+    }
+}
+
+// Function to find the k'th largest elements in an array
+// v[0..n-1], arr[0..k-1] is the output array already allocated
+static void kLargest(double v[], int arr[], int n, int k) {
+  assert(k<=n);
+  assert(k>0);
+  // init arr[] with the first k elements
+  for(int i=0;i<k;i++) arr[i] = i;
+  // Build a min heap of first (k) elements in arr[]
+  for (int i = k / 2 - 1; i >= 0; i--)
+    minHeapify(v, arr, k, i);
+  // Iterate through the rest of the array elements
+  for (int i = k; i < n; i++) {
+    // If current element is larger than root of the heap
+    if (v[i] > v[arr[0]]) {
+      // Replace root with current element
+      arr[0] = i;
+      // Heapify the root
+      minHeapify(v, arr, k, 0);
+    }
+  }
 }
 
