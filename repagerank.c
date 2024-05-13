@@ -1,9 +1,47 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
- * ReMatrix
+ * RePageRank
  * 
- * test multiplication on repair compressed matrices
- * Given a matrix M and a vector x computes n times:
- *      y=Mx; z^T = y^T M; x = z
+ * Compute pagerank of a graph given its adjacency matrix
+ * repair compressed, dandling nodes and teleporting included
+ * 
+ * Overview
+ * In the original formulation PageRank requires the left multiplication 
+ * of the current rank vector, with entries divided by the outdegree
+ * of each node, times the binary adjacency matrix.
+ * 
+ * MatRepair does suport left and right matrix-vector multiplication 
+ * but since other compressed matrix formats only support right
+ * multiplication we are assuming that the graph matrix has been 
+ * transposed (and all self-loops already removed).  
+ * 
+ * The main iteration goes as follows:
+ *   1 each rank_i entry is divided by the outdegree of node i
+ *     which is now the # of nonzero elements in column i
+ *   2 if column i has no nonzero then i is a dandling node 
+ *     and rank_i is added to the sum of dandling nodes ranks
+ *   3 the normalized rank vector is right multiplied by the 
+ *     (transpose adjacency matrix)
+ *   4 the new rank vector is obtained for the above product
+ *     + contribution of teleporting and dandling nodes.
+ * In mathematical terms, let
+ *   N = # nodes
+ *   d = damping factor (from the command line)
+ *   X = current rank vector
+ *   dnr = 0  # dandling nodes rank sum
+ *   for i in range(N):
+ *     if col_count[i]==0: dnr[i] += X[i]
+ *     else Y[i] = X[i]/col_count[i]
+ *   Z = M*Y
+ *   for i in range(N):
+ *     Z[i] = d*Z[i] + (d/N)*dnr + (1-d)/N
+ *   X = Z  # prepare for next iteration    
+ * 
+ * We start the iterations with X = (1/N ... 1/N)^T
+ * we stop after maxiter (from the command line) iterations or
+ * when the sum of the abs differences of the ranks between two
+ * consecutive iterazions is smaller eps (from the command line)   
+ *  
+ * Copyright 2024- giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -32,55 +70,55 @@ typedef struct {
   vector *rv;    // row vector    (same size as a matrix row)
   vector *cv;    // column vector (      "               column)
   int op;        // operation to be performed
-  sem_t *in;     // semaphore for input shared with the main thread
-  sem_t *out;    // semaphore for output shared with the main thread
+  sem_t *in;    // semaphore for input shared with the main thread
+  sem_t *out;   // semaphore for output shared with the main thread
 } tdata;
-
-
-static void usage_and_exit(char *name)
-{
-    fprintf(stderr,"Usage:\n\t  %s [options] matrix rows cols xvector\n",name);
-    fprintf(stderr,"\t\t-v             verbose\n");
-    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
-    fprintf(stderr,"\t\t-n mul         number of multiplications, def. 1\n");
-    fprintf(stderr,"\t\t-e einfile     store computed eigenvalue in this file\n");
-    fprintf(stderr,"\t\t-y yvector     store y-vector in this file\n");
-    fprintf(stderr,"\t\t-z zvector     store z-vector in this file\n\n");
-    exit(1);
-}
 
 static rematrix **remat_create_multipart(int, int,const char *, int blocks);
 static void remat_destroy_multipart(rematrix **b,int n);
 static void *block_main(void *v);
-static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n);
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
 
+
+
+static void usage_and_exit(char *name)
+{
+    fprintf(stderr,"Usage:\n\t  %s [options] matrix msize colcount\n",name);
+    fprintf(stderr,"\t\t-v             verbose\n");
+    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
+    fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
+    fprintf(stderr,"\t\t-e eps         max error (default 1.0e-7)\n");
+    fprintf(stderr,"\t\t-d df          damping factor (default 0.9)\n");
+    fprintf(stderr,"\t\t-k K           show top K nodes (default 3)n\n");
+    exit(1);
+}
 
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
   int verbose=0;
   FILE *f;
-  int rows,cols,c,iter=1,nblocks=1;
+  int size,c;
   xmatval lambda=0;
-  char *ein_filename= NULL;
-  char *yvec=NULL, *zvec=NULL;
   time_t start_wc = time(NULL);
   #ifdef DETAILED_TIMING
   struct tms ignored;
   clock_t t1,t2,t3;
   long m1=0,m2=0;
   #endif
+  // default values for command line parameters 
+  int maxiter=1,nblocks=1,topk=3;
+  double dampf = 0.9, eps = 1e-7;
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "e:n:b:y:z:v")) != -1) {
+  while ((c=getopt(argc, argv, "b:m:e:d:k:v")) != -1) {
     switch (c) 
       {
       case 'v':
         verbose++; break;
-      case 'n':
-        iter=atoi(optarg); break;
+      case 'm':
+        maxiter=atoi(optarg); break;
       case 'b':
         nblocks=atoi(optarg); break;
       case 'e':
@@ -247,6 +285,10 @@ int main (int argc, char **argv) {
 }
 
 
+
+
+// ------- code unchanged from remm.c ---------
+
 // function executed by each thread 
 // wait on a semaphore for a new operation to execute
 // on its given matrix
@@ -277,8 +319,6 @@ static void *block_main(void *v)
   vector_destroy(auxrow);
   return NULL;
 }
-
-
 
 
 // read matrix consisting of n blocks  
@@ -329,6 +369,7 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   return b;
 }
 
+
 static void remat_destroy_multipart(rematrix **b,int n)
 {
 
@@ -351,25 +392,5 @@ static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
   // wait for all blocks
   for(int i=0;i<n;i++)
     xsem_wait(td[i].out, __LINE__,__FILE__); 
-}
-
-static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n)
-{
-  // start the block multiplications
-  for(int i=0;i<n;i++) {
-    td[i].rv = NULL;     // output in the internal vector 
-    td[i].cv = &yv[i];   // input 
-    td[i].op = 0;        // left mult
-    xsem_post(td[i].in, __LINE__,__FILE__);
-  }
-  // clean result vector
-  vector_set_zero(x,x->size);
-  // wait for all blocks and sum all the x vectors 
-  for(int i=0;i<n;i++) {
-    xsem_wait(td[i].out, __LINE__,__FILE__);
-    assert(x->size==td[i].rv->size);
-    for(int j=0;j<x->size;j++)
-      x->v[j] += td[i].rv->v[j];
-  } 
 }
 

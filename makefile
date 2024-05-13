@@ -59,14 +59,7 @@ reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
 
-# conjugate gradient method (no longer updated)
-recg: recg.c rematrix.h vector.h $(MALLOC_FILES)
-	$(CC) $(CFLAGS) -o $@ $< -lm $(MALLOC_FLAGS)
-
-csrcg: recg.c csrmatrix.h vector.h $(MALLOC_FILES)
-	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX
-
-
+# pagerank computation
 
 # directory containing the (balanced) irepar/idespair tools 
 brepair:
