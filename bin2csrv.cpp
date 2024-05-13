@@ -120,12 +120,67 @@ struct ComplexHasher
   }
 };
 
+
+
+// copy row :rindex from a sparse boolean matrix file :f
+// to file :fvc in csrv format working only with the nonzero 
+// elements and therefore in time O(nz) making reading extremely fast!
+// In the input file row indexes must be non-decreasing,
+// some rows can be empty and there must be no duplicates
+// (we cannot check for duplicates in this function)
+// It is not necessary that elements are in strict row major order
+// however, the sparse text format requires row major order
+// and no duplicates, so this condition should be satisfied as well.
+// We take advantage of teh fact that the id of the unique nonzero
+// (the value 1) is 0, so we do not use the values[] dictionary
+// Update :maxcode with the largest code written to the .vc file
+// and :nonz with the total number of processed values (they are all nonzeros)
+// used for boolean matrices in csrv format 
+void copy_sparse_bool_row(int rindex, int cols, FILE *fvc, 
+                          unsigned long *maxcode, unsigned long *nonz, FILE *f) {
+  // keep track of last pair read
+  static int r=-1, c = -1;
+  unsigned long id=0, code;
+  while (true) {
+    if(r<0) {
+      assert(c<0);
+      int e = fscanf(f,"%d %d",&r,&c);
+      if(e!=2) {
+        if(feof(f)) return;    // from now on nothing to read, all elements are 0
+        quit("Error reading sparse input file: invalid data format (copy_sparse_bool_row)");
+      }
+      if(r<0 or c<0) quit("Error! Sparse input file has negative row or column index (copy_sparse_bool_row)");
+    }
+    // now we have a row and a column (either from previous iteration or from fscanf)
+    if(r==rindex) {
+      if(c<0 or c>=cols) 
+        quit("Error! Sparse input file has column index out of range (copy_sparse_bool_row)");
+      *nonz += 1;               // found a new nonzero value
+      code = id*cols + c;       // we are using the same instructions as in the general case
+      code += 1;                // we could simpy write code = c+1 since id==0 
+      if (code>= 1ul<<30) 
+        quit("Code larger than 2**30. We are in trouble (copy_sparse_bool_row)");
+      if (code>*maxcode) *maxcode=code;
+      uint32_t wcode = (uint32_t) code; // convert to 32 bit value
+      if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
+        quit("Error writing to .vc file (copy_sparse_bool_row)");
+      r=c=-1;      // reset r,c pair
+    }
+    else {
+      if(r<rindex) quit("Error! Sparse input file is not in row-major order (copy_sparse_bool_row)");
+      return;    // row completed, save r,c pair for next row
+    }
+  }
+}
+
+
 // read row :rindex from a sparse boolean matrix file :f
 // the row is initialized to zero and the elements are set to 1
 // every time a pair (r,c) is read from the file with r=rindex
 // row indexes must be non-decreasing, some rows can be empty
 // for convenience we require that entries are in row-major order
 // and without duplicates
+// used for boolean matrices in drv format 
 void read_sparse_bool_row(int rindex, int cols, Type *row, FILE *f)
 {
   // keep track of last pair read
@@ -138,23 +193,23 @@ void read_sparse_bool_row(int rindex, int cols, Type *row, FILE *f)
       int e = fscanf(f,"%d %d",&r,&c);
       if(e!=2) {
         if(feof(f)) return;    // from now on nothing to read, all elements are 0
-        quit("Error reading sparse input file: invalid data format");
+        quit("Error reading sparse input file: invalid data format (read_sparse_bool_row)");
       }
-      if(r<0 or c<0) quit("Error! Sparse input file has negative row or column index");
+      if(r<0 or c<0) quit("Error! Sparse input file has negative row or column index (read_sparse_bool_row)");
     }
     // now we have a row and a column (either from previous iteration or from fscanf)
     if(r==rindex) {
-      if(c<0 or c>=cols) quit("Error! Sparse input file has column index out of range");
+      if(c<0 or c>=cols) quit("Error! Sparse input file has column index out of range (read_sparse_bool_row)");
       if(row[c]!=0) {
         assert(row[c]==1);
         fprintf(stderr,"Warning! Duplicate entry \"%d %d\" in sparse input file\n",r,c);
-        quit("Error! Duplicate entry in sparse input file\n");
+        quit("Error! Duplicate entry in sparse input file (read_sparse_bool_row)");
       }
       row[c]=1;  // set element to 1  
       r=c=-1;      // reset r,c pair
     }
     else {
-      if(r<rindex) quit("Error! Sparse input file is not in row-major order");
+      if(r<rindex) quit("Error! Sparse input file is not in row-major order (read_sparse_bool_row)");
       return;    // row completed, save r,c pair for next row
     }
   }
@@ -247,7 +302,7 @@ int main (int argc, char **argv) {
   unsigned long    nonz = 0;      // total number of processed values (nonzeros for crsv format)  
   unsigned long   dnonz = 0;      // distinct values in .val file (nonzeros for crsv format)  
   unsigned long maxcode = 0;      // largest code in a .vc/.dv file
-  // dictionaty for storing input values
+  // dictionary for storing input values
   std::unordered_map<Type,unsigned long> values; // dictionary of distinct nonzero
   Type v;   // values read from file
   // same for complex values
@@ -261,12 +316,8 @@ int main (int argc, char **argv) {
   // special case of boolean input and csrv format 
   if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID)) {
     // since we only store 1 in fval and values[] we do it there
-    // experimentally this optimization is not that effective
-    // the real problem is that we are "expanding" each row to cols values
-    // and therefore the running time is quadratic in the matrix size
     values[1] = dnonz++;
     write_bin(1,vtype,fval);
-    // similarly for drv matrices we could write also 0 to fval and avoid checking values[]
   } 
 
 
@@ -279,31 +330,37 @@ int main (int argc, char **argv) {
     FILE *fvc = fopen(fname,"w");
     if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
-      // read input file one row at a time
-      if(vtype & BOOLEAN_INPUT) 
-        read_sparse_bool_row(wr,cols,row,f);
-      else {
-        size_t e = fread(row,sizeof(Type),rowsize,f);
-        if(e!=rowsize)
-          if(ferror(f)) quit("Error reading input file");
-          else quit("Error reading input file: unexpected end of file");
+      // process input matrix one row at a time
+      if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID)) { // do not use row array & values disctionary
+        // for boolean csrv matrices we read the row from a sparse file
+        // and fill the vc file with the column indexes in time O(nz)
+        copy_sparse_bool_row(wr,cols,fvc,&maxcode,&nonz,f); // copy from sparse file to fvc
       }
-      // process row regardless of type bool/real/complex
-      for(int c=0;c<cols;c++) {
-        if(vtype&COMPLEX_INPUT) {
-          cov.real(row[2*c]);
-          cov.imag(row[2*c+1]);
-          v= (cov.real()==0 and cov.imag()==0) ? 0 : 1; // v==0 iff cov==0
+      else { // copy row from input file to row array
+        if(vtype & BOOLEAN_INPUT) {
+          assert(vtype&NO_COL_ID);    // csrv matrices handled above
+          read_sparse_bool_row(wr,cols,row,f); // copy from sparse file to row array
         }
-        else v = row[c];
-        // process element if nonzero or NO_COL_ID is set
-        if(v!=0 or (vtype&NO_COL_ID)) { // process non zero value
-          unsigned long id, code;
-          nonz += 1;      // note: v could be 0 so nonz is technically the wrong name
-          // get id of entry and possibly write new values to .val file
-          if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID))
-             id = 0; // csrv of boolean matrices: there is only a nonzero element
-          else {
+        else {
+          // copy from binary file to row array
+          size_t e = fread(row,sizeof(Type),rowsize,f);
+          if(e!=rowsize)
+            if(ferror(f)) quit("Error reading input file");
+            else quit("Error reading input file: unexpected end of file");
+        }
+        // process row regardless of type bool/real/complex
+        for(int c=0;c<cols;c++) {
+          if(vtype&COMPLEX_INPUT) {
+            cov.real(row[2*c]);
+            cov.imag(row[2*c+1]);
+            v= (cov.real()==0 and cov.imag()==0) ? 0 : 1; // v==0 iff cov==0
+          }
+          else v = row[c];
+          // process element if nonzero or NO_COL_ID is set
+          if(v!=0 or (vtype&NO_COL_ID)) { // process non zero value
+            unsigned long id, code;
+            nonz += 1;      // note: v could be 0 so nonz is technically the wrong name
+            // get id of entry and possibly write new values to .val file
             if(!(vtype&COMPLEX_INPUT)) { // real entry
               if(values.count(v)==0) {
                 id = values[v] = dnonz++;
@@ -316,19 +373,19 @@ int main (int argc, char **argv) {
                 write_bin(cov.imag(),vtype, fval);
               } else id = covalues[cov];
             }
+            // generate code and write it to .vc file 
+            if (vtype&NO_COL_ID) code = id;
+            else code = id*cols + c;
+            code += 1;                // shift by 1 to allow code for endrow code 0 
+            if (code>= 1ul<<30) 
+              quit("Code larger than 2**30. We are in trouble");
+            if (code>maxcode) maxcode=code;
+            wcode = (uint32_t) code; // convert to 32 bit value
+            if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
+              quit("Error writing to .vc/.dv file");
           }
-          // generate code and write it to .vc file 
-          if (vtype&NO_COL_ID) code = id;
-          else code = id*cols + c;
-          code += 1;                // shift by 1 to allow code for endrow code 0 
-          if (code>= 1ul<<30) 
-            quit("Code larger than 2**30. We are in trouble");
-          if (code>maxcode) maxcode=code;
-          wcode = (uint32_t) code; // convert to 32 bit value
-          if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-            quit("Error writing to .vc/.dv file");
         }
-      }
+      } // end if(vtype&BOOLEAN_INPUT and !(vtype&NO_COL_ID)
       // end row
       wcode=0;
       if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 

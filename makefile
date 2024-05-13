@@ -6,13 +6,14 @@ INC_DIR = ${HOME}/include
 # Compilation flags
 CFLAGS=-g -Wall -std=c99 -O3
 CC=gcc 
-CXX_FLAGS=-std=c++17 -pg -O2 -msse4.2
+CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
 
 # comment out this definition to get rid of malloc_count 
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
 # executables in this directory
-EXECS=re32mm csrvmm reansmm reivmm reans32mm csvmat2csrv bin2csrv bin2csrvf bin2csrvi bin2csvf
+BIN_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf
+EXECS=re32mm csrvmm reansmm reivmm reans32mm csvmat2csrv $(BIN_EXECS)
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
