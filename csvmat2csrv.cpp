@@ -214,8 +214,7 @@ int main (int argc, char **argv) {
       int e = getline(&buffer,&n,f);
       if(e<0) {
         if(ferror(f)) quit("Error reading input file");
-        assert(bn==nblock-1);
-        assert(bn==nblock-1);
+        assert(bn==nblocks-1);
         break;
       }
       r += 1;
