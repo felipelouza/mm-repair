@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# sample invocation:
+#   mtx2rowm  infile
+
+# given the sparse matrix infile in mtx format, transforms it for 
+# the computation of the pagerank as follows:
+
+# remove all comments from infile
+# remove self-loops 
+# transpose the matrix (so pagerank can be computed with a
+#   right matrix vector multiplications)
+# subtract 1 by all nodes id's (mtx format is 1-based)
+# sort the trasformed arcs in row-major order
+# for the trasformed matrix compute the number of nonzero in each column
+
+# The new set of sorted arcs is stored in infile.rowm 
+# The number of elements in each column is stored in infile.ccount
+# in binary form using 32bit unsigned int per column  
+# Store in infile.header some information abot the processed matrix
+
+ # check arguments
+if [ $# -ne 1 ]; 
+then 
+  echo Usage: $0 infile
+  exit 1
+fi
+
+# define outfile name
+outfile=$1.rowm
+
+# get current dir and execute python command followed by sort
+exe_dir=$(dirname "$0")
+$exe_dir/edge2edge.py -cts -a -1 $1 | sort -uk1n -k2n > $outfile
+
+# get nodes and arcs from header file and delete it 
+matrix_data=(`tail -n1 $1.header | tr " " "\n"`)
+echo Matrix size: ${matrix_data[0]}
+echo Number of nonzeros ${matrix_data[2]}
+
+# display information on the output
+echo
+echo The "(transposed)" matrix in row major order ready for 
+echo PageRank computation is in file $outfile 
+echo The column count file required by repagerank is $1.ccount
+
+# display suggestions for the next steps
+echo
+echo To compress the matrix with matrepair use the command line:
+echo "  " matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
+echo Then, to compute PageRank use the command line
+echo "  " repagerank $outfile ${matrix_data[0]} $1.ccount 
+
+exit 0

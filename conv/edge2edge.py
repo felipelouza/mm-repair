@@ -4,26 +4,25 @@ import argparse, sys, struct, subprocess
 
 
 Description = """
-convert to mtx format a matrix given as a list of arcs 
-provided in text format with one arc per line
-optionally shift all node ids by a constant
-optionally transpose the matrix and remove self loops
-optionally write to file the row and column counts, that is,
-  the number of nonzero in each row and column. 
+convert and possibly transform a matrix in a mtx-like format in a 
+simple list of arcs wrting to stdout one arc per line in text format
+ * optionally shift all node ids by a constant
+ * optionally transpose the matrix and/or remove self loops
+ * optionally write to a binary file the row and column counts, that is,
+   the number of nonzero in each row and column. 
 
 Lines starting with # or % or containing more than 2 items 
-are discarded so it can be used also for matrices already
-in mtx format that we want to manipulate.  
+are discarded 
 
-The trasformed list of arcs is written to stdout again in text format 
-An appropriate mtx header is written to infile.header
+A tentative mtx header containing info about the processed 
+matrix is written to infile.header; this is useful for
+human inspection.
 
 The list of arcs can be further manipulated (for example sorted in 
-row major order) and then possibly appended to the header to form a valid
-mtx matrix file
+row major order) and then appended to the header to form a 
+possibly valid mtx matrix file (depends on how the arcs are manipulated)
 
-Note that some tools just want the list of arcs, so the header is not needed
-(but it is useful for human inspection since it reports the number of nodes and arcs)
+Additional notes:
 
 For matrepair:
   the list of arcs must be stored in row major order; this can achieved
@@ -33,7 +32,8 @@ For matrepair:
   on column 2 in numerical order
 
 For k2sparse:
-  the list of arcs does not need to be sorted but there must be no duplicates  
+  the list of arcs does not need to be sorted but there must be no 
+  duplicates; the format used for matrepair will work fine  
 """
 
 
@@ -98,8 +98,9 @@ if __name__ == '__main__':
         if maxcount > 2**32 -1:
             print(f"maxcount = {maxcount} is too large. Cannot produce 32-bit column count file",file = sys.stderr )
         else:
-            print(f"Largest column count = {maxcount}", file=sys.stderr)
-            print(f"Saving column counts in {args.infile}.ccount", file=sys.stderr)
+            if args.v:
+              print(f"Largest column count = {maxcount}", file=sys.stderr)
+              print(f"Saving column counts in {args.infile}.ccount", file=sys.stderr)
             with open(args.infile + ".ccount", "wb") as f:
                 for i in range(maxnode+1):
                     f.write(struct.pack("I", col_counts[i] if i in col_counts else 0))
@@ -109,8 +110,9 @@ if __name__ == '__main__':
         if maxcount > 2**32 -1:
             print(f"maxcount = {maxcount} is too large. Cannot produce 32-bit row count file",file = sys.stderr )
         else:
-            print(f"Largest row count = {maxcount}", file=sys.stderr)
-            print(f"Saving row counts in {args.infile}.rcount", file=sys.stderr)
+            if args.v:
+              print(f"Largest row count = {maxcount}", file=sys.stderr)
+              print(f"Saving row counts in {args.infile}.rcount", file=sys.stderr)
             with open(args.infile + ".rcount", "wb") as f:
                 for i in range(maxnode+1):
                     f.write(struct.pack("I", row_counts[i] if i in row_counts else 0))
