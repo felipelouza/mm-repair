@@ -61,6 +61,23 @@ od -An -t f8 z.dbl | head
                   7002929                 33807845
 ```
 
+
+---
+
+## Input matrix format
+
+By default matrepair assumes the inut matrix is in textual `csv` format. This behaviour can be changed by the following command line options
+
+* `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a test file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
+
+
+* `--f64` the input matrix is represented in dense format using one float64 per entry. The total file size  is $ 8 \cdot rows \cdot columns$ bytes
+
+* `--f32` the input matrix is represented in dense format using one float32 per entry. The total file size  is $ 4 \cdot rows \cdot columns$ bytes
+
+
+* `--i32` the input matrix is represented in dense format using one int32 per entry. The total file size  is $ 4 \cdot rows \cdot columns$ bytes
+
 ---
 
 ## Parallel computation
@@ -155,12 +172,9 @@ executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re3
 
 ---
 
-## Experimental: the DRV format
+## PageRank computation 
 
-The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. At the moment matrix vector multiplication is not supported for the DRV format. To bulk test compression in the DRV format use `mmtest.py` with option `md`, for example:
-```bash 
-mmtest.py md -d /data
-```
+As an application of the boolea matrix compressed format we have implemeted the PageRank algorithm. See the `pagerank` subfolder.
 
 
 ---
@@ -172,14 +186,12 @@ For the column reordering algorithms, take a look at the `reordering` subfolder.
 
 ---
 
-## Conversion betwenn different formats
+## Experimental: the DRV format
 
-
-### conv/csvmat2bin.py
-Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
-
-
-
+The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. This format will usully proved a better compression, but the matrix operations will have cost proportional to the size of the uncompressed matrix. At the moment matrix vector multiplication is not supported for the DRV format. To bulk test compression in the DRV format use `mmtest.py` with option `md`, for example:
+```bash 
+mmtest.py md -d /data
+```
 
 
 ---
@@ -209,6 +221,10 @@ Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the 
 ### ans/encode.x
 Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *matrepair* to generate the `.ansf.1` files.
 
+
+
+### others/csvmat2bin.py
+Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
 
 
 ### others/stripcsvmat.py

@@ -23,7 +23,7 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries of type int32, float32 and float64. The .[if]val
 file will contain entries of the same type as the input matrix.
 
-The option --bool signals that the input matric contains booleas and
+The option --bool signals that the input matrix contains booleans and
 is stored in text format (eg a list of nonzero positions). 
 The .val file will contain only the value 1 in the float64 format 
 """
