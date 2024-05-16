@@ -13,8 +13,8 @@ CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
 
 # main executables in this
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
-PR_EXECS=pagerank/repagerank 
-EXECS=re32mm csrvmm reansmm reivmm reans32mm $(CONV_EXECS) $(PR_EXECS)
+PR_EXECS=pagerank/repagerank pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank
+EXECS=csrvmm re32mm remm reivmm $(CONV_EXECS) $(PR_EXECS)
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
@@ -44,25 +44,41 @@ bin2csvf: bin2csv.cpp
 
 # left and right matrix vector multiplication, double entries
 # one could create versions for float and int defining FLOAT_VAL or INT_VALS 
-re32mm: remm.c rematrix.h vector.h tools/xerrors.h $(MALLOC_FILES)
-	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -pthread
 
+# vc/val vectors only, no Repair
 csrvmm: remm.c csrmatrix.h vector.h $(MALLOC_FILES)
 	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -DCSR_MATRIX -pthread
 
-reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS -pthread
+# 32 bit vectors for R and C
+re32mm: remm.c rematrix.h vector.h tools/xerrors.h $(MALLOC_FILES)
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -pthread
 
+# sdsl IV for R and C
 reivmm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread  -DUSE_INTVEC
 
-reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+# sdsl IV for R, ANS for C
+remm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
+# abandoned during testing: not an interesting time/space tradeoff
+# 32 bit ints for R, ANS for C
+reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS -pthread
 
-# pagerank computation
+
+# pagerank computation for different matrix formats
 pagerank/repagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
+
+pagerank/reivpagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_INTVEC
+
+pagerank/re32pagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread
+
+pagerank/csrvpagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CC) $(CFLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DCSR_MATRIX
 
 
 

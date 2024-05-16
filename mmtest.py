@@ -26,7 +26,7 @@ Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174)
          'airline78':(14462943, 29),'imagenet':(1262102, 900) }
 
 # matrix mutiplication algorithms to be tested
-Algos = ['csrvmm', 're32mm','reivmm','reansmm']
+Algos = ['csrvmm', 're32mm','reivmm','remm']
 
 # name of files containing the input/output vectors
 # these files are created by this script at each execution

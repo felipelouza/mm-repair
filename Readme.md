@@ -30,7 +30,7 @@ makevec.py x54.dbl 54 1
 ```
 Now we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ with the command:
 ```bash
-re32mm  -y y.dbl -z z.dbl somedir/covtype 581012 54 x54.dbl
+remm  -y y.dbl -z z.dbl somedir/covtype 581012 54 x54.dbl
 ```
 The output vector `y.dbl` has length 581012 and contains the sum of the entries of each row:
 ```bash
@@ -71,12 +71,12 @@ By default matrepair assumes the inut matrix is in textual `csv` format. This be
 * `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a test file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
 
 
-* `--f64` the input matrix is represented in dense format using one float64 per entry. The total file size  is $ 8 \cdot rows \cdot columns$ bytes
+* `--f64` the input matrix is represented in dense format using one float64 per entry. The total file size  is $`8 \cdot rows \cdot columns`'$ bytes
 
-* `--f32` the input matrix is represented in dense format using one float32 per entry. The total file size  is $ 4 \cdot rows \cdot columns$ bytes
+* `--f32` the input matrix is represented in dense format using one float32 per entry. The total file size  is $`4 \cdot rows \cdot columns`$ bytes
 
 
-* `--i32` the input matrix is represented in dense format using one int32 per entry. The total file size  is $ 4 \cdot rows \cdot columns$ bytes
+* `--i32` the input matrix is represented in dense format using one int32 per entry. The total file size  is $`4 \cdot rows \cdot columns`$ bytes
 
 ---
 
@@ -91,7 +91,7 @@ splits the input matrix into three blocks of rows which are compressed separatel
 
 Next, we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ in parallel using the above row blocks with the command:
 ```bash
-reansmm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
+remm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
 ```
 
 ---
@@ -115,7 +115,7 @@ The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `
 
 
 ### ReANS
-The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array.
+The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array. This is the option usually providing the best compression.
 The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.ansf.1`
 
 
@@ -128,14 +128,14 @@ Tool to compute the CSRV representation of a matrix and to grammar-compress it. 
 Boolean (0/1) matrices are supported by the option `--bool`, which assumes that the input matrix consists of a text file containing a list of row/column pairs indicating the positions of the 1s. The list of pairs must be in row major order without duplicates, with one pair per row.  
 The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
 
-### re32mm
-Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in Re32 format (files `.val`, `.vc.R`, `.vc.C`) of size *RxC*, a vector *x* of size *C* stored in a binary file (in float64 format) and an integer parameter *n*; computes *n* times the operations *y=Mx*, *z=y^t M*, *x = z/|z|*. You can use the tool `makevec.py` below to create an input vector *x* of the proper size.
+### remm
+Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in ReANS format (files `.val`, `.vc.R.iv`, `.vc.C.ansf.1`) of size *RxC*, a vector *x* of size *C* stored in a binary file (in float64 format) and an integer parameter *n*; computes *n* times the operations *y=Mx*, *z=y^t M*, *x = z/|z|*. You can use the tool `makevec.py` below to create an input vector *x* of the proper size.
 
 ### csrvmm
-Analogous to *re32mm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (just the files `.val` and `.vc`) 
+Analogous to *remm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (just the files `.val` and `.vc`, no grammar compression) 
 
-### reivmm, reansmm 
-Analogous to *re32mm* except that the input matrix is expected to be in the format ReIV or ReANS.
+### reivmm, re32mm 
+Analogous to *remm* except that the input matrix is expected to be in the format ReIV or Re32.
 
 ### makevec.py
 Tool to create a vector of a given length and write it to a file in binary format (default float64 bit doubles, float32 and int32 formats are also supported). The vector is specified giving a set of values which are repeated cyclically.
