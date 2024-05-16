@@ -176,7 +176,7 @@ executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re3
 
 ## PageRank computation 
 
-As an application of the boolea matrix compressed format we have implemeted the PageRank algorithm. See the `pagerank` subfolder.
+As an application of the boolean matrix compressed format we have implemented the PageRank algorithm. See the `pagerank` subfolder.
 
 
 ---
@@ -194,6 +194,7 @@ The DRV (Dense Row Values) format is suitable for dense matrices since it treats
 ```bash 
 mmtest.py md -d /data
 ```
+The purpose of this format is to explore the maximum compression acheivable using Repair.
 
 
 ---

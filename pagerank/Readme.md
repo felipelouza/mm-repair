@@ -30,13 +30,13 @@ To compress the matrix with matrepair use the command line:
 Then, to compute PageRank use the command line
    repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
 ```
-The command `../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557` compresses the `cnr-2000.mtx.rowm` matrix. It genrates different compressed versions; the omst compact one is ReANS which consists of the files `cnr-2000.mtx.rowm.val`, `cnr-2000.mtx.rowm.vc.R.iv` and `cnr-2000.mtx.rowm.vc.C.ansf1` that together take 2717846 bytes, corresponding to roughly 6.95 bit per nonzero entry.  
+The command `../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557` compresses the `cnr-2000.mtx.rowm` matrix. It genrates different compressed formats; the most compact one is ReANS which consists of the files `cnr-2000.mtx.rowm.val`, `cnr-2000.mtx.rowm.vc.R.iv` and `cnr-2000.mtx.rowm.vc.C.ansf1` that together take 2717846 bytes, corresponding to roughly 6.95 bit per nonzero entry.  
 
 Finally, the command line
 ```bash
 repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
 ```
-uses the compressed matrix and the file `cnr-2000.mtx.ccount` to compute the PageRank and report the three nodes with the highets rank. This should produce the following output:
+uses the compressed matrix and the file `cnr-2000.mtx.ccount` to compute PageRank and report the three nodes with the highest rank. In our example this should produce the following output:
 ```
 ==== Command line:
  repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
@@ -52,4 +52,4 @@ Top 3 ranks:
 Top: 60597 60595 247028
 Elapsed time: 0 secs
 ```
-Type `repagerank` without arguments to get the available command line options. 
+Type `repagerank` without arguments to get the available command line options. The executables `csrvpagerank` and `re32pagerank` and `reivpagerank` work as `repagerank` (they share the same code) but assumes the compressed matrix is in format CSRV, Re32, and ReIV respectively.  

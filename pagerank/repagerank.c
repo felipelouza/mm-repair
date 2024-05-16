@@ -41,8 +41,8 @@
  * when the sum of the abs differences of the ranks between two
  * consecutive iterations is smaller than eps (from the command line)   
  *  
- * Note: it is possible to use only two vectors X and Y ate the expense
- * of some loss of accuracy in the error computation, the trick is
+ * Note: it is possible to use only two vectors X and Y at the expense
+ * of some loss of accuracy in the error computation. The trick is
  * that in Y there is enough information to retrieve the previous X:
  *   1. when computing Y if col_count[i]==0 set Y[i] = X[i]
  *   2. instead of computing the new rank Z store it in X
@@ -171,7 +171,7 @@ int main (int argc, char **argv) {
   // ----------- read and check matrix size 
   size  = atoi(argv[2]);
   if(size<1) die("Invalid matrix size");
-  // ----------- inint outdegree vector from file
+  // ----------- init outdegree vector from file
   u_int32_t *outd = (u_int32_t *) malloc(size*sizeof(*outd));
   {
     FILE *ccol_file  = fopen(argv[3],"rb");
@@ -318,8 +318,6 @@ int main (int argc, char **argv) {
   fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }
-
-
 
 
 // ------- code unchanged from remm.c ---------
