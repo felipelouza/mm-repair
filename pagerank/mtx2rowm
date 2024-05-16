@@ -12,7 +12,7 @@
 #   right matrix vector multiplications)
 # subtract 1 by all nodes id's (mtx format is 1-based)
 # sort the trasformed arcs in row-major order
-# for the trasformed matrix compute the number of nonzero in each column
+# for the trasnformed matrix compute the number of nonzero in each column
 
 # The new set of sorted arcs is stored in infile.rowm 
 # The number of elements in each column is stored in infile.ccount
@@ -47,8 +47,8 @@ echo The column count file required by repagerank is $1.ccount
 # display suggestions for the next steps
 echo
 echo To compress the matrix with matrepair use the command line:
-echo "  " matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
+echo "  " ../matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
 echo Then, to compute PageRank use the command line
-echo "  " repagerank $outfile ${matrix_data[0]} $1.ccount 
+echo "  " repagerank -e 1e-4 -v $outfile ${matrix_data[0]} $1.ccount 
 
 exit 0

@@ -11,9 +11,10 @@ CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
 # comment out this definition to get rid of malloc_count 
 # MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 
-# executables in this directory
+# main executables in this
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
-EXECS=re32mm csrvmm reansmm reivmm reans32mm repagerank $(CONV_EXECS)
+PR_EXECS=pagerank/repagerank 
+EXECS=re32mm csrvmm reansmm reivmm reans32mm $(CONV_EXECS) $(PR_EXECS)
 
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
@@ -60,6 +61,10 @@ reansmm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 
 
 # pagerank computation
+pagerank/repagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
+
+
 
 # directory containing the (balanced) irepar/idespair tools 
 brepair:

@@ -58,14 +58,14 @@
 #define _GNU_SOURCE
 #endif
 #ifdef CSR_MATRIX
-#include "csrmatrix.h"
+#include "../csrmatrix.h"
 #elif defined(USE_INTVEC) || defined(USE_ANSIV)
-#include "rematrix.hpp"
+#include "../rematrix.hpp"
 #else
-#include "rematrix.h"
+#include "../rematrix.h"
 #endif
 #ifdef MALLOC_COUNT
-#include "tools/malloc_count.h"
+#include "../tools/malloc_count.h"
 #endif
 #include <time.h>
 #ifdef DETAILED_TIMING
@@ -74,7 +74,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <math.h>
-#include "tools/xerrors.h"
+#include "../tools/xerrors.h"
 
 // input/output data for each thread 
 typedef struct {
@@ -82,8 +82,8 @@ typedef struct {
   vector *rv;    // row vector    (same size as a matrix row)
   vector *cv;    // column vector (      "               column)
   int op;        // operation to be performed
-  sem_t *in;    // semaphore for input shared with the main thread
-  sem_t *out;   // semaphore for output shared with the main thread
+  sem_t *in;     // semaphore for input shared with the main thread
+  sem_t *out;    // semaphore for output shared with the main thread
 } tdata;
 
 static rematrix **remat_create_multipart(int, int,const char *, int blocks);
@@ -101,7 +101,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
     fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
-    fprintf(stderr,"\t\t-e eps         max error (default 1.0e-7)\n");
+    fprintf(stderr,"\t\t-e eps         stop if error<eps (default ignore error)\n");
     fprintf(stderr,"\t\t-d df          damping factor (default 0.9)\n");
     fprintf(stderr,"\t\t-k K           show top K nodes (default 3)n\n");
     exit(1);
@@ -122,7 +122,7 @@ int main (int argc, char **argv) {
   #endif
   // default values for command line parameters 
   int maxiter=100,nblocks=1,topk=3;
-  double dampf = 0.9, eps = 1e-7;
+  double dampf = 0.9, eps = -1;
   
   /* ------------- read options from command line ----------- */
   opterr = 0;
@@ -172,7 +172,7 @@ int main (int argc, char **argv) {
   size  = atoi(argv[2]);
   if(size<1) die("Invalid matrix size");
   // ----------- inint outdegree vector from file
-  u_int32_t *outd = malloc(size*sizeof(*outd));
+  u_int32_t *outd = (u_int32_t *) malloc(size*sizeof(*outd));
   {
     FILE *ccol_file  = fopen(argv[3],"rb");
     if(ccol_file==NULL) die("Cannot open col_count_file");
@@ -229,8 +229,8 @@ int main (int argc, char **argv) {
     
   // compute products  
   int iter=0;
-  double delta=1+eps;
-  while(iter<maxiter && delta>eps) {
+  double delta=11+eps;
+  while(iter<maxiter && delta>=eps) {
     // normalize rank vector and compute dandling nodes rank
     double dnr = 0;
     for(int i=0;i<size;i++) {
@@ -256,14 +256,14 @@ int main (int argc, char **argv) {
       x->v[i] = nextri;
     }
     iter++; // iteration complete
-    if(verbose>1) fprintf(stderr,"Iteration %d, delta=%lf \n",iter,delta);
+    if(verbose>1) fprintf(stderr,"Iteration %d, delta=%g \n",iter,delta);
   }
   if(verbose>0) {
-    if (delta>eps) fprintf(stderr,"Stopped after %d iterations, delta=%lf\n",iter,delta);
-    else           fprintf(stderr,"Converged after %d iterations\n",iter);
+    if (delta>eps) fprintf(stderr,"Stopped after %d iterations, delta=%g\n",iter,delta);
+    else           fprintf(stderr,"Converged after %d iterations, delta=%g\n",iter,delta);
     double sum=0;
     for(int i=0;i<size;i++) sum += x->v[i];
-    fprintf(stderr,"Sum of ranks: %lf (should be 1)\n",sum);
+    fprintf(stderr,"Sum of ranks: %f (should be 1)\n",sum);
   }
   // deallocate y, z and outd: we may need space for the topk array
   vector_destroy(z);
@@ -272,8 +272,8 @@ int main (int argc, char **argv) {
 
   // retrieve topk nodes
   if(topk>size) topk = size;
-  int *top = malloc(topk*sizeof(*top));
-  int *aux = malloc(topk*sizeof(*top));
+  int *top = (int *) malloc(topk*sizeof(*top));
+  int *aux = (int *) malloc(topk*sizeof(*top));
   if(top==NULL || aux==NULL) die("Cannot allocate topk/aux array");
   kLargest(x->v,aux,size,topk);
   // get sorted nodes in top
@@ -315,7 +315,7 @@ int main (int argc, char **argv) {
   #ifdef DETAILED_TIMING
   fprintf(stderr,"Total mult time (secs): %lf  Average: %lf\n", ((double)m1)/sysconf(_SC_CLK_TCK), ((double)m1/iter)/sysconf(_SC_CLK_TCK));
   #endif
-  printf("Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
+  fprintf(stderr,"Elapsed time: %.0lf secs\n",(double) (time(NULL)-start_wc));  
   return 0;
 }
 

@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 
-import argparse, sys, struct, subprocess 
+import argparse, sys, struct 
 
 
 Description = """
-convert and possibly transform a matrix in a mtx-like format in a 
+Convert and possibly transform a matrix in a mtx-like format in a 
 simple list of arcs wrting to stdout one arc per line in text format
  * optionally shift all node ids by a constant
  * optionally transpose the matrix and/or remove self loops

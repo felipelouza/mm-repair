@@ -66,7 +66,7 @@ od -An -t f8 z.dbl | head
 
 ## Input matrix format
 
-By default matrepair assumes the inut matrix is in textual `csv` format. This behaviour can be changed by the following command line options
+By default matrepair assumes the inut matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
 
 * `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a test file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
 
@@ -82,7 +82,8 @@ By default matrepair assumes the inut matrix is in textual `csv` format. This be
 
 ## Parallel computation
 
-The command 
+
+In order to exploits parallelism in matrix operations, we need to partition the matrix in blocks of rows and compress them separately. The command 
 ```bash
 matrepair -r -b3 somedir/covtype 581012 54
 ```
@@ -124,6 +125,7 @@ The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `
 
 ### matrepair
 Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` to specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
+Boolean (0/1) matrices are supported by the option `--bool`, which assumes that the input matrix consists of a text file containing a list of row/column pairs indicating the positions of the 1s. The list of pairs must be in row major order without duplicates, with one pair per row.  
 The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
 
 ### re32mm
