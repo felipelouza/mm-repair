@@ -57,6 +57,7 @@ def main():
   # parser.add_argument('-k', help='keep intermediate files',action='store_true')
   parser.add_argument('-v', help="verbose", action='store_true')
   parser.add_argument('--bool', help='matrix entries are bool in text format',action='store_true')
+  parser.add_argument('--sparse', help='matrix entries are in sparse text format',action='store_true')
   parser.add_argument('--i32', help='matrix entries are int32 in binary format',action='store_true')
   parser.add_argument('--f32', help='matrix entries are float32 in binary format',action='store_true')
   parser.add_argument('--f64', help='matrix entries are float64 in binary format',action='store_true')
@@ -77,14 +78,22 @@ def main():
     args.m = max(4000,int(0.90*mem/2**20)) # assume at least 4GB in case virtual_memory() misbehaves
     args.m = args.m//args.p # if repair is done in parallel divide memory equally 
     print("Setting memory for each repair instance to", args.m, "MBs")
-  # choose extension for the file containing the matrix entries
+  # check for incompatible options
+  if sum([args.bool, args.sparse, args.complex])>1:
+    print("Options --bool --sparse and --complex are incompatible")
+    sys.exit(1)
+  if args.drv and args.sparse:
+    print("Options --drv and --sparse are incompatible")
+    sys.exit(1)
   if sum([args.bool, args.i32, args.f32,  args.f64])>1:
     print("Options --bool --i32 --f32 and --f64 are incompatible")
     sys.exit(1)
+  # choose extension for the file containing the matrix entries
   # default csv matrix of doubles, otherwise change exe and extension
   args.val_ext = ".val"
   args.csrv_exe = "csvmat2csrv"
   args.entry_size = 8   # size in bytes of a double 
+  # the following 4 options are incompatible 
   if args.i32:
     args.val_ext = ".ival"
     args.csrv_exe = "bin2csrvi" 
@@ -97,6 +106,12 @@ def main():
     args.csrv_exe = "bin2csrv" # matrix of doubles in binary form 
   elif args.bool:
     args.csrv_exe = "bin2csrv -B" # boolean text matrix considering 0/1 float64 values
+  # take care of the sparse option
+  if args.sparse:
+    if args.i32 or args.f32:
+      args.csrv_exe += " -S"    # sparse textual input values int32 or float 32
+    else:
+      args.csrv_exe = "bin2csrv -S" # sparse text matrix values in float64
   # take care of the drv option   
   if args.drv: 
     args.vc_ext = ".dv"   # drv: no column id's and keep 0s

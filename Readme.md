@@ -68,8 +68,9 @@ od -An -t f8 z.dbl | head
 
 By default matrepair assumes the inut matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
 
-* `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a test file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
+* `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a text file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
 
+* `--sparse`  the input matrix is represente by a text file in which each line contains a triplet consisting of row and column indices, denoting the position of a nonzero, followed by the nonzero value. The triplets must be ordered in row-major order and without duplicates. 
 
 * `--f64` the input matrix is represented in dense format using one float64 per entry. The total file size  is $`8 \cdot rows \cdot columns`'$ bytes
 
