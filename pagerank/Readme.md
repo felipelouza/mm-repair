@@ -30,7 +30,7 @@ To compress the matrix with matrepair use the command line:
 Then, to compute PageRank use the command line
    repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
 ```
-The command `../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557` compresses the `cnr-2000.mtx.rowm` matrix. It genrates different compressed formats; the most compact one is ReANS which consists of the files `cnr-2000.mtx.rowm.val`, `cnr-2000.mtx.rowm.vc.R.iv` and `cnr-2000.mtx.rowm.vc.C.ansf1` that together take 2717846 bytes, corresponding to roughly 6.95 bit per nonzero entry.  
+The command `../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557` compresses the `cnr-2000.mtx.rowm` matrix. It generates different compressed formats; the most compact one is ReANS which consists of the files `cnr-2000.mtx.rowm.val`, `cnr-2000.mtx.rowm.vc.R.iv` and `cnr-2000.mtx.rowm.vc.C.ansf1` that together take 2717846 bytes, corresponding to roughly 6.95 bits per nonzero entry.  
 
 Finally, the command line
 ```bash
