@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #endif
-
+#include <errno.h>
 
 //#ifdef  __cplusplus
 //extern "C" {
@@ -171,6 +171,16 @@ int xsem_destroy(sem_t *sem, int linea, const char *file) {
   }
   return e;
 }
+
+// write error message and exit
+void quit(const char *msg, int line, char *file) {
+  if(errno==0)  fprintf(stderr,"== %d == %s\n",getpid(), msg);
+  else fprintf(stderr,"== %d == %s: %s\n",getpid(), msg,
+               strerror(errno));
+  fprintf(stderr,"== %d == Line: %d, File: %s\n",getpid(),line,file);
+  exit(1);
+}
+
 
 //#ifdef  __cplusplus
 //}

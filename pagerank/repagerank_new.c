@@ -41,9 +41,10 @@
  * when the sum of the abs differences of the ranks between two
  * consecutive iterations is smaller than eps (from the command line)   
  *  
- * Note: it is possible to use only two vectors X and Y at the expense
- * of some loss of accuracy in the error computation. The trick is
- * that in Y there is enough information to retrieve the previous X:
+ * The above is the standard algorithm; in this program we use only two 
+ * vectors X and Y at the expense of some loss of accuracy in the 
+ * error computation. The trick is that in Y there is enough 
+ * information to retrieve the previous X:
  *   1. when computing Y if col_count[i]==0 set Y[i] = X[i]
  *   2. instead of computing the new rank Z store it in X
  *   3. compute the error and Y for the next iteration as follows:
@@ -51,6 +52,7 @@
  *      for i in range(N):
  *        if col_count[i]==0: error += abs(X[i]-Y[i]); Y[i] = X[i]
  *        else error += abs(X[i]-Y[i]*col_count[i]);    Y[i] = X[i]/col_count[i]   
+ * 
  * 
  * Copyright 2024- giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
@@ -97,7 +99,7 @@ static void kLargest(double v[], int arr[], int n, int k);
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t  %s [options] matrix msize col_count_file\n",name);
+    fprintf(stderr,"Usage:\n\t  %s [options] matrix col_count_file\n",name);
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
     fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
@@ -113,7 +115,7 @@ int main (int argc, char **argv) {
   extern char *optarg;
   extern int optind, opterr, optopt;
   int verbose=0;
-  int size,c;
+  int c;
   time_t start_wc = time(NULL);
   #ifdef DETAILED_TIMING
   struct tms ignored;
@@ -165,24 +167,27 @@ int main (int argc, char **argv) {
   
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 4) usage_and_exit(argv[0]); 
+  if (argc-optind != 3) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
-  // ----------- read and check matrix size 
-  size  = atoi(argv[2]);
-  if(size<1) die("Invalid matrix size");
-  // ----------- init outdegree vector from file
-  u_int32_t *outd = (u_int32_t *) malloc(size*sizeof(*outd));
+  // ----------- read column count file and get matrix size 
+  u_int32_t *outd = NULL;
+  long size;
   {
-    FILE *ccol_file  = fopen(argv[3],"rb");
-    if(ccol_file==NULL) die("Cannot open col_count_file");
-    if(outd==NULL) die("Cannot allocate out_degree vector");
+    FILE *ccol_file  = fopen(argv[2],"rb");
+    if(ccol_file==NULL) quit("Cannot open col_count_file", __LINE__, __FILE__);
+    fseek(ccol_file,0,SEEK_END);
+    size = ftell(ccol_file)/sizeof(u_int32_t);
+    if(size<1) quit("ftell failed or invalid col_count_file", __LINE__, __FILE__);
+    outd = (u_int32_t *) malloc(size*sizeof(*outd));
+    if(outd==NULL) quit("Cannot allocate out_degree vector", __LINE__, __FILE__);
     size_t e = fread(outd,sizeof(*outd),size,ccol_file);
-    if(e!=size) die("cannot read out_degree vector from col_count_file");
-    if(fclose(ccol_file)!=0) die("Error closing col_count_file");
+    if(e!=size) quit("cannot read out_degree vequitctor from col_count_file", __LINE__, __FILE__);
+    if(fclose(ccol_file)!=0) quit("Error closing col_count_file", __LINE__, __FILE__);
   }
+
   if(verbose>0) {
-    fprintf(stderr,"Number of nodes: %d\n",size);
+    fprintf(stderr,"Number of nodes: %ld\n",size);
     long dn=0,arcs=0;
     for(int i=0;i<size;i++) {
       if(outd[i]==0) dn++;
@@ -191,7 +196,6 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Number of dandling nodes: %ld\n",dn);
     fprintf(stderr,"Number of arcs: %ld\n",arcs);
   }
-
 
   // ------------ read matrix or row blocks
   rematrix *m = NULL;
