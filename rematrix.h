@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <limits.h>
-
+#include <errno.h>
 
 #ifdef USE_ANS
   #include <iostream>
@@ -465,4 +465,12 @@ static void die(const char *s)
   exit(1);
 }    
 
+// write error message + extra info and and exit
+static void quit(const char *msg, int line, char *file) {
+  if(errno==0)  fprintf(stderr,"== %d == %s\n",getpid(), msg);
+  else fprintf(stderr,"== %d == %s: %s\n",getpid(), msg,
+               strerror(errno));
+  fprintf(stderr,"== %d == Line: %d, File: %s\n",getpid(),line,file);
+  exit(1);
+}
 
