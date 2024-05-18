@@ -120,7 +120,7 @@ void prepare0 (relong len)
     else 
        { incFreq (&Heap,id);
        }
-if (PRNL && (i%1000000 == 0)) printf ("Processed %lli ints\n",i);
+    if (PRNL && (i%1000000 == 0)) printf ("Processed %lli ints\n",i);
   }
     purgeHeap (&Heap);
   }

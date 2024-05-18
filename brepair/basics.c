@@ -37,8 +37,8 @@ void *myMalloc (relong n)
     if (n == 0) return NULL;
     p = (void*)malloc(n);
     if (p == NULL)
-       { fprintf(stderr,"Error: malloc failed\n");
-	 exit(1);
+       { fprintf(stderr,"Error: malloc failed (%lld bytes)\n",n);
+   exit(1);
        }
     return p;
   }
@@ -50,7 +50,7 @@ void *myRealloc (void *p, relong n)
     p = (void*)realloc(p,n);
     if (p == NULL)
        { fprintf(stderr,"Error: realloc failed\n");
-	 exit(1);
+   exit(1);
        }
     return p;
   }
