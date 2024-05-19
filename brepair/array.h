@@ -33,9 +33,9 @@ Chile. Blanco Encalada 2120, Santiago, Chile. gnavarro@dcc.uchile.cl
 
 typedef struct
    { int *pairs; // identifiers
-     int maxsize;  
-     int size;
-     int fst; // first of circular array
+     long maxsize;  
+     long size;
+     long fst; // first of circular array
      float factor;
      int minsize;
      void *Rec; // records
