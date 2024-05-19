@@ -37,7 +37,7 @@ typedef struct
      long size;
      long fst; // first of circular array
      float factor;
-     int minsize;
+     long minsize;
      void *Rec; // records
    } Tarray;
 
