@@ -49,7 +49,7 @@ void *myRealloc (void *p, relong n)
     if (p == NULL) return myMalloc(n);
     p = (void*)realloc(p,n);
     if (p == NULL)
-       { fprintf(stderr,"Error: realloc failed\n");
+       { fprintf(stderr,"Error: realloc failed (%lld bytes)\n",n);
    exit(1);
        }
     return p;

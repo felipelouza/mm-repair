@@ -41,16 +41,15 @@
  * when the sum of the abs differences of the ranks between two
  * consecutive iterations is smaller than eps (from the command line)   
  *  
- * Note: it is possible to use only two vectors X and Y at the expense
- * of some loss of accuracy in the error computation. The trick is
- * that in Y there is enough information to retrieve the previous X:
- *   1. when computing Y if col_count[i]==0 set Y[i] = X[i]
- *   2. instead of computing the new rank Z store it in X
- *   3. compute the error and Y for the next iteration as follows:
- *      error = 0
- *      for i in range(N):
- *        if col_count[i]==0: error += abs(X[i]-Y[i]); Y[i] = X[i]
- *        else error += abs(X[i]-Y[i]*col_count[i]);    Y[i] = X[i]/col_count[i]   
+ * The above is the standard algorithm; in this program we use only two 
+ * vectors X and Z at the expense of some loss of accuracy in the 
+ * error computation. The trick is that X and Y there is the same 
+ * information provided we know the outdegree of each node; so
+ * we do not store X but only Y and retrieve X from Y when needed
+ *   1. compute Y overwriting X and if col_count[i]==0 simply set Y[i] = X[i]
+ *   2. compute Z = M*Y
+ *   3. compute the new rank values but do not store them, instead
+ *      compute the error, dnr, and Y for the next iteration
  * 
  * Copyright 2024- giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
@@ -97,7 +96,7 @@ static void kLargest(double v[], int arr[], int n, int k);
 
 static void usage_and_exit(char *name)
 {
-    fprintf(stderr,"Usage:\n\t  %s [options] matrix msize col_count_file\n",name);
+    fprintf(stderr,"Usage:\n\t  %s [options] matrix col_count_file\n",name);
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
     fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
@@ -113,7 +112,7 @@ int main (int argc, char **argv) {
   extern char *optarg;
   extern int optind, opterr, optopt;
   int verbose=0;
-  int size,c;
+  int c;
   time_t start_wc = time(NULL);
   #ifdef DETAILED_TIMING
   struct tms ignored;
@@ -165,24 +164,28 @@ int main (int argc, char **argv) {
   
   // virtually get rid of options from the command line 
   optind -=1;
-  if (argc-optind != 4) usage_and_exit(argv[0]); 
+  if (argc-optind != 3) usage_and_exit(argv[0]); 
   argv += optind; argc -= optind;
   
-  // ----------- read and check matrix size 
-  size  = atoi(argv[2]);
-  if(size<1) die("Invalid matrix size");
-  // ----------- init outdegree vector from file
-  u_int32_t *outd = (u_int32_t *) malloc(size*sizeof(*outd));
+  // ----------- read column count file and get matrix size 
+  u_int32_t *outd = NULL;
+  long size;
   {
-    FILE *ccol_file  = fopen(argv[3],"rb");
-    if(ccol_file==NULL) die("Cannot open col_count_file");
-    if(outd==NULL) die("Cannot allocate out_degree vector");
+    FILE *ccol_file  = fopen(argv[2],"rb");
+    if(ccol_file==NULL) quit("Cannot open col_count_file", __LINE__, __FILE__);
+    fseek(ccol_file,0,SEEK_END);
+    size = ftell(ccol_file)/sizeof(u_int32_t);
+    rewind(ccol_file);
+    if(size<1) quit("ftell failed or invalid col_count_file", __LINE__, __FILE__);
+    outd = (u_int32_t *) malloc(size*sizeof(*outd));
+    if(outd==NULL) quit("Cannot allocate out_degree vector", __LINE__, __FILE__);
     size_t e = fread(outd,sizeof(*outd),size,ccol_file);
-    if(e!=size) die("cannot read out_degree vector from col_count_file");
-    if(fclose(ccol_file)!=0) die("Error closing col_count_file");
+    if(e!=size) quit("cannot read out_degree vector from col_count_file", __LINE__, __FILE__);
+    if(fclose(ccol_file)!=0) quit("Error closing col_count_file", __LINE__, __FILE__);
   }
+
   if(verbose>0) {
-    fprintf(stderr,"Number of nodes: %d\n",size);
+    fprintf(stderr,"Number of nodes: %ld\n",size);
     long dn=0,arcs=0;
     for(int i=0;i<size;i++) {
       if(outd[i]==0) dn++;
@@ -192,7 +195,6 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Number of arcs: %ld\n",arcs);
   }
 
-
   // ------------ read matrix or row blocks
   rematrix *m = NULL;
   rematrix **rblocks = NULL; 
@@ -201,13 +203,12 @@ int main (int argc, char **argv) {
   else 
     rblocks = remat_create_multipart(size,size,argv[1],nblocks);
     
-  // ------------ init rank and aux vectors
-  vector *x = vector_create_value(size,1.0/size);
+  // ------------ alloc rank and aux vectors
   vector *y = vector_create_value(size,0);
   vector *z = vector_create_value(size,0);
   
   // data structures for multithread computation (nblocks>1)
-  vector *zv = NULL;  // array of subvectors of z initialized below
+  vector *zv = NULL;        // array of subvectors of z initialized below
   tdata td[nblocks];
   pthread_t t[nblocks];
   sem_t tsem_in[nblocks];
@@ -226,17 +227,17 @@ int main (int argc, char **argv) {
       xpthread_create(&t[i],NULL,&block_main,&td[i],__LINE__,__FILE__);
     }
   }
-    
-  // compute products  
+
+  // x_0 = (1/N ... 1/N)^T (no need to write those values)
+  // initialze y_0 based on x_0=(1/N ... 1/N)^T and compute dandling nodes rank
+  double dnr = 0;
+  for(int i=0;i<size;i++) 
+    if(outd[i]==0) dnr += (y->v[i] = 1.0/size);
+    else y->v[i] = (1.0/size)/outd[i];
+  // main loop 
   int iter=0;
-  double delta=11+eps;
+  double delta=11+eps; // always larger than eps to prevent stopping at first iteration
   while(iter<maxiter && delta>=eps) {
-    // normalize rank vector and compute dandling nodes rank
-    double dnr = 0;
-    for(int i=0;i<size;i++) {
-      if(outd[i]==0) dnr += x->v[i];
-      else y->v[i] = x->v[i]/outd[i];
-    }
     #ifdef DETAILED_TIMING
     t1 = times(&ignored);
     #endif 
@@ -248,26 +249,39 @@ int main (int argc, char **argv) {
     #endif
     // compute contribution of teleporting and dandling nodes
     double teleport = (dnr*dampf+1-dampf)/size;
-    // compute new rank vector and L1 norm of the difference
-    delta = 0;
+    // compute new rank vector values (without storing them) and
+    //   1. the L1 norm of the difference with the previos iteration retrifred from y
+    //   2. update y with the new values, and compute the new dnr
+    dnr = delta = 0;
     for(int i=0;i<size;i++) {
       double nextri = dampf*z->v[i] + teleport;
-      delta += fabs(nextri-x->v[i]);
-      x->v[i] = nextri;
+      if (outd[i]==0) {
+        delta += fabs(nextri-y->v[i]); // update delta
+        dnr += (y->v[i]=nextri);       // update dnr and y_i
+      }
+      else {
+        delta += fabs(nextri-y->v[i]*outd[i]); //update delta
+        y->v[i] = nextri/outd[i];              // update y_i
+      }
     }
     iter++; // iteration complete
     if(verbose>1) fprintf(stderr,"Iteration %d, delta=%g \n",iter,delta);
   }
+  // retrieve the actual rank vector from the last iteration
+  for(int i=0;i<size;i++) 
+    if(outd[i]!=0) y->v[i] = y->v[i]*outd[i];
+  // call x the actual rank vector for consistency with the literature and disable y
+  vector *x = y; y = NULL; // make sure y is never used again
+
   if(verbose>0) {
     if (delta>eps) fprintf(stderr,"Stopped after %d iterations, delta=%g\n",iter,delta);
     else           fprintf(stderr,"Converged after %d iterations, delta=%g\n",iter,delta);
     double sum=0;
     for(int i=0;i<size;i++) sum += x->v[i];
     fprintf(stderr,"Sum of ranks: %f (should be 1)\n",sum);
-  }
-  // deallocate y, z and outd: we may need space for the topk array
+  }  
+  // deallocate z and outd: we may need space for the topk array
   vector_destroy(z);
-  vector_destroy(y);
   free(outd);
 
   // retrieve topk nodes

@@ -49,6 +49,6 @@ echo
 echo To compress the matrix with matrepair use the command line:
 echo "  " ../matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
 echo Then, to compute PageRank use the command line
-echo "  " repagerank -e 1e-4 -v $outfile ${matrix_data[0]} $1.ccount 
+echo "  " repagerank -e 1e-4 -v $outfile $1.ccount 
 
 exit 0

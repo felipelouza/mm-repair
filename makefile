@@ -13,7 +13,7 @@ CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
 
 # main executables in this
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
-PR_EXECS=pagerank/repagerank pagerank/repagerank_new  #pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank
+PR_EXECS=pagerank/repagerank pagerank/repagerank_old  pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank
 EXECS=csrvmm re32mm remm reivmm $(CONV_EXECS) $(PR_EXECS)
 
 # malloc_count dependencies
@@ -71,7 +71,7 @@ reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
 pagerank/repagerank: pagerank/repagerank.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
-pagerank/repagerank_new: pagerank/repagerank_new.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+pagerank/repagerank_old: pagerank/repagerank_old.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
 
