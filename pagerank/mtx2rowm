@@ -46,7 +46,8 @@ echo The column count file required by repagerank is $1.ccount
 
 # display suggestions for the next steps
 echo
-echo To compress the matrix with matrepair use the command line:
+echo Assuming you are in the pagerank directory \(adjust paths otherwise\)
+echo to compress the matrix with matrepair use the command line:
 echo "  " ../matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
 echo Then, to compute PageRank use the command line
 echo "  " repagerank -e 1e-4 -v $outfile $1.ccount 

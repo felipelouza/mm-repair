@@ -1,5 +1,6 @@
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
- * RePageRank
+ * RePageRank (old version using 3 vectors)
+ * A new version using only 2 vectors is in repagerank.c
  * 
  * Compute pagerank of a graph given its adjacency matrix
  * repair compressed, dandling nodes and teleporting included
@@ -41,7 +42,9 @@
  * when the sum of the abs differences of the ranks between two
  * consecutive iterations is smaller than eps (from the command line)   
  *  
- * Note: it is possible to use only two vectors X and Y at the expense
+ * Note: in this program we execute the above iterations
+ * as describe above, using three vectors X, Y and Z. However,
+ * it is possible to use only two vectors X and Y at the expense
  * of some loss of accuracy in the error computation. The trick is
  * that in Y there is enough information to retrieve the previous X:
  *   1. when computing Y if col_count[i]==0 set Y[i] = X[i]
@@ -50,7 +53,7 @@
  *      error = 0
  *      for i in range(N):
  *        if col_count[i]==0: error += abs(X[i]-Y[i]); Y[i] = X[i]
- *        else error += abs(X[i]-Y[i]*col_count[i]);    Y[i] = X[i]/col_count[i]   
+ *        else error += abs(X[i]-Y[i]*col_count[i]);    Y[i] = X[i]/col_count[i]
  * 
  * Copyright 2024- giovanni.manzini@unipi.it
  * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */

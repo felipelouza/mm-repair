@@ -58,7 +58,10 @@ typedef double  matval;     // type representing a matrix/vector entry
 typedef double xmatval;     // type representing a matrix entry with larger precision   
 
 // report error message and terminates
-static void die(const char *s);
+//static void die(const char *s);
+static void quit(const char *msg, int line, char *file);
+#define die(s) quit((s),__LINE__,__FILE__)
+
 
 // include definitions for dense uncompressed vectors 
 #include "vector.h"
@@ -458,12 +461,6 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
   return;  
 }
 
-// write error message and exit
-static void die(const char *s)
-{
-  perror(s);
-  exit(1);
-}    
 
 // write error message + extra info and and exit
 static void quit(const char *msg, int line, char *file) {

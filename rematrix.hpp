@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <limits.h>
+#include <errno.h>
 
 #include <sdsl/int_vector.hpp>
 #include <iostream>
@@ -63,7 +64,10 @@ typedef double  matval;     // type representing a matrix/vector entry
 typedef double xmatval;     // type representing a matrix entry with larger precision   
 
 // report error message and terminate
-static void die(const char *s);
+static void quit(const char *msg, int line, const char *file);
+#define die(s) quit((s),__LINE__,__FILE__)
+
+
 
 // include definitions for dense uncompressed vectors 
 #include "vector.h"
@@ -423,11 +427,12 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
   return;  
 }
 
-// write error message and exit
-static void die(const char *s)
-{
-  perror(s);
+// write error message + extra info and and exit
+static void quit(const char *msg, int line, const char *file) {
+  if(errno==0)  fprintf(stderr,"== %d == %s\n",getpid(), msg);
+  else fprintf(stderr,"== %d == %s: %s\n",getpid(), msg,
+               strerror(errno));
+  fprintf(stderr,"== %d == Line: %d, File: %s\n",getpid(),line,file);
   exit(1);
-}    
-
+}
 

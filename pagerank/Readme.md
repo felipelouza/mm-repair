@@ -25,16 +25,17 @@ The (transposed) matrix in row major order ready for
 PageRank computation is in file cnr-2000.mtx.rowm
 The column count file required by repagerank is cnr-2000.mtx.ccount
 
-To compress the matrix with matrepair use the command line:
+Assuming you are in the pagerank directory (adjust paths otherwise)
+to compress the matrix with matrepair use the command line:
    ../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557
 Then, to compute PageRank use the command line
-   repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
+   repagerank -e 1e-4 -v cnr-2000.mtx.rowm cnr-2000.mtx.ccount
 ```
 The command `../matrepair --bool -r cnr-2000.mtx.rowm 325557 325557` compresses the `cnr-2000.mtx.rowm` matrix. It generates different compressed formats; the most compact one is ReANS which consists of the files `cnr-2000.mtx.rowm.val`, `cnr-2000.mtx.rowm.vc.R.iv` and `cnr-2000.mtx.rowm.vc.C.ansf1` that together take 2717846 bytes, corresponding to roughly 6.95 bits per nonzero entry.  
 
 Finally, the command line
 ```bash
-repagerank -e 1e-4 -v cnr-2000.mtx.rowm 325557 cnr-2000.mtx.ccount
+repagerank -e 1e-4 -v cnr-2000.mtx.rowm cnr-2000.mtx.ccount
 ```
 uses the compressed matrix and the file `cnr-2000.mtx.ccount` to compute PageRank and report the three nodes with the highest rank. In our example this should produce the following output:
 ```
