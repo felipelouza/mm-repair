@@ -38,12 +38,14 @@ int insertArray (Tarray *A, int pair)
      if (A->size == A->maxsize)
 	{ if (A->maxsize == 0)
 	     { A->maxsize = A->minsize;
+			   assert(A->maxsize > 0);
 	       A->pairs = malloc (A->maxsize * sizeof(int));
 	       A->fst = 0;
 	     }
 	  else
 	     { max = A->maxsize;
 	       A->maxsize /= A->factor;
+				 assert(A->maxsize > 0);
 	       npairs = malloc (A->maxsize * sizeof(int));
 	       size = A->size;
 	       fst = A->fst;
@@ -81,6 +83,7 @@ void deleteArray (Tarray *A)
 	      (A->maxsize * A->factor >= A->minsize))
 	{ max = A->maxsize;
 	  A->maxsize *= A->factor;
+		assert(A->maxsize > 0);
 	  npairs = malloc (A->maxsize * sizeof(int));
 	  size = A->size;
 	  fst = A->fst;
@@ -96,7 +99,7 @@ void deleteArray (Tarray *A)
 	}
    }
 
-Tarray createArray (void *Rec, float factor, int minsize)
+Tarray createArray (void *Rec, float factor, long minsize)
 
    { Tarray A;
      A.Rec = Rec;

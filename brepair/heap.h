@@ -62,7 +62,7 @@ typedef struct
     Trarray *Rec; // records
   } Theap;
 
-Theap createHeap (relong u, Trarray *Rec, float factor, int minsize); 
+Theap createHeap (relong u, Trarray *Rec, float factor, long minsize); 
 				// creates new empty heap
 				// 0<factor<1: occupancy factor
 				// sqrt(u)*max(minsize,n/factor) integers

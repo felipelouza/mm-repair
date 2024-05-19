@@ -47,7 +47,7 @@ int insertArray (Tarray *A, int pair); // inserts pair in A, returns pos
 
 void deleteArray (Tarray *A); // deletes last cell in A
 
-Tarray createArray (void *Rec, float factor, int minsize); // creates empty array
+Tarray createArray (void *Rec, float factor, long minsize); // creates empty array
 
 void destroyArray (Tarray *A); // destroys A
   

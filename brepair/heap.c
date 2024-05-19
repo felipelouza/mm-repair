@@ -32,7 +32,7 @@ Chile. Blanco Encalada 2120, Santiago, Chile. gnavarro@dcc.uchile.cl
 
 static int PRNH = 0;
 
-Theap createHeap (relong u, Trarray *Rec, float factor, int minsize) 
+Theap createHeap (relong u, Trarray *Rec, float factor, long minsize) 
         // creates new empty heap
         // minsize, factor: space/time tradeoffs
 

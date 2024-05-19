@@ -61,7 +61,7 @@ void deleteHash (Thash *H, int id) // deletes H->Rec[id].pair from hash
     H->used--;
   }
 
-Thash createHash (int maxpos, Trarray *Rec)
+Thash createHash (long maxpos, Trarray *Rec)
         // creates new empty hash table
 
   { Thash H;

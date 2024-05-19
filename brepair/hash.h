@@ -34,12 +34,12 @@ Chile. Blanco Encalada 2120, Santiago, Chile. gnavarro@dcc.uchile.cl
 
 typedef struct
   { int *table;
-    int maxpos; // of the form (1<<smth)-1
-    int used;
+    long maxpos; // of the form (1<<smth)-1
+    long used;
     Trarray *Rec; // records
   } Thash;
 
-Thash createHash (int maxpos, Trarray *Rec); 
+Thash createHash (long maxpos, Trarray *Rec); 
 					// creates new empty hash table
 
 void destroyHash (Thash *H); // destroys hash table, not heap nor list
