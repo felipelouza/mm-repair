@@ -229,7 +229,7 @@ int main (int argc, char **argv) {
   }
 
   // x_0 = (1/N ... 1/N)^T (no need to write those values)
-  // initialze y_0 based on x_0=(1/N ... 1/N)^T and compute dandling nodes rank
+  // initialize y_0 based on x_0=(1/N ... 1/N)^T and compute dandling nodes rank
   double dnr = 0;
   for(int i=0;i<size;i++) 
     if(outd[i]==0) dnr += (y->v[i] = 1.0/size);
