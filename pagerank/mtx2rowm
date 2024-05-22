@@ -12,7 +12,13 @@
 #   right matrix vector multiplications)
 # subtract 1 by all nodes id's (mtx format is 1-based)
 # sort the trasformed arcs in row-major order
-# for the trasnformed matrix compute the number of nonzero in each column
+# for the transformed matrix compute the number of nonzero in each column
+
+# pagerank is usually computed removing self-loops from the input graph
+# however, if one is mainly interested in compressing the graph
+# the self loop should be maintained
+# edge2edge.py by defualt keeps self loops, to remove them add the option 
+# -s to when calling edge2edge.py (currently at line 40)
 
 # The new set of sorted arcs is stored in infile.rowm 
 # The number of elements in each column is stored in infile.ccount
@@ -31,7 +37,7 @@ outfile=$1.rowm
 
 # get current dir and execute python command followed by sort
 exe_dir=$(dirname "$0")
-$exe_dir/edge2edge.py -cts -a -1 $1 | sort -uk1n -k2n > $outfile
+$exe_dir/edge2edge.py -ct -a -1 $1 | sort -uk1n -k2n > $outfile
 
 # get nodes and arcs from header file and delete it 
 matrix_data=(`tail -n1 $1.header | tr " " "\n"`)
@@ -46,10 +52,10 @@ echo The column count file required by repagerank is $1.ccount
 
 # display suggestions for the next steps
 echo
-echo Assuming you are in the pagerank directory \(adjust paths otherwise\)
+echo Assuming you are in the main directory \(adjust paths otherwise\),
 echo to compress the matrix with matrepair use the command line:
-echo "  " ../matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
+echo "  " ./matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
 echo Then, to compute PageRank use the command line
-echo "  " repagerank -e 1e-4 -v $outfile $1.ccount 
+echo "  " pagerank/repagerank -e 1e-4 -v $outfile $1.ccount 
 
 exit 0

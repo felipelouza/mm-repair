@@ -277,21 +277,25 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
   print(" >> number of distinct nonzero: {0}".format(valsize//args.entry_size))
   psize = valsize+vcsize
-  print(" >> {2}  size: {0} bytes  ({1:.2f}%)".format(psize,100*psize/isize,args.name.upper()))
+  if args.bool: print(f" >> {args.name.upper()}  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
+  else:         print(f" >> {args.name.upper()}  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   csize = getsize_multipart(args.input,args.b,args.vc_ext+".C") 
   rsize = getsize_multipart(args.input,args.b,args.vc_ext+".R") 
   psize = valsize + csize+rsize
-  print(" >> RE32  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  if args.bool: print(f" >> RE32  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
+  else:         print(f" >> RE32  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   csizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".C.iv") 
   rsizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".R.iv") 
   psize = valsize + csizeiv+rsizeiv
-  print(" >> REIV  size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  if args.bool: print(f" >> REIV  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
+  else:         print(f" >> REIV  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   ans_csize = getsize_multipart(args.input,args.b,args.vc_ext+".C.ansf.1")
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  psize = valsize+ans_csize+rsizeiv 
-  print(" >> REANS size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
+  psize = valsize+ans_csize+rsizeiv
+  if args.bool: print(f" >> REANS size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
+  else:         print(f" >> REANS size: {psize} bytes  ({100*psize/isize:.2f}%)")
 
 
 def show_command_line(f):
