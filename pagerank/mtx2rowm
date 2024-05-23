@@ -23,7 +23,7 @@
 # The new set of sorted arcs is stored in infile.rowm 
 # The number of elements in each column is stored in infile.ccount
 # in binary form using 32bit unsigned int per column  
-# Store in infile.header some information abot the processed matrix
+# Store in infile.header some information about the processed matrix
 
  # check arguments
 if [ $# -ne 1 ]; 
@@ -38,6 +38,7 @@ outfile=$1.rowm
 # get current dir and execute python command followed by sort
 exe_dir=$(dirname "$0")
 $exe_dir/edge2edge.py -ct -a -1 $1 | sort -uk1n -k2n > $outfile
+
 
 # get nodes and arcs from header file and delete it 
 matrix_data=(`tail -n1 $1.header | tr " " "\n"`)
