@@ -8,7 +8,7 @@ The supported input format is the [Matrix Market Exchange Formats](https://math.
 For techical reasons, to compute PageRank the adjaceny matrix of the web graph has to be: trasposed, self-loops (if any) removed, and the positions of the nonzero elements have to be sorted in row-major order. This is done by the `mtx2rowm` tool (which internally calls `egde2egde.py`). The `mtx2rowm` tool also subtracts one by all node ids (mtx format is 1 based) and writes to a binary file the number of nonzero elements in each column of the transformed matrix. 
 
 
-For example, to compute the pagrank of the [cnr-2000.mtx](https://www.kaggle.com/datasets/wolfram77/graphs-law?select=cnr-2000.mtx) graph the procedure is the following. The command
+For example, to compute the pagerank of the [cnr-2000.mtx](https://www.kaggle.com/datasets/wolfram77/graphs-law?select=cnr-2000.mtx) graph the procedure is the following. The command
 ```bash
 
 mtx2rowm cnr-2000.mtx

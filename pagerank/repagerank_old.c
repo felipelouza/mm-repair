@@ -311,8 +311,8 @@ int main (int argc, char **argv) {
     }
   }
   #ifdef MALLOC_COUNT
-    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
-           malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
+    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/node\n",
+           malloc_count_peak(), (double)malloc_count_peak()/(size));
     fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
   #endif
   #ifdef DETAILED_TIMING

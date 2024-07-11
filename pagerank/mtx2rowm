@@ -9,7 +9,7 @@
 # remove all comments from infile
 # remove self-loops 
 # transpose the matrix (so pagerank can be computed with a
-#   right matrix vector multiplications)
+#   right matrix vector multiplication)
 # subtract 1 by all nodes id's (mtx format is 1-based)
 # sort the trasformed arcs in row-major order
 # for the transformed matrix compute the number of nonzero in each column
@@ -17,7 +17,7 @@
 # pagerank is usually computed removing self-loops from the input graph
 # however, if one is mainly interested in compressing the graph
 # the self loop should be maintained
-# edge2edge.py by defualt keeps self loops, to remove them add the option 
+# edge2edge.py by default keeps self loops, to remove them add the option 
 # -s to when calling edge2edge.py (currently at line 40)
 
 # The new set of sorted arcs is stored in infile.rowm 
@@ -53,10 +53,29 @@ echo The column count file required by repagerank is $1.ccount
 
 # display suggestions for the next steps
 echo
-echo Assuming you are in the main directory \(adjust paths otherwise\),
-echo to compress the matrix with matrepair use the command line:
+echo To compress with matrepair, assuming you are in the main directory 
+echo \(adjust paths otherwise\), use the command line:
 echo "  " ./matrepair --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
-echo Then, to compute PageRank use the command line
+echo Then, to compute PageRank "(single thread)" use for example the command
 echo "  " pagerank/repagerank -e 1e-4 -v $outfile $1.ccount 
 
+echo
+echo To use for example 8 threads during the pagerank computation the
+echo input matrix has to be compressed in 8 blocks with the command line:
+echo "  " ./matrepair -b 8 --bool -r $outfile ${matrix_data[0]} ${matrix_data[0]}
+echo Then, to compute PageRank use for example the command
+echo "  " pagerank/repagerank -b 8 -e 1e-4 -v $outfile $1.ccount 
+
+echo 
+echo If you are using k2-dfs single thread, compress with
+echo "  " ./k2sparse.x -s ${matrix_data[0]} $outfile
+echo and compute pagerank with
+echo "  " ./k2pagerank.x -v $outfile.k2 $1.ccount
+echo
+echo To use for example 8 threads for computing 
+echo matrix-vector multiplication with k2-dfs, compress with
+echo "  " ./k2blockc.py -s ${matrix_data[0]} $outfile 8
+echo and compute pagerank with
+echo "  " ./k2pagerank.x -v -b 8 $outfile $1.ccount
+echo
 exit 0

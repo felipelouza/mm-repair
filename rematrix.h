@@ -59,7 +59,7 @@ typedef double xmatval;     // type representing a matrix entry with larger prec
 
 // report error message and terminates
 //static void die(const char *s);
-static void quit(const char *msg, int line, char *file);
+static void quit(const char *msg, int line, const char *file);
 #define die(s) quit((s),__LINE__,__FILE__)
 
 
@@ -463,7 +463,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
 
 
 // write error message + extra info and and exit
-static void quit(const char *msg, int line, char *file) {
+static void quit(const char *msg, int line, const char *file) {
   if(errno==0)  fprintf(stderr,"== %d == %s\n",getpid(), msg);
   else fprintf(stderr,"== %d == %s: %s\n",getpid(), msg,
                strerror(errno));

@@ -22,5 +22,10 @@ int main(int argc, char* argv[])
     cout<<"v.size()="<<v.size()<<endl;
     cout<<"v.width()="<<(int)v.width()<<endl;
     cout<<"v[0]="<<v[0]<<endl;
+    long sum=0;
+    for (int i=0; i<v.size(); i++) {
+        sum+=v[i];
+    }
+    cout<<"sum="<<sum<<endl;
     // TODO: save the decoded array to file
 }

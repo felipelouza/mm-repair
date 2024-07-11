@@ -43,7 +43,7 @@
  *  
  * The above is the standard algorithm; in this program we use only two 
  * vectors X and Z at the expense of some loss of accuracy in the 
- * error computation. The trick is that X and Y there is the same 
+ * error computation. The trick is that in X and Y there is the same 
  * information provided we know the outdegree of each node; so
  * we do not store X but only Y and retrieve X from Y when needed
  *   1. compute Y overwriting X and if col_count[i]==0 simply set Y[i] = X[i]
@@ -98,11 +98,11 @@ static void usage_and_exit(char *name)
 {
     fprintf(stderr,"Usage:\n\t  %s [options] matrix col_count_file\n",name);
     fprintf(stderr,"\t\t-v             verbose\n");
-    fprintf(stderr,"\t\t-b num         number of row blocks, def. 1\n");
-    fprintf(stderr,"\t\t-m maxiter     maximum number of iteration, def. 100\n");
-    fprintf(stderr,"\t\t-e eps         stop if error<eps (default ignore error)\n");
-    fprintf(stderr,"\t\t-d df          damping factor (default 0.9)\n");
-    fprintf(stderr,"\t\t-k K           show top K nodes (default 3)n\n");
+    fprintf(stderr,"\t\t-b num         number of row blocks, default: 1\n");
+    fprintf(stderr,"\t\t-m maxiter     maximum number of iterations, def. 100\n");
+    fprintf(stderr,"\t\t-e eps         stop if error<eps (default: ignore error)\n");
+    fprintf(stderr,"\t\t-d df          damping factor (default: 0.9)\n");
+    fprintf(stderr,"\t\t-k K           show top K nodes (default: 3)\n\n");
     exit(1);
 }
 
@@ -322,8 +322,8 @@ int main (int argc, char **argv) {
     }
   }
   #ifdef MALLOC_COUNT
-    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
-           malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
+    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/node\n",
+           malloc_count_peak(), (double)malloc_count_peak()/(size));
     fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
   #endif
   #ifdef DETAILED_TIMING

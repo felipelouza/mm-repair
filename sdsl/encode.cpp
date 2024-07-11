@@ -1,5 +1,5 @@
 /*
- * Transforms a sequence of 64-bit integers into a bit-compressed integer vector.
+ * Transforms a sequence of 32-bit integers into a bit-compressed integer vector.
  * The first command line parameter argv[1] specifies the input file, 
  * which contains the sequence of integers to be transformed (ie compressed)
  * The bit-compressed integer vector is stored in a file called `argv[1].iv`.
