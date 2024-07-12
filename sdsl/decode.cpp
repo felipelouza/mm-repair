@@ -5,6 +5,11 @@
 #include <sdsl/int_vector.hpp>
 #include <iostream>
 #include <string>
+#ifdef MALLOC_COUNT
+#include "../tools/malloc_count.h"
+#endif
+
+
 
 using namespace sdsl;
 using namespace std;
@@ -17,15 +22,24 @@ int main(int argc, char* argv[])
     }
 
     string ifile = string(argv[1]);
-    int_vector<> v;
-    load_from_file(v, ifile);
-    cout<<"v.size()="<<v.size()<<endl;
-    cout<<"v.width()="<<(int)v.width()<<endl;
-    cout<<"v[0]="<<v[0]<<endl;
-    long sum=0;
-    for (int i=0; i<v.size(); i++) {
-        sum+=v[i];
+    size_t size;
+    {
+      int_vector<> v;
+      load_from_file(v, ifile);
+      size = v.size();
+      cout<<"v.size()="<<v.size()<<endl;
+      cout<<"v.width()="<<(int)v.width()<<endl;
+      cout<<"v[0]="<<v[0]<<endl;
+      long sum=0;
+      for (size_t i=0; i<size; i++) 
+          sum+=v[i];
+          // TODO: save the decoded array to file
+      cout<<"sum="<<sum<<endl;
     }
-    cout<<"sum="<<sum<<endl;
-    // TODO: save the decoded array to file
+  #ifdef MALLOC_COUNT
+    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entry\n",
+           malloc_count_peak(), (double)malloc_count_peak()/(size));
+    fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
+  #endif
+    
 }

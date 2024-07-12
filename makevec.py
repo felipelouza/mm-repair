@@ -14,8 +14,8 @@ def main():
   parser.add_argument('outfile', help='output file name', type=str)
   parser.add_argument('size',    help='number of elements', type=int)
   parser.add_argument('val',      help='values to be repeated cyclically', nargs='+')
-  parser.add_argument('-f', help='vector entries are 32 bits floats',action='store_true')
-  parser.add_argument('-i', help='vector entries are integers',action='store_true')
+  parser.add_argument('-f', help='vector entries are 32 bit floats',action='store_true')
+  parser.add_argument('-i', help='vector entries are 32 bit integers',action='store_true')
   #parser.add_argument('-v',  help='verbose',action='store_true')
   args = parser.parse_args()
   if args.i and args.f:
