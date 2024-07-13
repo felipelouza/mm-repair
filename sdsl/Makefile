@@ -9,17 +9,16 @@ CCLIB=-lsdsl
 SOURCES=$(wildcard *.cpp)
 EXECS=$(SOURCES:.cpp=.x)
 
-# malloc_count dependencies
+# malloc_count flags and dependencies
+# comment next line to eclude malloc_count
+# MALLOC_FLAGS=../tools/malloc_count.c -DMALLOC_COUNT -ldl
 ifdef MALLOC_FLAGS
 MALLOC_FILES=../tools/malloc_count.c ../tools/malloc_count.h
-MALLOC_FLAGS=../tools/malloc_count.c -DMALLOC_COUNT -ldl
 endif
-
-
 
 all: $(EXECS)
 	        
-%.x:%.cpp
+%.x: %.cpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) $(CCLIB) 
 
 clean:

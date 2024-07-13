@@ -37,9 +37,10 @@ int main(int argc, char* argv[])
       cout<<"sum="<<sum<<endl;
     }
   #ifdef MALLOC_COUNT
-    fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entry\n",
-           malloc_count_peak(), (double)malloc_count_peak()/(size));
-    fprintf(stderr,"Current memory allocation: %zu bytes\n", malloc_count_current());
+    // we write %'zu to get the thousands separators  
+    fprintf(stderr,"Peak memory allocation: %'zu kbs, %.4lf bytes/entry\n",
+           malloc_count_peak()/1024, (double)malloc_count_peak()/(size));
+    fprintf(stderr,"Current memory allocation: %'zu bytes\n", malloc_count_current());
   #endif
     
 }
