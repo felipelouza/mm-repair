@@ -341,9 +341,7 @@ int main (int argc, char **argv) {
 // on its given matrix
 static void *block_main(void *v)
 {
-  tdata *td = (tdata *) v;
-  vector *auxrow = vector_create();
-  vector_set_zero(auxrow,td->m->cols);  
+  tdata *td = (tdata *) v; 
   
   while(true) {
     // wait for input 
@@ -351,7 +349,7 @@ static void *block_main(void *v)
     if(td->op<0) break;
     else if(td->op==0) { //left mult
       assert(td->cv!=NULL); // the input is a column vector
-      if(td->rv==NULL) td->rv = auxrow;
+      assert(td->rv!=NULL);
       remat_left_mult(td->cv,td->m,td->rv);
     }
     else if(td->op==1) { //right mult
@@ -363,7 +361,6 @@ static void *block_main(void *v)
     // output ready 
     xsem_post(td->out,__LINE__,__FILE__);
   }
-  vector_destroy(auxrow);
   return NULL;
 }
 

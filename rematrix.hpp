@@ -349,7 +349,7 @@ static void clear_NTval(rematrix *m)
 }
 
 // propagate NTvalues up to the terminals and the x array
-// the NTrules array is read in right to left 
+// the NTrules array is read in right to left order
 // used in left multiplication 
 static void propagate_NTval(rematrix *m, vector *x) 
 {
@@ -427,7 +427,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
   return;  
 }
 
-// write error message + extra info and and exit
+// write error message + extra info and exit
 static void quit(const char *msg, int line, const char *file) {
   if(errno==0)  fprintf(stderr,"== %d == %s\n",getpid(), msg);
   else fprintf(stderr,"== %d == %s: %s\n",getpid(), msg,

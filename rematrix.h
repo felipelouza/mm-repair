@@ -54,8 +54,6 @@
   typedef int xmatval;      // type representing a matrix entry with larger precision   
 #endif
 
-typedef double  matval;     // type representing a matrix/vector entry
-typedef double xmatval;     // type representing a matrix entry with larger precision   
 
 // report error message and terminates
 //static void die(const char *s);

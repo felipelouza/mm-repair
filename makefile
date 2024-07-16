@@ -60,7 +60,7 @@ reivmm: remm.c rematrix.hpp vector.h $(MALLOC_FILES)
 remm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV 
 
-# not reparted in the VLDB paper: not an interesting time/space tradeoff for the dataset
+# not reported in the VLDB paper: not an interesting time/space tradeoff for the dataset
 # 32 bit ints for R, ANS for C
 reans32mm: remm.c rematrix.h vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -DUSE_ANS -pthread
