@@ -344,7 +344,8 @@ static void remat_destroy_multipart(rematrix **b,int n)
 }
 
 // execute multithread right multiplication 
-// x has size m_cols, y has size m_rows 
+// x has size m_cols, yv is an array of n vectors of total size m_rows 
+// which are subvectors of the result
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
 {
   // start the block multiplications
@@ -365,14 +366,14 @@ static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, in
 {
   // start the block multiplications
   for(int i=0;i<n;i++) {
-    td[i].rightv = NULL;     // output in the aux vector from block_main() 
+    td[i].rightv = NULL;     // prod output in the aux vector from block_main() 
     td[i].leftv = &yv[i];    // input 
     td[i].op = 0;            // left mult
     xsem_post(td[i].in, __LINE__,__FILE__);
   }
   // clean result vector
   vector_set_zero(x,x->size);
-  // wait for all blocks and sum all the x vectors 
+  // wait for all blocks and sum all the aux vectors 
   for(int i=0;i<n;i++) {
     xsem_wait(td[i].out, __LINE__,__FILE__);
     assert(x->size==td[i].rightv->size);

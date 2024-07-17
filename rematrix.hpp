@@ -48,6 +48,8 @@
 
 
 // the use of float's has not been fully tested 
+//  matval: type representing a matrix/vector entry
+// xmatval: type representing a matrix entry with larger precision (for intermediate results)
 #ifndef INT_VALS 
   #ifndef FLOAT_VALS
   typedef double matval;    // type representing a matrix/vector entry
@@ -60,18 +62,14 @@
   typedef int xmatval;      // type representing a matrix entry with larger precision   
 #endif
 
-typedef double  matval;     // type representing a matrix/vector entry
-typedef double xmatval;     // type representing a matrix entry with larger precision   
 
 // report error message and terminate
 static void quit(const char *msg, int line, const char *file);
 #define die(s) quit((s),__LINE__,__FILE__)
 
 
-
 // include definitions for dense uncompressed vectors 
 #include "vector.h"
-
 
 
 // matrix represented as a re-pair grammar

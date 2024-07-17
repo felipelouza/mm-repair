@@ -7,9 +7,9 @@
  * Overview
  * In the original formulation PageRank requires the left multiplication 
  * of the current rank vector, with entries divided by the outdegree
- * of each node, times the binary adjacency matrix.
+ * of each node times the binary adjacency matrix.
  * 
- * MatRepair does suport left and right matrix-vector multiplication 
+ * MatRepair does support left and right matrix-vector multiplication 
  * but since other compressed matrix formats only support right
  * multiplication we are assuming that the graph matrix has been 
  * transposed (and all self-loops already removed).  
@@ -77,12 +77,12 @@
 
 // input/output data for each thread 
 typedef struct {
-  rematrix *m;   // matrix block
-  vector *rv;    // row vector    (same size as a matrix row)
-  vector *cv;    // column vector (      "               column)
-  int op;        // operation to be performed
-  sem_t *in;     // semaphore for input shared with the main thread
-  sem_t *out;    // semaphore for output shared with the main thread
+  rematrix *m;      // matrix block
+  vector *rightv;   // right vector    (same size as a matrix row, ie m->cols)
+  vector *leftv;    // left vector     (       "           column, ie m->rows)
+  int op;           // operation to be performed
+  sem_t *in;        // semaphore for input, shared with the main thread
+  sem_t *out;       // semaphore for output, shared with the main thread
 } tdata;
 
 static rematrix **remat_create_multipart(int, int,const char *, int blocks);
@@ -91,7 +91,6 @@ static void *block_main(void *v);
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
 static void minHeapify(double v[], int arr[], int n, int i);
 static void kLargest(double v[], int arr[], int n, int k);
-
 
 
 static void usage_and_exit(char *name)
@@ -105,7 +104,6 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-k K           show top K nodes (default: 3)\n\n");
     exit(1);
 }
-
 
 
 int main (int argc, char **argv) { 
@@ -160,8 +158,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Error! Options -d must be in the range [0,1]\n");
     usage_and_exit(argv[0]);
   }
-  
-  
+    
   // virtually get rid of options from the command line 
   optind -=1;
   if (argc-optind != 3) usage_and_exit(argv[0]); 
@@ -334,11 +331,11 @@ int main (int argc, char **argv) {
 }
 
 
-// ------- code unchanged from remm.c ---------
+// ------- code from remm.c with minor changes ---------
 
 // function executed by each thread 
 // wait on a semaphore for a new operation to execute
-// on its given matrix
+// Supported operations are right multiplication or exit.
 static void *block_main(void *v)
 {
   tdata *td = (tdata *) v; 
@@ -347,15 +344,10 @@ static void *block_main(void *v)
     // wait for input 
     xsem_wait(td->in,__LINE__,__FILE__);
     if(td->op<0) break;
-    else if(td->op==0) { //left mult
-      assert(td->cv!=NULL); // the input is a column vector
-      assert(td->rv!=NULL); // output is stored here
-      remat_left_mult(td->cv,td->m,td->rv);
-    }
     else if(td->op==1) { //right mult
-      assert(td->rv!=NULL); // the input is a row vector
-      assert(td->cv!=NULL); // output is stored here 
-      remat_mult(td->m,td->rv,td->cv);
+      assert(td->rightv!=NULL); // the input is a row vector
+      assert(td->leftv!=NULL); // output is stored here 
+      remat_mult(td->m,td->rightv,td->leftv);
     }
     else die("Unknown operation");
     // output ready 
@@ -423,14 +415,15 @@ static void remat_destroy_multipart(rematrix **b,int n)
   free(b);
 }
 
-// note: x is a pointer to the left operand, yz is an array of n vectors 
+// execute multithread right multiplication 
+// is a pointer to the right operand, yv is an array of n vectors 
 // which are subvectors of the result
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
 {
   // start the block multiplications
   for(int i=0;i<n;i++) {
-    td[i].rv = x;      // input  
-    td[i].cv = &yv[i]; // output here 
+    td[i].rightv = x;      // input  
+    td[i].leftv = &yv[i]; // output here 
     td[i].op = 1;      // right mult
     xsem_post(td[i].in, __LINE__,__FILE__);
   }
@@ -440,7 +433,7 @@ static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n)
 }
 
 
-
+// -----------------------------------------------------
 // heap based algorithm for finding the k largest ranks
 // in heap order
 

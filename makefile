@@ -4,17 +4,18 @@ LIB_DIR = ${HOME}/lib
 INC_DIR = ${HOME}/include
 
 # Compilation flags
-CFLAGS=-g -Wall -std=c99 -O3
+CFLAGS=-Wall -std=c99 -g -O3
 CC=gcc 
-CXX_FLAGS=-std=c++17 -g -O2 -msse4.2
+CXX_FLAGS=-std=c++17 -g -O3 -msse4.2
 
 # main executables in this directory
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
-PR_EXECS=pagerank/repagerank pagerank/repagerank_old  pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank pagerank/reans32pagerank
 EXECS=csrvmm re32mm remm reivmm reans32mm $(CONV_EXECS) $(PR_EXECS)
+# executables in pagerank directory
+PR_EXECS=pagerank/repagerank pagerank/repagerank_old  pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank pagerank/reans32pagerank
 
 # comment out this definition to get rid of malloc_count 
-# MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
+#    MALLOC_FLAGS=tools/malloc_count.c -DMALLOC_COUNT -ldl
 # malloc_count dependencies
 ifdef MALLOC_FLAGS
 MALLOC_FILES=tools/malloc_count.c tools/malloc_count.h
@@ -105,4 +106,3 @@ clean:
 	make -C brepair clean
 	make -C ans clean
 	make -C sdsl clean
-
