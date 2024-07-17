@@ -349,12 +349,12 @@ static void *block_main(void *v)
     if(td->op<0) break;
     else if(td->op==0) { //left mult
       assert(td->cv!=NULL); // the input is a column vector
-      assert(td->rv!=NULL);
+      assert(td->rv!=NULL); // output is stored here
       remat_left_mult(td->cv,td->m,td->rv);
     }
     else if(td->op==1) { //right mult
       assert(td->rv!=NULL); // the input is a row vector
-      assert(td->cv!=NULL); // output must be given here 
+      assert(td->cv!=NULL); // output is stored here 
       remat_mult(td->m,td->rv,td->cv);
     }
     else die("Unknown operation");

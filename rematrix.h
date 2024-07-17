@@ -183,7 +183,9 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
 
 
 
-// right multiplication 
+// compute right multiplication: y = m x 
+// right multiply the (rows x cols) matrix m by the
+// vector x of size (cols x 1), obtaining y of size (rows x 1)
 void remat_mult(rematrix *m, vector *x, vector *y)
 {
   if(m->NTrules==NULL) die("Rules array missing (remat_mult)");
