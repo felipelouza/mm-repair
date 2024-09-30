@@ -10,13 +10,11 @@ For techical reasons, to compute PageRank the adjaceny matrix of the web graph h
 
 For example, to compute the pagerank of the [cnr-2000.mtx](https://www.kaggle.com/datasets/wolfram77/graphs-law?select=cnr-2000.mtx) graph the procedure is the following. The command
 ```bash
-
 mtx2rowm cnr-2000.mtx
-
 ```
-generates the files `cnr-2000.mtx.rowm` and `cnr-2000.mtx.ccount`. The former contains the positions of the 3128710 nonzeros in row-major order, while the latter is a binary file of length 1302228 contaning the number of elements per column stored in 32-bit format; the graph has 325557 nodes, so the file has size $1302228 = 325557 \cdot 4$. `mtx2rowm` also generates the file `cnr-2000.mtx.header` which contains some human readable infromation on the matrix (it can be safely deleted). 
+generates the files `cnr-2000.mtx.rowm` and `cnr-2000.mtx.ccount`. The former contains the positions of the 3128710 nonzeros in row-major order, while the latter is a binary file of length 1302228 contaning the number of elements per column stored in 32-bit format; the graph has 325557 nodes, so the file has size $1302228 = 325557 \cdot 4$. `mtx2rowm` also generates the file `cnr-2000.mtx.header` which contains some human readable information on the matrix (it can be safely deleted). 
 
-The output of `mtx2rowm` already provide the detailed instruction for computing the PageRank in a typical setting:
+The output of `mtx2rowm` already provides the detailed instructions for computing the PageRank in a typical setting:
 ```
 Matrix size: 325557
 Number of nonzeros 3128710
@@ -53,4 +51,4 @@ Top 3 ranks:
 Top: 60597 60595 247028
 Elapsed time: 0 secs
 ```
-Type `repagerank` without arguments to get the available command line options. The executables `csrvpagerank` and `re32pagerank` and `reivpagerank` work as `repagerank` (they share the same code) but assumes the compressed matrix is in format CSRV, Re32, and ReIV respectively.  
+Type `repagerank` without arguments to get the available command line options. The executables `csrvpagerank` and `re32pagerank` and `reivpagerank` work as `repagerank` (they share the same code) but assume the compressed matrix is in format CSRV, Re32, and ReIV respectively.  
