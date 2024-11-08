@@ -221,7 +221,7 @@ int main (int argc, char **argv) {
       td[i].out = &tsem_out[i];
       xsem_init(&tsem_in[i],0,0,__LINE__,__FILE__);
       xsem_init(&tsem_out[i],0,0,__LINE__,__FILE__);
-      printf("Creating thread %d\n",i);
+      // printf("Creating thread %d\n",i);
       xpthread_create(&t[i],NULL,&block_main,&td[i],__LINE__,__FILE__);
       set_core(&t[i],i,ncores);
     }
