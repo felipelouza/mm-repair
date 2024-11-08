@@ -57,6 +57,19 @@ void xperror(int en, const char *msg) {
 
 // ----- threads
 
+inline int set_core(pthread_t *thread, int tid, const int ncores) {
+    // Set thread affinity
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(tid % ncores, &cpuset); // Assign thread to a core in a round-robin fashion
+    const int rc = pthread_setaffinity_np(*thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0) {
+        fprintf(stderr, "Error setting thread affinity: %d\n", rc);
+        exit(1);
+    }
+    return rc;
+}
+
 int xpthread_create(pthread_t *thread, const pthread_attr_t *attr,
                           void *(*start_routine) (void *), void *arg, int linea, const char *file) {
   int e = pthread_create(thread, attr, start_routine, arg);

@@ -105,7 +105,6 @@ static void usage_and_exit(char *name)
     exit(1);
 }
 
-
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
@@ -212,6 +211,7 @@ int main (int argc, char **argv) {
   sem_t tsem_out[nblocks];
   
   // initialize thread data
+  const int ncores = sysconf(_SC_NPROCESSORS_ONLN); // Number of available cores              
   if(nblocks>1) {
     // zv entries coincide with those of z  
     zv = vector_split(z,nblocks);
@@ -221,8 +221,14 @@ int main (int argc, char **argv) {
       td[i].out = &tsem_out[i];
       xsem_init(&tsem_in[i],0,0,__LINE__,__FILE__);
       xsem_init(&tsem_out[i],0,0,__LINE__,__FILE__);
+      printf("Creating thread %d\n",i);
       xpthread_create(&t[i],NULL,&block_main,&td[i],__LINE__,__FILE__);
+      set_core(&t[i],i,ncores);
     }
+  }else{
+    pthread_t main_thread = pthread_self(); // Get the identifier of the calling thread
+    const int tid = 0;
+    set_core(&main_thread,tid,ncores);
   }
 
   // x_0 = (1/N ... 1/N)^T (no need to write those values)
