@@ -38,6 +38,7 @@
 #include <time.h>
 #include <complex>
 #include <array>
+#include <cstdint>
 
 #if Typecode==1  // int32_t    
 #define Type int32_t

@@ -18,6 +18,8 @@
 // A byte based ANS entropy coder
 #pragma once
 
+#include <array>
+
 #include "ans_util.hpp"
 #include "interp.hpp"
 
