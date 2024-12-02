@@ -22,6 +22,7 @@
 #include <time.h>
 #include <complex>
 #include <array>
+#include <cstdint>
 
 // bit representing types of input/output values 
 // and general options of the algorithm 
