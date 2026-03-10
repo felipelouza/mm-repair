@@ -23,6 +23,10 @@
 #include <complex>
 #include <array>
 #include <cstdint>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
 
 // bit representing types of input/output values 
 // and general options of the algorithm 
@@ -51,6 +55,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-f             save entries as floats (debug only)\n");
     fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
+    fprintf(stderr,"\t\t-r             reordering the elements within each row (independently)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
@@ -113,7 +118,7 @@ struct ComplexHasher
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0;
+  int verbose=0,vtype=0, reorder=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -121,7 +126,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfinv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfirnv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -134,6 +139,8 @@ int main (int argc, char **argv) {
          vtype |= COMPLEX_INPUT; break;
       case 'n':
          vtype |= NO_COL_ID; break;
+      case 'r':
+        reorder++; break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -213,6 +220,7 @@ int main (int argc, char **argv) {
     while(true) {
       // read csv file
       int e = getline(&buffer,&n,f);
+      vector<uint32_t> row;
       if(e<0) {
         if(ferror(f)) quit("Error reading input file");
         assert(bn==nblocks-1);
@@ -223,6 +231,7 @@ int main (int argc, char **argv) {
         fprintf(stderr,"Warning: more matrix rows than expected\n");
         break;
       } 
+      //std::cout<<buffer<<std::endl;
       // convert text numerical values
       char *s = strtok(buffer,",");
       // loop over entries in current row
@@ -275,8 +284,13 @@ int main (int argc, char **argv) {
             quit("Code larger than 2**30. We are in trouble");
           if (code>maxcode) maxcode=code;
           wcode = (uint32_t) code; // convert to 32 bit value
+
+          //FELIPE
+          row.push_back(wcode);
+          /*
           if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
             quit("Error writing to .vc file");
+          */
         }
         s = strtok(NULL,","); // scan next value
       }
@@ -284,10 +298,30 @@ int main (int argc, char **argv) {
         fprintf(stderr,"Extra value in row %d (one based)\n",r);
         quit("Check input file");
       }
+
       // end row
       wcode=0;
+      /*
       if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
         quit("Error writing to .vc file");
+      */
+
+      if(reorder){
+        vector<uint32_t> tmp(row);
+        sort(tmp.begin(), tmp.end());
+
+        int n=tmp.size(), j=0;
+        for(int i=0; i<n/2; i++){
+          row[j++] = tmp[i];
+          row[j++] = tmp[n-i];
+        }
+        if(n%2!=0) row[j]=tmp[n/2+1];
+      }
+
+      row.push_back(wcode);
+      if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
+        quit("Error writing to .vc file");
+
       wr += 1;
       // if a block is full, stop and start the next 
       if ((wr%block_size) == 0) break; // end while true
