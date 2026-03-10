@@ -313,8 +313,14 @@ int main (int argc, char **argv) {
         int n=tmp.size(), j=0;
         for(int i=0; i<n/2; i++){
           row[j++] = tmp[i];
+          row[j++] = tmp[n/2+i+1];
+        }
+        /*
+        for(int i=0; i<n/2; i++){
+          row[j++] = tmp[i];
           row[j++] = tmp[n-i];
         }
+        */
         if(n%2!=0) row[j]=tmp[n/2+1];
       }
 
