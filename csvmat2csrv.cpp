@@ -55,7 +55,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-f             save entries as floats (debug only)\n");
     fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
-    fprintf(stderr,"\t\t-r             reordering the elements within each row (independently)\n");
+    fprintf(stderr,"\t\t-r opt         reordering the elements within each row (independently)\n");
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
@@ -114,6 +114,33 @@ struct ComplexHasher
   }
 };
 
+void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_freq, int reorder_opt){
+
+  switch (reorder_opt)
+    {
+    case 1:
+        sort(row.begin(), row.end()-1);
+        break;
+    case 2:
+        sort(row.begin(), row.end()-1, std::greater<uint32_t>());
+        break;
+    case 3:
+        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] < wcode_freq[b];});
+        break;
+    case 4:
+        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] > wcode_freq[b];});
+        break;
+    case 5:
+        vector<uint32_t> tmp(row.begin(), row.end()-1);
+        sort(tmp.begin(), tmp.end());
+        int n=tmp.size(), m=(n%2)?n/2+1:n/2, j=0;
+        for(int i=0; i<n/2; i++){
+          row[j++] = tmp[i];
+          row[j++] = tmp[m++];
+        }
+        if(n%2!=0) row[j]=tmp[n/2];
+    }
+}
 
 int main (int argc, char **argv) { 
   extern char *optarg;
@@ -126,7 +153,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfirnv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfir:nv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -140,7 +167,7 @@ int main (int argc, char **argv) {
       case 'n':
          vtype |= NO_COL_ID; break;
       case 'r':
-        reorder++; break;
+        reorder=atoi(optarg); break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -215,6 +242,7 @@ int main (int argc, char **argv) {
   for(int bn=0;bn<nblocks;bn++) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
     else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
+    std::unordered_map<uint32_t, int> wcode_freq;
     FILE *fvc = fopen(fname,"w");
     if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
@@ -231,7 +259,6 @@ int main (int argc, char **argv) {
         fprintf(stderr,"Warning: more matrix rows than expected\n");
         break;
       } 
-      //std::cout<<buffer<<std::endl;
       // convert text numerical values
       char *s = strtok(buffer,",");
       // loop over entries in current row
@@ -268,7 +295,9 @@ int main (int argc, char **argv) {
             if(values.count(v)==0) {
               id = values[v] = dnonz++;
               write_bin(v,vtype,fval);
-            } else id = values[v];
+            } else{
+              id = values[v];
+            }
           } else { // complex entry 
             if(covalues.count(cov)==0) {
               id = covalues[cov] = dnonz++;
@@ -284,6 +313,11 @@ int main (int argc, char **argv) {
             quit("Code larger than 2**30. We are in trouble");
           if (code>maxcode) maxcode=code;
           wcode = (uint32_t) code; // convert to 32 bit value
+
+          if(wcode_freq.find(wcode)==wcode_freq.end()) 
+            wcode_freq[wcode]=1;
+          else
+            wcode_freq[wcode]++;
 
           //FELIPE
           row.push_back(wcode);
@@ -306,24 +340,6 @@ int main (int argc, char **argv) {
         quit("Error writing to .vc file");
       */
 
-      if(reorder){
-        vector<uint32_t> tmp(row);
-        sort(tmp.begin(), tmp.end());
-
-        int n=tmp.size(), j=0;
-        for(int i=0; i<n/2; i++){
-          row[j++] = tmp[i];
-          row[j++] = tmp[n/2+i+1];
-        }
-        /*
-        for(int i=0; i<n/2; i++){
-          row[j++] = tmp[i];
-          row[j++] = tmp[n-i];
-        }
-        */
-        if(n%2!=0) row[j]=tmp[n/2+1];
-      }
-
       row.push_back(wcode);
       if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
         quit("Error writing to .vc file");
@@ -333,8 +349,47 @@ int main (int argc, char **argv) {
       if ((wr%block_size) == 0) break; // end while true
     }
     fclose(fvc);
+  
+    //open and overwrite the file with reordered elements (inside each line)
+    if(reorder){
+    
+      FILE *fvc = fopen(fname,"r+b");
+      if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+
+      vector<uint32_t> row;
+      uint32_t value;
+
+      while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
+        row.push_back(value);
+        if(value==0){
+
+          reorder_line(row, wcode_freq, reorder);
+
+          fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
+          if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
+            quit("Error writing to .vc file");
+          row.clear();
+        }
+        //for(auto &r:row) cout<<"<"<<r<<"> "; cout<<endl;
+      }
+      //cout<<endl;
+      fclose(fvc);
+    }
+    
+    /**
+    fvc = fopen(fname,"rb");
+    if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+    uint32_t value;
+    while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
+        cout<<"<"<<value<<"> "; 
+    cout<<endl;
+    /**/
+
   }
   fclose(fval);
+
+
+
   if(vtype&COMPLEX_INPUT) assert(dnonz==covalues.size());
   else assert(dnonz==values.size());
   if(wr!=rows)

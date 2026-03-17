@@ -65,6 +65,7 @@ def main():
   parser.add_argument('--noconv',  help='skip the CSRV conversion phase (debug only)',action='store_true')
   parser.add_argument('--norepair',  help='stop after the conversion phase (debug only)',action='store_true')
   parser.add_argument('--drv',  help="keep 0s and don't store column id (DRV format, debug only)",action='store_true')
+  parser.add_argument('--reorder',  help='stop after the conversion phase (debug only)',type=int, default=0)
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -156,8 +157,9 @@ def main():
       if args.noconv or (args.y and not files_changed):
         print("---- Skipping conversion bin/csv->csrv")
       else:
-        command = "{exe} {opts} {nocol} {c64} {mfile} {rows} {cols}".format(
+        command = "{exe} {opts} {nocol} {c64} {mfile} {reorder} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,args.csrv_exe), mfile=args.input,
+          reorder = f"-r {args.reorder}",
           rows = args.rows, cols=args.cols, opts = f"-b {args.b}",
           c64 = "-c" if args.complex else "",nocol = "-n" if args.drv else "");
         print("==== Conversion bin/csv->csrv\nCommand:", command)
