@@ -125,10 +125,18 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
         sort(row.begin(), row.end()-1, std::greater<uint32_t>());
         break;
     case 3:
-        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] < wcode_freq[b];});
+        //sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] < wcode_freq[b];});
+        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){
+                                       auto fa = wcode_freq[a]; auto fb = wcode_freq[b];
+                                       if (fa != fb) return fa < fb;
+                                       return a < b;});
         break;
     case 4:
-        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] > wcode_freq[b];});
+        //sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] > wcode_freq[b];});
+        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){
+                                       auto fa = wcode_freq[a]; auto fb = wcode_freq[b];
+                                       if (fa != fb) return fa > fb;
+                                       return a > b;});
         break;
     case 5:
         vector<uint32_t> tmp(row.begin(), row.end()-1);
@@ -376,7 +384,9 @@ int main (int argc, char **argv) {
       fclose(fvc);
     }
     
-    /**
+    /**/
+    for(auto& w:wcode_freq)
+      cout<<"<"<<w.first<<">: "<<w.second<<endl;
     fvc = fopen(fname,"rb");
     if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     uint32_t value;
