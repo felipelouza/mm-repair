@@ -116,6 +116,7 @@ struct ComplexHasher
 
 void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_freq, int reorder_opt){
 
+  uint32_t diff;
   switch (reorder_opt)
     {
     case 1:
@@ -139,6 +140,14 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
                                        return a > b;});
         break;
     case 5:
+        sort(row.begin(), row.end()-1);
+        diff=0;
+        for(int i=0; i<row.size()-1; i++){
+          row[i] -= diff;
+          diff += row[i];
+        }
+        break;
+    case 6:
         vector<uint32_t> tmp(row.begin(), row.end()-1);
         sort(tmp.begin(), tmp.end());
         int n=tmp.size(), m=(n%2)?n/2+1:n/2, j=0;
@@ -147,7 +156,9 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
           row[j++] = tmp[m++];
         }
         if(n%2!=0) row[j]=tmp[n/2];
+        break;
     }
+
 }
 
 int main (int argc, char **argv) { 
@@ -384,7 +395,7 @@ int main (int argc, char **argv) {
       fclose(fvc);
     }
     
-    /**/
+    /**
     for(auto& w:wcode_freq)
       cout<<"<"<<w.first<<">: "<<w.second<<endl;
     fvc = fopen(fname,"rb");
