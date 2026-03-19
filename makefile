@@ -33,6 +33,9 @@ all: $(EXECS) brepair ansf sdsl
 %: %.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< 
 
+csvmat2csrv: csvmat2csrv.cpp
+	$(CXX) $(CXX_FLAGS) -o $@ $< -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -Wno-deprecated-declarations
+
 # special rules for the bin2csrv variants
 bin2csrvf: bin2csrv.cpp
 	$(CXX) $(CXX_FLAGS) -o $@ $< -DTypecode=2

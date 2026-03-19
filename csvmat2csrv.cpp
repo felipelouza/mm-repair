@@ -25,6 +25,9 @@
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <set>
+#include <sdsl/int_vector.hpp>
+#include <sdsl/io.hpp>
 
 using namespace std;
 
@@ -164,7 +167,7 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0, reorder=0;
+  int verbose=0,vtype=0, reorder=0, map_alpha=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -172,7 +175,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfir:nv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfir:mnv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -187,6 +190,8 @@ int main (int argc, char **argv) {
          vtype |= NO_COL_ID; break;
       case 'r':
         reorder=atoi(optarg); break;
+      case 'm':
+        map_alpha++; break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -254,6 +259,7 @@ int main (int argc, char **argv) {
   double re,im;
   // extension of the matrix file .vc or .dv
   const char *mext = (vtype &NO_COL_ID) ? ".dv" : ".vc";
+  const char *mext_sigma = ".wcode";
   
   // main loop reading csv file 
   size_t n=0;
@@ -261,7 +267,11 @@ int main (int argc, char **argv) {
   for(int bn=0;bn<nblocks;bn++) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
     else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
+    //
     std::unordered_map<uint32_t, int> wcode_freq;
+    set<uint32_t> SIGMA;
+    map<uint32_t, uint32_t> rank;
+    //
     FILE *fvc = fopen(fname,"w");
     if(fvc==NULL) quit("Cannot open a .vc/.dv file");
     while(true) {
@@ -359,6 +369,11 @@ int main (int argc, char **argv) {
         quit("Error writing to .vc file");
       */
 
+      //alphabet mapping
+      if(map_alpha){
+        for(auto &r: row) SIGMA.insert(r);
+      }
+
       row.push_back(wcode);
       if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
         quit("Error writing to .vc file");
@@ -370,8 +385,18 @@ int main (int argc, char **argv) {
     fclose(fvc);
   
     //open and overwrite the file with reordered elements (inside each line)
-    if(reorder){
-    
+    if(reorder or map_alpha){
+ 
+      if(reorder) fprintf(stderr,"Reordering option: %d\n", reorder);
+   
+      if(map_alpha){ 
+        std::cout << "Alphabet size = " << *SIGMA.rbegin() << std::endl;
+        std::cout << "(real) Alphabet size = " << SIGMA.size() << std::endl;                   
+        //compress
+        uint32_t r=0;
+        for(auto &c:SIGMA) rank[c]=r++; 
+      }
+
       FILE *fvc = fopen(fname,"r+b");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
 
@@ -382,7 +407,10 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
-          reorder_line(row, wcode_freq, reorder);
+          if(map_alpha){
+            for (int i = 0; i < row.size()-1; i++) row[i] = rank[row[i]];
+          }
+          if(reorder) reorder_line(row, wcode_freq, reorder);
 
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
@@ -393,9 +421,23 @@ int main (int argc, char **argv) {
       }
       //cout<<endl;
       fclose(fvc);
-    }
+
+      if(map_alpha){
     
-    /**
+        char fname[PATH_MAX];
+        if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext_sigma);
+        else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext_sigma);
+
+        uint8_t w = (sdsl::bits::hi(*SIGMA.rbegin())+1);
+        sdsl::int_vector<> SIGMA_iv(SIGMA.size(), 0, w);
+        uint32_t i=0;
+        for(auto &s:SIGMA) SIGMA_iv[i++] = s;
+        sdsl::store_to_file(SIGMA_iv, fname);
+  
+        maxcode = i;
+      }
+    }                                                                                             
+    /**/
     for(auto& w:wcode_freq)
       cout<<"<"<<w.first<<">: "<<w.second<<endl;
     fvc = fopen(fname,"rb");
