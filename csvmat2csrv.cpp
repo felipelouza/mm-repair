@@ -437,7 +437,7 @@ int main (int argc, char **argv) {
         maxcode = i;
       }
     }                                                                                             
-    /**/
+    /**
     for(auto& w:wcode_freq)
       cout<<"<"<<w.first<<">: "<<w.second<<endl;
     fvc = fopen(fname,"rb");
@@ -446,7 +446,7 @@ int main (int argc, char **argv) {
     while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
         cout<<"<"<<value<<"> "; 
     cout<<endl;
-    /**/
+    **/
 
   }
   fclose(fval);
