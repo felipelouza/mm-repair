@@ -158,10 +158,11 @@ def main():
       if args.noconv or (args.y and not files_changed):
         print("---- Skipping conversion bin/csv->csrv")
       else:
+        m = f"-m" if(args.mapping) else ""
         command = "{exe} {opts} {nocol} {c64} {mfile} {reorder} {mapping} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,args.csrv_exe), mfile=args.input,
           reorder = f"-r {args.reorder}",
-          mapping = f"-m",
+          mapping = m,
           rows = args.rows, cols=args.cols, opts = f"-b {args.b}",
           c64 = "-c" if args.complex else "",nocol = "-n" if args.drv else "");
         print("==== Conversion bin/csv->csrv\nCommand:", command)
