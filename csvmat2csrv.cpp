@@ -393,7 +393,7 @@ int main (int argc, char **argv) {
         std::cout << "Alphabet size = " << *SIGMA.rbegin() << std::endl;
         std::cout << "(real) Alphabet size = " << SIGMA.size() << std::endl;                   
         //compress
-        uint32_t r=0;
+        uint32_t r=1;
         for(auto &c:SIGMA) rank[c]=r++; 
       }
 
@@ -428,16 +428,24 @@ int main (int argc, char **argv) {
         if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext_sigma);
         else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext_sigma);
 
+        /*
         uint8_t w = (sdsl::bits::hi(*SIGMA.rbegin())+1);
         sdsl::int_vector<> SIGMA_iv(SIGMA.size(), 0, w);
-        uint32_t i=0;
-        for(auto &s:SIGMA) SIGMA_iv[i++] = s;
+        */
+        sdsl::int_vector<> SIGMA_iv(SIGMA.size(), 0);
+        uint32_t i=0, diff=0;
+        for(auto &s:SIGMA){
+          SIGMA_iv[i] = s-diff;
+          diff+=SIGMA_iv[i];
+          i++;
+        }
+        sdsl::util::bit_compress(SIGMA_iv);
         sdsl::store_to_file(SIGMA_iv, fname);
   
         maxcode = i;
       }
     }                                                                                             
-    /**
+    /**/
     for(auto& w:wcode_freq)
       cout<<"<"<<w.first<<">: "<<w.second<<endl;
     fvc = fopen(fname,"rb");
@@ -446,7 +454,7 @@ int main (int argc, char **argv) {
     while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
         cout<<"<"<<value<<"> "; 
     cout<<endl;
-    **/
+    /**/
 
   }
   fclose(fval);
