@@ -411,10 +411,10 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
+          if(reorder) reorder_line(row, wcode_freq, reorder);
           if(map_alpha){
             for (int i = 0; i < row.size()-1; i++) row[i] = rank[row[i]];
           }
-          if(reorder) reorder_line(row, wcode_freq, reorder);
 
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
