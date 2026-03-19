@@ -58,7 +58,9 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-f             save entries as floats (debug only)\n");
     fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
-    fprintf(stderr,"\t\t-r opt         reordering the elements within each row (independently)\n");
+    fprintf(stderr,"\t\t-r opt         reorder elements within each row (independently)\n");
+    fprintf(stderr,"\t\t-m             map values in string C to [1..wcodes]\n");
+    fprintf(stderr,"\t\t-d             debug prints\n");
     fprintf(stderr,"\t\t-v             verbose\n");
     fprintf(stderr,"The option -c can be combined with either -f or -i,\n");
     fprintf(stderr,"if they are not present each complex entry is represented\n");
@@ -167,7 +169,7 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0, reorder=0, map_alpha=0;
+  int verbose=0,vtype=0, reorder=0, map_alpha=0, debug=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -175,7 +177,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfir:mnv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfir:mdnv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -192,6 +194,8 @@ int main (int argc, char **argv) {
         reorder=atoi(optarg); break;
       case 'm':
         map_alpha++; break;
+      case 'd':
+        debug++; break;
       case 'b':
         nblocks=atoi(optarg); break;
       case '?':
@@ -445,17 +449,17 @@ int main (int argc, char **argv) {
         maxcode = i;
       }
     }                                                                                             
-    /**/
-    for(auto& w:wcode_freq)
-      cout<<"<"<<w.first<<">: "<<w.second<<endl;
-    fvc = fopen(fname,"rb");
-    if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-    uint32_t value;
-    while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
-        cout<<"<"<<value<<"> "; 
-    cout<<endl;
-    /**/
 
+    if(debug){
+      for(auto& w:wcode_freq)
+        cout<<"<"<<w.first<<">: "<<w.second<<endl;
+      fvc = fopen(fname,"rb");
+      if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+      uint32_t value;
+      while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
+          cout<<"<"<<value<<"> "; 
+      cout<<endl;
+    }
   }
   fclose(fval);
 
