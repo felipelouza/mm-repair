@@ -28,6 +28,8 @@
 #include <set>
 #include <sdsl/int_vector.hpp>
 #include <sdsl/io.hpp>
+#include <sdsl/bit_vectors.hpp>
+#include <sdsl/sd_vector.hpp>
 
 using namespace std;
 
@@ -59,6 +61,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
     fprintf(stderr,"\t\t-r opt         reorder elements within each row (independently)\n");
+    fprintf(stderr,"\t\t-p opt         partition S into A and B (according to some criteria)\n");
     fprintf(stderr,"\t\t-m             map values in string C to [1..wcodes]\n");
     fprintf(stderr,"\t\t-d             debug prints\n");
     fprintf(stderr,"\t\t-v             verbose\n");
@@ -169,7 +172,7 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0, reorder=0, map_alpha=0, debug=0;
+  int verbose=0,vtype=0, reorder=0, map_alpha=0, partition=0, debug=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -177,7 +180,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfir:mdnv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfir:p:mdnv")) != -1) {
     switch (c) 
       {
       case 'v':
@@ -194,6 +197,8 @@ int main (int argc, char **argv) {
         reorder=atoi(optarg); break;
       case 'm':
         map_alpha++; break;
+      case 'p':
+        partition=atoi(optarg); break;
       case 'd':
         debug++; break;
       case 'b':
@@ -399,6 +404,14 @@ int main (int argc, char **argv) {
         //compress
         uint32_t r=1;
         for(auto &c:SIGMA) rank[c]=r++; 
+
+        //update wcode_freq with mapped codes
+        std::unordered_map<uint32_t, int> wcode_tmp(wcode_freq);
+        wcode_freq.clear();
+        for(auto &c: wcode_tmp){
+          wcode_freq[rank[c.first]]=c.second;
+        }
+        wcode_tmp.clear();
       }
 
       FILE *fvc = fopen(fname,"r+b");
@@ -460,8 +473,127 @@ int main (int argc, char **argv) {
           cout<<"<"<<value<<"> "; 
       cout<<endl;
     }
+    
+    /**/
+    if(partition){
+
+      fvc = fopen(fname,"rb");
+      if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+      
+      //open_file()
+      char fname_A[PATH_MAX];
+      if(nblocks==1) snprintf(fname_A,PATH_MAX,"%s.%c%s",argv[1],'A', mext);
+      else snprintf(fname_A,PATH_MAX,"%s.%d.%d.%c%s",argv[1],nblocks,bn, 'A',mext);
+      FILE *fvc_A = fopen(fname_A,"w");
+      if(fvc_A==NULL) quit("Cannot open a .vc/.dv file");
+
+      //open_file()
+      char fname_B[PATH_MAX];
+      if(nblocks==1) snprintf(fname_B,PATH_MAX,"%s.%c%s",argv[1],'B', mext);
+      else snprintf(fname_B,PATH_MAX,"%s.%d.%d.%c%s",argv[1],nblocks,bn, 'B',mext);
+      /*
+      FILE *fvc_B = fopen(fname_B,"w");
+      if(fvc_B==NULL) quit("Cannot open a .vc/.dv file");
+      */
+
+
+      vector<uint32_t> row;
+      uint32_t value;
+
+      vector<uint32_t> row_B;
+      int zeros = 0;
+
+      vector<uint32_t> ones;
+
+      if(debug) cout<<"A = ";
+
+      while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
+        row.push_back(value);
+        if(value==0){
+
+          //split S
+          vector<uint32_t> row_A;
+          //vector<uint32_t> row_B;
+          
+          for(auto it=row.begin(); it != std::prev(row.end()); it++){
+            auto r = *it;
+            if(wcode_freq[r]>=partition) row_A.push_back(r);
+            else{
+              if(zeros){//RLE (only) the zeros
+                row_B.push_back(0);
+                row_B.push_back(zeros);
+                zeros=0;
+              }
+              row_B.push_back(r);
+            }
+          }
+          row_A.push_back(*row.rbegin());
+          zeros++;
+          //row_B.push_back(*row.rbegin());
+          if(row_B.size()) ones.push_back(row_B.size()-1);
+          else ones.push_back(0);
+          
+          if(fwrite(row_A.data(), sizeof(uint32_t), row_A.size(), fvc_A)!=row_A.size())
+            quit("Error writing to .A.vc file");
+          /*
+          if(fwrite(row_B.data(), sizeof(uint32_t), row_B.size(), fvc_B)!=row_B.size())
+            quit("Error writing to .B.vc file");
+          */
+          
+          if(debug){
+            //cout<<"###"<<endl; 
+          //  for(auto &r:row)   cout<<"<"<<r<<"> "; cout<<" = ";
+            for(auto &r:row_A) cout<<"<"<<r<<"> "; 
+         //      for(auto &r:row_B) cout<<"<"<<r<<"> "; cout<<endl;
+          }
+          row.clear();
+        }
+      }      
+
+      if(zeros){//RLE (only) the zeros
+        row_B.push_back(0);
+        row_B.push_back(zeros);
+      }
+
+      fclose(fvc_A);
+      if(debug){
+        cout<<endl;
+        cout<<"B = ";
+        for(auto &r:row_B) cout<<"<"<<r<<"> "; cout<<endl;
+        //cout<<"ones = "; 
+        //for(auto &z:ones) cout<<z<<", "; cout<<endl;
+      }
+
+      /*
+      sdsl::sd_vector_builder builder(row_B.size(), ones.size());
+      for(auto &pos: ones) builder.set(pos);
+  
+      sdsl::sd_vector<> sd(builder);
+
+      if(debug){
+        for (size_t i = 0; i < sd.size(); i++) cout<<sd[i]; cout<<endl;
+      }
+
+      */
+      //ofstream out(fname_B, ios::binary);
+      //sd.serialize(out);
+
+      sdsl::int_vector<> row_B_iv(row_B.size(), 0);
+      int i=0;
+      for(auto &r:row_B) 
+        //if(r) 
+          row_B_iv[i++]=r;
+
+      sdsl::util::bit_compress(row_B_iv);
+      sdsl::store_to_file(row_B_iv, fname_B);
+      //row_B_iv.serialize(out);
+      //out.close();
+      //fclose(fvc_B);
+    }
   }
   fclose(fval);
+
+  if(debug) cout<<"##"<<endl;
 
 
 
