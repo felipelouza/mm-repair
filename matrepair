@@ -67,7 +67,7 @@ def main():
   parser.add_argument('--drv',  help="keep 0s and don't store column id (DRV format, debug only)",action='store_true')
   parser.add_argument('--reorder',  help='stop after the conversion phase (debug only)',type=int, default=0)
   parser.add_argument('--mapping',  help='alphabet mapping (crsv)',action='store_true')
-  parser.add_argument('--partition',  help='partition string S into A and B (crsv)',type=int, default=0)
+  parser.add_argument('--split',  help='split string S into A and B (crsv)',type=int, default=0)
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -124,9 +124,11 @@ def main():
     args.vc_ext = ".vc"   # csrv: no 0s and entries encode also columns id 
     args.vc_A_ext = ".A.vc"   
     args.vc_B_ext = ".B.vc"   
+    args.vc_A_ext_wcode = ".A.wcode"   
+    args.vc_B_ext_wcode = ".B.wcode"   
     args.name = "crsv"
 
-  if(args.partition):
+  if(args.split):
     args.vc_ext = args.vc_A_ext
   
   # init time counters 
@@ -165,12 +167,12 @@ def main():
         print("---- Skipping conversion bin/csv->csrv")
       else:
         m = f"-m" if(args.mapping) else ""
-        p = f"-p {args.partition}" if(args.partition) else ""
-        command = "{exe} {opts} {nocol} {c64} {mfile} {reorder} {mapping} {partition} {rows} {cols}".format(
+        s = f"-s {args.split}" if(args.split) else ""
+        command = "{exe} {opts} {nocol} {c64} {mfile} {reorder} {mapping} {split} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,args.csrv_exe), mfile=args.input,
           reorder = f"-r {args.reorder}",
           mapping = m,
-          partition = p,
+          split = s,
           rows = args.rows, cols=args.cols, opts = f"-b {args.b}",
           c64 = "-c" if args.complex else "",nocol = "-n" if args.drv else "");
         print("==== Conversion bin/csv->csrv\nCommand:", command)
@@ -282,13 +284,19 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   valsize = os.path.getsize(args.input + args.val_ext)
   vcsize = 0
   vc_B_size = 0
-  if args.partition: 
+  if args.split: 
       vc_B_size = getsize_multipart(args.input,args.b,args.vc_B_ext) 
   vcsize += getsize_multipart(args.input,args.b,args.vc_ext) 
   wsize = 0
-  if args.mapping: 
+  w_A_size = 0
+  w_B_size = 0
+  if args.mapping and not args.split: 
       wsize = getsize_multipart(args.input, args.b, ".wcode")
       print(" >> wcode: {0} bytes".format(wsize))  
+  if args.split:
+      w_A_size += getsize_multipart(args.input,args.b,args.vc_A_ext_wcode) 
+      w_B_size += getsize_multipart(args.input,args.b,args.vc_B_ext_wcode) 
+      print(" >> wcode: {0} bytes".format(w_A_size+w_B_size))  
   nonzero = vcsize//4 - args.rows
   isize = (bits(valsize//args.entry_size)*args.rows*args.cols)//8
   print(" >> matrix log(alpha)xNumEntries size:",isize, "bytes")  
@@ -297,27 +305,28 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> matrix dense size:",isize, "bytes")
   print(" >> total number of nonzero: {0} ({1:.2f}%)".format(nonzero,100*nonzero/(args.rows*args.cols)))
   print(" >> number of distinct nonzero: {0}".format(valsize//args.entry_size))
-  psize = valsize+vcsize + wsize
+  psize = valsize+vcsize
   if args.bool: print(f" >> {args.name.upper()}  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> {args.name.upper()}  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   #FELIPE
-  if args.partition: 
+  if args.split: 
       print(f" >> B\t  size: {vc_B_size} bytes  ({100*vc_B_size/isize:.2f}%)")
+  wsize +=  w_A_size + w_B_size +vc_B_size
   csize = getsize_multipart(args.input,args.b,args.vc_ext+".C") 
   rsize = getsize_multipart(args.input,args.b,args.vc_ext+".R") 
-  psize = valsize + csize+rsize + wsize + vc_B_size
+  psize = valsize + csize+rsize + wsize 
   if args.bool: print(f" >> RE32  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> RE32  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   csizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".C.iv") 
   rsizeiv = getsize_multipart(args.input,args.b,args.vc_ext+".R.iv") 
-  psize = valsize + csizeiv+rsizeiv + wsize + vc_B_size
+  psize = valsize + csizeiv+rsizeiv + wsize 
   if args.bool: print(f" >> REIV  size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> REIV  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   ans_csize = getsize_multipart(args.input,args.b,args.vc_ext+".C.ansf.1")
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  psize = valsize+ans_csize+rsizeiv + wsize+ vc_B_size
+  psize = valsize+ans_csize+rsizeiv + wsize
   if args.bool: print(f" >> REANS size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> REANS size: {psize} bytes  ({100*psize/isize:.2f}%)")
 
