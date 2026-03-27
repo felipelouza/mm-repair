@@ -592,12 +592,19 @@ int main (int argc, char **argv) {
         fclose(fvc);
       }
 
+      int first_zero=0;
       //iv compress string B
       {
         fvc = fopen(fname_B,"rb");
         if(fvc==NULL) quit("Cannot open a .vc/.dv file");
 
-        uint32_t zeros = 0, diff=0;
+
+        fread(&value, sizeof(uint32_t), 1, fvc);
+        if(value==0) first_zero++;
+        fseek(fvc, 0, SEEK_SET);
+
+
+        uint32_t zeros = 0, diff=0, nzeros=0;
         while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
           if(value){
             if(zeros){//RLE (only) the zeros
@@ -605,29 +612,96 @@ int main (int argc, char **argv) {
               row.push_back(zeros);
               zeros=0;
               diff=0;
+              nzeros++;
             }
             row.push_back(value-diff);
             diff+=value-diff;
           }
-          else zeros++;
+          else{
+            zeros++;
+          }
         }
         fclose(fvc);
         if(zeros){//RLE (only) the zeros
           row.push_back(0);
           row.push_back(zeros);
+          nzeros++;
         }
-
+        
+        if(debug){
+          cout<<"B (rle) = ";
+          for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
+        }
+        /*
         sdsl::int_vector<> row_iv(row.size(), 0);
         uint32_t i=0;
-        for(auto &r:row) row_iv[i++]=r;
+        for(auto &v:row) row_iv[i++]=v;
         sdsl::util::bit_compress(row_iv);
         sdsl::store_to_file(row_iv, fname_B);
+        */
+        cout<<"nzeros = "<<nzeros<<endl;
+
+        sdsl::int_vector<> row_iv_1(nzeros-first_zero, 0);
+        sdsl::int_vector<> row_iv_2(row.size()-(nzeros-first_zero)-nzeros, 0);
+        sdsl::int_vector<> row_iv_3(nzeros, 0);
+        uint32_t i=0, j=0, k=0;
+        bool first=true, rle=false;
+        for(auto &v:row){
+          if(not first and not rle){
+            row_iv_2[j++]=v;
+            if(v==0) rle=true;
+          }
+          else if(first){
+            if(v==0){
+              row_iv_2[j++]=v;
+               rle=true;
+            }
+            else{
+              row_iv_1[i++]=v;
+            }
+              first=false;
+          }
+          else if(rle){
+            row_iv_3[k++]=v;
+            rle=false;
+            first=true;
+          }
+        }
+
+        sdsl::util::bit_compress(row_iv_1);
+        sdsl::util::bit_compress(row_iv_2);
+        sdsl::util::bit_compress(row_iv_3);
+
+        std::ofstream out(fname_B, std::ios::binary);
+
+        row_iv_1.serialize(out);
+        row_iv_2.serialize(out);
+        row_iv_3.serialize(out);
+
+        out.close();
       }
 
       if(debug){
-         sdsl::int_vector<> row_iv;
-         sdsl::load_from_file(row_iv, fname_B);
-         for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+        /*
+           sdsl::int_vector<> row_iv;
+           sdsl::load_from_file(row_iv, fname_B);
+           for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+           */
+        std::ifstream in(fname_B, std::ios::binary);
+        sdsl::int_vector<> v1, v2, v3;
+
+        v1.load(in);
+        v2.load(in);
+        v3.load(in);
+
+        cout<<"B1 = ";
+        for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
+        cout<<"B2 = ";
+        for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
+        cout<<"B3 = ";
+        for(auto v:v3) cout<<"<"<<v<<"> "; cout<<endl;
+
+        in.close();
       }
     }
   }
