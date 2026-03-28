@@ -616,7 +616,7 @@ int main (int argc, char **argv) {
         if(value==0) first_zero++;
         fseek(fvc, 0, SEEK_SET);
 
-        if(!rle_zeros){
+        if(not rle_zeros){
           uint32_t diff=0, nzeros=0;
           while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
             if(value){
@@ -632,15 +632,48 @@ int main (int argc, char **argv) {
           fclose(fvc);
 
           if(debug){
-            cout<<"B (rle) = ";
+            cout<<"B (gap) = ";
             for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
           }
 
-          sdsl::int_vector<> row_iv(row.size(), 0);
-          uint32_t i=0;
-          for(auto &v:row) row_iv[i++]=v;
-          sdsl::util::bit_compress(row_iv);
-          sdsl::store_to_file(row_iv, fname_B);
+             sdsl::int_vector<> row_iv(row.size(), 0);
+             uint32_t i=0;
+             for(auto &v:row) row_iv[i++]=v;
+             sdsl::util::bit_compress(row_iv);
+             sdsl::store_to_file(row_iv, fname_B);
+
+          /*
+          sdsl::int_vector<> row_iv_1(wr_modified, 0);
+          sdsl::int_vector<> row_iv_2(row.size()-wr_modified, 0);
+
+          uint32_t i=0, j=0, k=0;
+          bool first=true;
+          for(auto &v:row){
+            if(not first and v!=0){
+              row_iv_2[j++]=v;
+            }
+            else{
+              if(v==0){
+                row_iv_2[j++]=v;
+                first=true;
+              }
+              else{
+                row_iv_1[i++]=v;
+                first=false;
+              }
+            }
+          }
+
+          sdsl::util::bit_compress(row_iv_1);
+          sdsl::util::bit_compress(row_iv_2);
+
+          std::ofstream out(fname_B, std::ios::binary);
+
+          row_iv_1.serialize(out);
+          row_iv_2.serialize(out);
+
+          out.close();
+             */
         }
         else{
           uint32_t zeros = 0, diff=0, nzeros=0;
@@ -717,9 +750,23 @@ int main (int argc, char **argv) {
       if(debug){
 
         if(not rle_zeros){
-          sdsl::int_vector<> row_iv;
-          sdsl::load_from_file(row_iv, fname_B);
-          for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+          /*
+             sdsl::int_vector<> row_iv;
+             sdsl::load_from_file(row_iv, fname_B);
+             for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+             */
+          std::ifstream in(fname_B, std::ios::binary);
+          sdsl::int_vector<> v1, v2;
+
+          v1.load(in);
+          v2.load(in);
+
+          cout<<"B1 = ";
+          for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"B2 = ";
+          for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
+
+          in.close();
         }
         else{
 
