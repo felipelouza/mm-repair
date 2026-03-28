@@ -636,13 +636,14 @@ int main (int argc, char **argv) {
             for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
           }
 
+          /*
              sdsl::int_vector<> row_iv(row.size(), 0);
              uint32_t i=0;
              for(auto &v:row) row_iv[i++]=v;
              sdsl::util::bit_compress(row_iv);
              sdsl::store_to_file(row_iv, fname_B);
+             */
 
-          /*
           sdsl::int_vector<> row_iv_1(wr_modified, 0);
           sdsl::int_vector<> row_iv_2(row.size()-wr_modified, 0);
 
@@ -673,7 +674,6 @@ int main (int argc, char **argv) {
           row_iv_2.serialize(out);
 
           out.close();
-             */
         }
         else{
           uint32_t zeros = 0, diff=0, nzeros=0;
