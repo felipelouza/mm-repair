@@ -124,8 +124,7 @@ def main():
     args.vc_ext = ".vc"   # csrv: no 0s and entries encode also columns id 
     args.vc_A_ext = ".A.vc"   
     args.vc_B_ext = ".B.vc"   
-    args.vc_A_ext_wcode = ".A.wcode"   
-    args.vc_B_ext_wcode = ".B.wcode"   
+    args.vc_B_ext_ans = ".B.vc.ansf.1"   
     args.name = "crsv"
 
   if(args.split):
@@ -249,6 +248,31 @@ def main():
           print("==== Ans-fold compression\nCommand:", command)
           if(execute_command(command,logfile)!=True):
            sys.exit(6)
+          #
+          if args.mapping and not args.split: 
+            command = "{exe} {mfile}.wcode ".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            print("==== Ans-fold compression\nCommand:", command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
+          #
+          if args.split: 
+            command = "{exe} {mfile}.A.wcode ".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            print("==== Ans-fold compression\nCommand:", command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
+            command = "{exe} {mfile}.B.wcode ".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            print("==== Ans-fold compression\nCommand:", command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
+            command = "{exe} {mfile}.B.vc".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            print("==== Ans-fold compression\nCommand:", command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
+          #
           ansf_time += time.time()-start
           print("Ans-fold time: {0:.4f}".format(ansf_time))
       # end for on row blocks
@@ -284,8 +308,10 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   valsize = os.path.getsize(args.input + args.val_ext)
   vcsize = 0
   vc_B_size = 0
+  vc_B_size_ans = 0
   if args.split: 
       vc_B_size = getsize_multipart(args.input,args.b,args.vc_B_ext) 
+      vc_B_size_ans = getsize_multipart(args.input,args.b,args.vc_B_ext_ans) 
   vcsize += getsize_multipart(args.input,args.b,args.vc_ext) 
   wsize = 0
   w_A_size = 0
@@ -294,9 +320,21 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
       wsize = getsize_multipart(args.input, args.b, ".wcode")
       print(" >> wcode: {0} bytes".format(wsize))  
   if args.split:
-      w_A_size += getsize_multipart(args.input,args.b,args.vc_A_ext_wcode) 
-      w_B_size += getsize_multipart(args.input,args.b,args.vc_B_ext_wcode) 
+      w_A_size += getsize_multipart(args.input,args.b,".A.wcode") 
+      w_B_size += getsize_multipart(args.input,args.b,".B.wcode") 
       print(" >> wcode: {0} bytes".format(w_A_size+w_B_size))  
+  #
+  wsize_ans = 0
+  w_A_size_ans = 0
+  w_B_size_ans = 0
+  if args.mapping and not args.split: 
+      wsize_ans = getsize_multipart(args.input, args.b, ".wcode.ansf.1")
+      print(" >> wcode_ans: {0} bytes".format(wsize_ans))  
+  if args.split:
+      w_A_size_ans += getsize_multipart(args.input,args.b,".A.wcode.ansf.1") 
+      w_B_size_ans += getsize_multipart(args.input,args.b,".B.wcode.ansf.1") 
+      print(" >> wcode_ans: {0} bytes".format(w_A_size_ans+w_B_size_ans))  
+  #
   nonzero = vcsize//4 - args.rows
   isize = (bits(valsize//args.entry_size)*args.rows*args.cols)//8
   print(" >> matrix log(alpha)xNumEntries size:",isize, "bytes")  
@@ -311,7 +349,9 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   #FELIPE
   if args.split: 
       print(f" >> B\t  size: {vc_B_size} bytes  ({100*vc_B_size/isize:.2f}%)")
-  wsize +=  w_A_size + w_B_size +vc_B_size
+  if args.split: 
+      print(f" >> B_ans size: {vc_B_size_ans} bytes  ({100*vc_B_size_ans/isize:.2f}%)")
+  wsize +=  w_A_size + w_B_size +vc_B_size_ans
   csize = getsize_multipart(args.input,args.b,args.vc_ext+".C") 
   rsize = getsize_multipart(args.input,args.b,args.vc_ext+".R") 
   psize = valsize + csize+rsize + wsize 
@@ -326,7 +366,8 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  psize = valsize+ans_csize+rsizeiv + wsize
+  wsize_ans +=  w_A_size_ans + w_B_size_ans + vc_B_size_ans
+  psize = valsize+ans_csize+rsizeiv + wsize_ans
   if args.bool: print(f" >> REANS size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> REANS size: {psize} bytes  ({100*psize/isize:.2f}%)")
 
