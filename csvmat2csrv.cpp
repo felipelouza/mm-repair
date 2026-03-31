@@ -222,7 +222,7 @@ unsigned long map_alphabet(char *fname, char *fname_alpha, int debug){
   map<uint32_t, uint32_t> rank;
   for(auto &c:SIGMA) rank[c]=r++; 
 
-  if(debug) for(auto &c:SIGMA) cout<<c<<": "<<rank[c]<<endl; 
+  if(debug==2) for(auto &c:SIGMA) cout<<c<<": "<<rank[c]<<endl; 
 
   FILE *fvc = fopen(fname,"r+b");
   if(fvc==NULL) quit("Cannot open a .vc/.dv file");
@@ -365,7 +365,7 @@ int main (int argc, char **argv) {
   const char *mext_wcode = ".wcode";
 
   // main loop reading csv file 
-  size_t n=0;
+  size_t n=0, n_A1=0, n_A2=0;
   char *buffer=NULL;
   for(int bn=0;bn<nblocks;bn++) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
@@ -516,6 +516,7 @@ int main (int argc, char **argv) {
       fvc = fopen(fname,"rb");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
       uint32_t value;
+      cout<<"A = ";
       while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
         cout<<"<"<<value<<"> "; 
       cout<<endl;
@@ -527,7 +528,8 @@ int main (int argc, char **argv) {
       //open the file and get wcode_freq
       unordered_map<uint32_t, int> wcode_freq;
       get_wcode_freq(fname, wcode_freq);
-      if(debug)
+
+      if(debug==2)
         for(auto& w:wcode_freq) cout<<"<"<<w.first<<">: "<<w.second<<endl;
 
       fvc = fopen(fname,"rb");
@@ -553,25 +555,30 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
-          vector<uint32_t> row_A, row_B;
+          vector<uint32_t> row_A1, row_A2;
           for(auto it=row.begin(); it != std::prev(row.end()); it++){
             auto r = *it;
-            if(wcode_freq[r]>split) row_A.push_back(r);
+            if(wcode_freq[r]>split) row_A1.push_back(r);
             else{
-              row_B.push_back(r);
+              row_A2.push_back(r);
             }
           }
-          row_A.push_back(*row.rbegin());
-          //gap-encode below
-          if(row_B.size()>0){
-            wr_modified++;
-            sort(row_B.begin(), row_B.end());
-          }
-          row_B.push_back(*row.rbegin());
 
-          if(fwrite(row_A.data(), sizeof(uint32_t), row_A.size(), fvc_A1)!=row_A.size())
+          n_A1 += row_A1.size();
+          n_A2 += row_A2.size();
+
+          row_A1.push_back(*row.rbegin());
+          //gap-encode below
+          if(row_A2.size()>0){
+            wr_modified++;
+            sort(row_A2.begin(), row_A2.end());
+          }
+          row_A2.push_back(*row.rbegin());
+
+
+          if(fwrite(row_A1.data(), sizeof(uint32_t), row_A1.size(), fvc_A1)!=row_A1.size())
             quit("Error writing to .A1.vc file");
-          if(fwrite(row_B.data(), sizeof(uint32_t), row_B.size(), fvc_A2)!=row_B.size())
+          if(fwrite(row_A2.data(), sizeof(uint32_t), row_A2.size(), fvc_A2)!=row_A2.size())
              quit("Error writing to .A2.vc file");
              
           row.clear();
@@ -637,10 +644,12 @@ int main (int argc, char **argv) {
         }
         fclose(fvc);
 
+        /*
         if(debug){
-          cout<<"A2 (gap) = ";
+          cout<<"A2 (delta) = ";
           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
         }
+        */
         
         #if ENCODE_32
           fvc = fopen(fname_A2,"wb");
@@ -718,10 +727,12 @@ int main (int argc, char **argv) {
           nzeros++;
         }
 
+        /*
         if(debug){
           cout<<"A2 (rle) = ";
           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
         }
+        */
 
         #if ENCODE_32
           fvc = fopen(fname_A2,"wb");
@@ -787,7 +798,7 @@ int main (int argc, char **argv) {
             fvc = fopen(fname_A2,"rb");
             if(fvc==NULL) quit("Cannot open a .vc/.dv file");
             uint32_t v;
-            cout<<"A2 = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+            cout<<"A2 (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
             fclose(fvc);
           #else
             #if SPLIT_A2 == 0
@@ -812,7 +823,7 @@ int main (int argc, char **argv) {
             fvc = fopen(fname_A2,"rb");
             if(fvc==NULL) quit("Cannot open a .vc/.dv file");
             uint32_t v;
-            cout<<"A2 = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+            cout<<"A2 (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
             fclose(fvc);
           #else
             #if SPLIT_A2 == 0
@@ -840,8 +851,6 @@ int main (int argc, char **argv) {
 
   if(debug) cout<<"##"<<endl;
 
-
-
   if(vtype&COMPLEX_INPUT) assert(dnonz==covalues.size());
   else assert(dnonz==values.size());
   if(wr!=rows)
@@ -850,6 +859,11 @@ int main (int argc, char **argv) {
   fprintf(stderr,"Number of nonzeros: %ld   Nonzero ratio: %.4f\n", nonz, ((double) nonz/(wr*cols)));  
   fprintf(stderr, "%zd distinct nonzeros values\n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
+  if(split){
+    fprintf(stderr,"A1.size(): %d\t %.2lf\%\n",n_A1, (double)(n_A1)/(n_A1+n_A2)*100.0);  
+    fprintf(stderr,"A2.size(): %d\t %.2lf\%\n",n_A2, (double)(n_A2)/(n_A1+n_A2)*100.0);  
+  }
+
   fprintf(stderr,"==== Done\n");
 
   return EXIT_SUCCESS;
