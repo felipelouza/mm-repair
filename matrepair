@@ -67,7 +67,7 @@ def main():
   parser.add_argument('--drv',  help="keep 0s and don't store column id (DRV format, debug only)",action='store_true')
   parser.add_argument('--reorder',  help='stop after the conversion phase (debug only)',type=int, default=0)
   parser.add_argument('--mapping',  help='alphabet mapping (crsv)',action='store_true')
-  parser.add_argument('--split',  help='split string S into A and B (crsv)',type=int, default=0)
+  parser.add_argument('--split',  help='split string S into A1 and A2 (crsv)',type=int, default=0)
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -122,9 +122,9 @@ def main():
     args.val_ext += "d"
   else:          
     args.vc_ext = ".vc"   # csrv: no 0s and entries encode also columns id 
-    args.vc_A_ext = ".A.vc"   
-    args.vc_B_ext = ".B.vc"   
-    args.vc_B_ext_ans = ".B.vc.ansf.1"   
+    args.vc_A_ext = ".A1.vc"   
+    args.vc_A2_ext = ".A2.vc"   
+    args.vc_A2_ext_ans = ".A2.vc.ansf.1"   
     args.name = "crsv"
 
   if(args.split):
@@ -252,25 +252,25 @@ def main():
           if args.mapping and not args.split: 
             command = "{exe} {mfile}.wcode ".format(ext=args.vc_ext,
                       exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-            print("==== Ans-fold compression\nCommand:", command)
+            print("Command:",command)
             if(execute_command(command,logfile)!=True):
              sys.exit(6)
           #
           if args.split: 
-            command = "{exe} {mfile}.B.vc".format(ext=args.vc_ext,
+            command = "{exe} {mfile}.A2.vc".format(ext=args.vc_ext,
                       exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-            print("==== Ans-fold compression\nCommand:", command)
+            print("Command:",command)
             if(execute_command(command,logfile)!=True):
              sys.exit(6)
             if args.mapping:
-              command = "{exe} {mfile}.A.wcode ".format(ext=args.vc_ext,
+              command = "{exe} {mfile}.A1.wcode ".format(ext=args.vc_ext,
                         exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-              print("==== Ans-fold compression\nCommand:", command)
+              print("Command:",command)
               if(execute_command(command,logfile)!=True):
                sys.exit(6)
-              command = "{exe} {mfile}.B.wcode ".format(ext=args.vc_ext,
+              command = "{exe} {mfile}.A2.wcode ".format(ext=args.vc_ext,
                         exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-              print("==== Ans-fold compression\nCommand:", command)
+              print("Command:",command)
               if(execute_command(command,logfile)!=True):
                sys.exit(6)
           #
@@ -308,17 +308,17 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   print(" >> total time: {0:.2f}".format(ttot))  
   valsize = os.path.getsize(args.input + args.val_ext)
   vcsize = 0
-  vc_B_size = 0
-  vc_B_size_ans = 0
+  vc_A2_size = 0
+  vc_A2_size_ans = 0
   if args.split: 
-      vc_B_size = getsize_multipart(args.input,args.b,args.vc_B_ext) 
-      vc_B_size_ans = getsize_multipart(args.input,args.b,args.vc_B_ext_ans) 
+      vc_A2_size = getsize_multipart(args.input,args.b,args.vc_A2_ext) 
+      vc_A2_size_ans = getsize_multipart(args.input,args.b,args.vc_A2_ext_ans) 
   vcsize += getsize_multipart(args.input,args.b,args.vc_ext) 
   wsize = 0
   if args.mapping:
       if args.split: 
-        wsize += getsize_multipart(args.input,args.b,".A.wcode") 
-        wsize += getsize_multipart(args.input,args.b,".B.wcode") 
+        wsize += getsize_multipart(args.input,args.b,".A1.wcode") 
+        wsize += getsize_multipart(args.input,args.b,".A2.wcode") 
       else:
         wsize += getsize_multipart(args.input, args.b, ".wcode")
       print(" >> wcode: {0} bytes".format(wsize))  
@@ -326,8 +326,8 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   wsize_ans = 0
   if args.mapping:
       if args.split: 
-        wsize_ans += getsize_multipart(args.input,args.b,".A.wcode.ansf.1") 
-        wsize_ans += getsize_multipart(args.input,args.b,".B.wcode.ansf.1") 
+        wsize_ans += getsize_multipart(args.input,args.b,".A1.wcode.ansf.1") 
+        wsize_ans += getsize_multipart(args.input,args.b,".A2.wcode.ansf.1") 
       else:
         wsize_ans += getsize_multipart(args.input, args.b, ".wcode.ansf.1")
       print(" >> wcode_ans: {0} bytes".format(wsize_ans))  
@@ -345,10 +345,10 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   else:         print(f" >> {args.name.upper()}  size: {psize} bytes  ({100*psize/isize:.2f}%)")
   #FELIPE
   if args.split: 
-      print(f" >> B\t  size: {vc_B_size} bytes  ({100*vc_B_size/isize:.2f}%)")
+      print(f" >> A2\t  size: {vc_A2_size} bytes  ({100*vc_A2_size/isize:.2f}%)")
   if args.split: 
-      print(f" >> B_ans size: {vc_B_size_ans} bytes  ({100*vc_B_size_ans/isize:.2f}%)")
-  wsize +=  vc_B_size_ans
+      print(f" >> A2_ans size: {vc_A2_size_ans} bytes  ({100*vc_A2_size_ans/isize:.2f}%)")
+  wsize +=  vc_A2_size_ans
   csize = getsize_multipart(args.input,args.b,args.vc_ext+".C") 
   rsize = getsize_multipart(args.input,args.b,args.vc_ext+".R") 
   psize = valsize + csize+rsize + wsize 
@@ -363,7 +363,7 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   # REANS32 no longer considered
   # psize = valsize+ans_csize+rsize 
   # print(" >> REANS32 size:", psize, "bytes  ({0:.2f}%)".format(100*psize/isize))
-  wsize_ans +=  vc_B_size_ans
+  wsize_ans +=  vc_A2_size_ans
   psize = valsize+ans_csize+rsizeiv + wsize_ans
   if args.bool: print(f" >> REANS size: {psize} bytes  ({8*psize/nonzero:.2f}) bpe")
   else:         print(f" >> REANS size: {psize} bytes  ({100*psize/isize:.2f}%)")
