@@ -699,7 +699,9 @@ int main (int argc, char **argv) {
       else{
 
         int first_zero=0;
-        fread(&value, sizeof(uint32_t), 1, fvc);
+  	uint32_t value;
+        if(fread(&value, sizeof(uint32_t), 1, fvc)!=1)
+	  quit("Cannot read a .vc file");
         if(value==0) first_zero++;
         fseek(fvc, 0, SEEK_SET);
 
@@ -860,8 +862,8 @@ int main (int argc, char **argv) {
   fprintf(stderr, "%zd distinct nonzeros values\n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   if(split){
-    fprintf(stderr,"A1.size(): %d\t %.2lf\%\n",n_A1, (double)(n_A1)/(n_A1+n_A2)*100.0);  
-    fprintf(stderr,"A2.size(): %d\t %.2lf\%\n",n_A2, (double)(n_A2)/(n_A1+n_A2)*100.0);  
+    fprintf(stderr,"A1.size(): %zu\t %.2lf%%\n",n_A1, (double)(n_A1)/(n_A1+n_A2)*100.0);  
+    fprintf(stderr,"A2.size(): %zu\t %.2lf%%\n",n_A2, (double)(n_A2)/(n_A1+n_A2)*100.0);  
   }
 
   fprintf(stderr,"==== Done\n");
