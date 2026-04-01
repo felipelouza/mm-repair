@@ -38,7 +38,7 @@ template <class t_compressor>
 void run(std::vector<uint32_t>& input, std::string input_name)
 {
 
-  if (input.size() == 0 or input.size() == 1) {
+  if (input.size() < 100) {
     std::string outfile = input_name + ".ansf." + std::to_string(t_compressor::fold_fidelity);
     auto fd = fopen_or_fail(outfile, "w");
 
@@ -46,8 +46,8 @@ void run(std::vector<uint32_t>& input, std::string input_name)
     size_t e = fwrite(&isize, sizeof(isize), 1, fd);
     if (e != 1) quit("Error writing input file size");
 
-    if(isize){
-      uint32_t val = input[0];
+    for(int i=0; i<isize; i++){
+      uint32_t val = input[i];
       e = fwrite(&val, sizeof(val), 1, fd);
       if (e != 1) quit("Error writing single value");
     }
