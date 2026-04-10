@@ -26,6 +26,8 @@
 #include <vector>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
+#include <queue>
 #include <sdsl/int_vector.hpp>
 #include <sdsl/io.hpp>
 #include <sdsl/bit_vectors.hpp>
@@ -164,6 +166,104 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 
 }
 
+// reorder row according the most frequent pairs (taking into account only topk symbols)
+void reorder_row(vector<uint32_t>& row, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq){
+
+  vector<uint32_t> A, B;
+
+  for(size_t i=0; i<row.size()-1; i++){//-1 removes zero
+    auto w = row[i];
+    if(is_top.count(w)) A.push_back(w); //topk
+    else B.push_back(w); //others
+  }
+
+  map<pair<uint32_t,uint32_t>, int> pair_wcode;
+
+  for(size_t i=0; i<A.size(); i++){ 
+    for(size_t j=i+1; j<A.size(); j++){
+      uint32_t a = A[i], b = A[j];
+      if(a>b) swap(a, b);
+      pair_wcode[{a,b}] = pair_freq.at({a,b});
+    }
+  }
+
+  vector<pair<pair<uint32_t,uint32_t>, int>> v(pair_wcode.begin(), pair_wcode.end());
+  sort(v.begin(), v.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
+
+  unordered_set<uint32_t> setA(A.begin(), A.end());
+  A.clear();
+
+  for(const auto& [p, freq] : v){
+    uint32_t a = p.first, b = p.second;
+    if(setA.count(a) and setA.count(b)){
+      A.push_back(p.first);
+      A.push_back(p.second);
+      setA.erase(a); setA.erase(b);
+    }
+  }
+
+  for(auto &v: setA) A.push_back(v);
+
+  size_t t=0;
+  for(size_t i=0; i<A.size(); i++) row[t++] = A[i];
+  for(size_t i=0; i<B.size(); i++) row[t++] = B[i];
+
+  return;
+}
+
+// compute topk most frequent symbols
+vector<pair<uint32_t,int>> get_wcode_topk(unordered_map<uint32_t, int> &wcode_freq, int k){
+
+  typedef pair<uint32_t, int> pui;
+
+  auto cmp = [](const pui& a, const pui& b){return a.second > b.second;};
+  priority_queue<pui, vector<pui>, decltype(cmp)> PQ(cmp);
+
+  for (const auto& [wcode, freq] : wcode_freq) {
+    PQ.emplace(wcode, freq);
+    if(PQ.size() > k) PQ.pop();
+  }
+
+  vector<pui> result;
+  while(!PQ.empty()){
+    result.push_back(PQ.top());
+    PQ.pop();
+  }
+
+  sort(result.begin(), result.end(), [](auto& a, auto& b) { return a.second > b.second; });
+
+  return result;
+}
+
+// compute pair frequencies (only for the topk symbols)
+map<pair<uint32_t,uint32_t>, int> get_pair_freq(char* fname, unordered_set<uint32_t> is_top){
+
+  map<pair<uint32_t,uint32_t>, int> pair_freq;
+  FILE *fvc = fopen(fname,"rb");
+  if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+
+  vector<uint32_t> row;
+  uint32_t value;
+  while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
+    row.push_back(value);
+    if(value==0){
+      for(size_t i=0; i<row.size()-1; i++){ //-1 removes zero
+        for(size_t j=i+1; j<row.size()-1; j++){
+          uint32_t a = row[i], b = row[j];
+          if(is_top.count(a) and is_top.count(b)){
+            if(a>b) swap(a, b);
+            pair_freq[{a,b}]++;
+          }
+        }
+      }
+      row.clear();
+    }
+  }
+  fclose(fvc);
+
+  return pair_freq;
+}
+
 // open the string file and get the alphabet
 void get_alphabet(char *fname, set<uint32_t> &SIGMA){
 
@@ -180,30 +280,30 @@ void get_alphabet(char *fname, set<uint32_t> &SIGMA){
 // store the alphabet (using gap-encoding)
 unsigned long store_alphabet(char *fname, set<uint32_t> &SIGMA){
 
-  #if ENCODE_32
-    FILE *fvc = fopen(fname,"wb");
-    if(fvc==NULL) quit("Cannot open a .wcode file");
-    vector<uint32_t> SIGMA_v(SIGMA.size(), 0);
-    unsigned long i=0, diff=0;
-    for(auto &s:SIGMA){
-      SIGMA_v[i] = s-diff;
-      diff+=SIGMA_v[i];
-      i++;
-    }
-    if(fwrite(SIGMA_v.data(), sizeof(uint32_t), SIGMA_v.size(), fvc)!=SIGMA_v.size())
-      quit("Error writing to .wcode file");
-    fclose(fvc);
-  #else
-    sdsl::int_vector<> SIGMA_iv(SIGMA.size(), 0);
-    unsigned long i=0, diff=0;
-    for(auto &s:SIGMA){
-      SIGMA_iv[i] = s-diff;
-      diff+=SIGMA_iv[i];
-      i++;
-    }
-    sdsl::util::bit_compress(SIGMA_iv);
-    sdsl::store_to_file(SIGMA_iv, fname);
-  #endif
+#if ENCODE_32
+  FILE *fvc = fopen(fname,"wb");
+  if(fvc==NULL) quit("Cannot open a .wcode file");
+  vector<uint32_t> SIGMA_v(SIGMA.size(), 0);
+  unsigned long i=0, diff=0;
+  for(auto &s:SIGMA){
+    SIGMA_v[i] = s-diff;
+    diff+=SIGMA_v[i];
+    i++;
+  }
+  if(fwrite(SIGMA_v.data(), sizeof(uint32_t), SIGMA_v.size(), fvc)!=SIGMA_v.size())
+    quit("Error writing to .wcode file");
+  fclose(fvc);
+#else
+  sdsl::int_vector<> SIGMA_iv(SIGMA.size(), 0);
+  unsigned long i=0, diff=0;
+  for(auto &s:SIGMA){
+    SIGMA_iv[i] = s-diff;
+    diff+=SIGMA_iv[i];
+    i++;
+  }
+  sdsl::util::bit_compress(SIGMA_iv);
+  sdsl::store_to_file(SIGMA_iv, fname);
+#endif
 
   return i; //return maxcode
 }
@@ -242,7 +342,7 @@ unsigned long map_alphabet(char *fname, char *fname_alpha, int debug){
     }
   }
   fclose(fvc);
-  
+
   unsigned long maxcode = store_alphabet(fname_alpha, SIGMA);
 
   return maxcode;
@@ -266,7 +366,7 @@ void get_wcode_freq(char *fname, unordered_map<uint32_t, int> &wcode_freq){
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0, reorder=0, map_alpha=0, split=0, debug=0;
+  int verbose=0,vtype=0, reorder=0, reorder_pair=0, map_alpha=0, split=0, debug=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -288,7 +388,7 @@ int main (int argc, char **argv) {
       case 'n':
         vtype |= NO_COL_ID; break;
       case 'r':
-        reorder=atoi(optarg); break;
+        reorder_pair=atoi(optarg); break;
       case 'm':
         map_alpha++; break;
       case 's':
@@ -444,9 +544,9 @@ int main (int argc, char **argv) {
           //work line-by-line
           row.push_back(wcode);
           /*
-          if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-          quit("Error writing to .vc file");
-          */
+             if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
+             quit("Error writing to .vc file");
+             */
         }
         s = strtok(NULL,","); // scan next value
       }
@@ -458,9 +558,9 @@ int main (int argc, char **argv) {
       // end row
       wcode=0;
       /*
-      if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
-      quit("Error writing to .vc file");
-      */
+         if(fwrite(&wcode,sizeof(wcode),1,fvc)!=1) 
+         quit("Error writing to .vc file");
+         */
       row.push_back(wcode);
       if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
         quit("Error writing to .vc file");
@@ -500,6 +600,58 @@ int main (int argc, char **argv) {
         }
       }
       fclose(fvc);
+    }                                                                                             
+
+    //open and overwrite the file with reordered elements (inside each line)
+    if(reorder_pair){
+
+      fprintf(stderr,"Reordering option: %d\n", reorder);
+      int k = reorder_pair; //top-k
+
+      //open the file and get wcode_freq
+      unordered_map<uint32_t, int> wcode_freq;
+      get_wcode_freq(fname, wcode_freq);
+
+      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, k+1); //+1 because of the zeros
+
+      if(debug){
+        for(auto& w:topk) cout<<"<"<<w.first<<">: "<<w.second<<endl;
+      }
+
+      unordered_set<uint32_t> is_top;
+      for (const auto& [wcode, freq] : topk) {
+        is_top.insert(wcode);
+      }
+
+      map<pair<uint32_t,uint32_t>, int> pair_freq = get_pair_freq(fname, is_top);
+
+
+      if(debug){
+        for (const auto& [p, freq] : pair_freq) {
+          std::cout << "(" << p.first << ", " << p.second << ") -> "
+            << freq << "\n";
+        }
+      }
+
+
+      FILE *fvc = fopen(fname,"r+b");
+      if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+
+      vector<uint32_t> row;
+      uint32_t value;
+      while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
+        row.push_back(value);
+        if(value==0){
+
+          reorder_row(row, is_top, pair_freq);
+          fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
+          if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
+            quit("Error writing to .vc file");
+          row.clear();
+        }
+      }
+      fclose(fvc);
+
     }                                                                                             
 
     if(map_alpha and not split){
@@ -579,8 +731,8 @@ int main (int argc, char **argv) {
           if(fwrite(row_A1.data(), sizeof(uint32_t), row_A1.size(), fvc_A1)!=row_A1.size())
             quit("Error writing to .A1.vc file");
           if(fwrite(row_A2.data(), sizeof(uint32_t), row_A2.size(), fvc_A2)!=row_A2.size())
-             quit("Error writing to .A2.vc file");
-             
+            quit("Error writing to .A2.vc file");
+
           row.clear();
         }
       }      
@@ -600,7 +752,7 @@ int main (int argc, char **argv) {
         else snprintf(fname_A2_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A2",mext_wcode);
         maxcode = map_alphabet(fname_A2, fname_A2_alpha, debug);
       }
-      
+
       cout<<"wr = "<<wr<<endl;
       cout<<"wr_modified = "<<wr_modified<<endl;
 
@@ -645,63 +797,63 @@ int main (int argc, char **argv) {
         fclose(fvc);
 
         /*
-        if(debug){
-          cout<<"A2 (delta) = ";
-          for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
-        }
-        */
-        
-        #if ENCODE_32
-          fvc = fopen(fname_A2,"wb");
-          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-          if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
-            quit("Error writing to .vc file");
-          fclose(fvc);
-        #else
-          #if SPLIT_A2 == 0
-              sdsl::int_vector<> row_iv(row.size(), 0);
-              uint32_t i=0;
-              for(auto &v:row) row_iv[i++]=v;
-              sdsl::util::bit_compress(row_iv);
-              sdsl::store_to_file(row_iv, fname_A2);
-          #else
-            sdsl::int_vector<> row_iv_1(wr_modified, 0);
-            sdsl::int_vector<> row_iv_2(row.size()-wr_modified, 0);
+           if(debug){
+           cout<<"A2 (delta) = ";
+           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
+           }
+           */
 
-            uint32_t i=0, j=0, k=0;
-            bool first=true;
-            for(auto &v:row){
-              if(not first and v!=0){
-                row_iv_2[j++]=v;
-              }
-              else{
-                if(v==0){
-                  row_iv_2[j++]=v;
-                  first=true;
-                }
-                else{
-                  row_iv_1[i++]=v;
-                  first=false;
-                }
-              }
+#if ENCODE_32
+        fvc = fopen(fname_A2,"wb");
+        if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+        if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
+          quit("Error writing to .vc file");
+        fclose(fvc);
+#else
+#if SPLIT_A2 == 0
+        sdsl::int_vector<> row_iv(row.size(), 0);
+        uint32_t i=0;
+        for(auto &v:row) row_iv[i++]=v;
+        sdsl::util::bit_compress(row_iv);
+        sdsl::store_to_file(row_iv, fname_A2);
+#else
+        sdsl::int_vector<> row_iv_1(wr_modified, 0);
+        sdsl::int_vector<> row_iv_2(row.size()-wr_modified, 0);
+
+        uint32_t i=0, j=0, k=0;
+        bool first=true;
+        for(auto &v:row){
+          if(not first and v!=0){
+            row_iv_2[j++]=v;
+          }
+          else{
+            if(v==0){
+              row_iv_2[j++]=v;
+              first=true;
             }
+            else{
+              row_iv_1[i++]=v;
+              first=false;
+            }
+          }
+        }
 
-            sdsl::util::bit_compress(row_iv_1);
-            sdsl::util::bit_compress(row_iv_2);
-            std::ofstream out(fname_A2, std::ios::binary);
-            row_iv_1.serialize(out);
-            row_iv_2.serialize(out);
+        sdsl::util::bit_compress(row_iv_1);
+        sdsl::util::bit_compress(row_iv_2);
+        std::ofstream out(fname_A2, std::ios::binary);
+        row_iv_1.serialize(out);
+        row_iv_2.serialize(out);
 
-            out.close();
-          #endif
-        #endif
+        out.close();
+#endif
+#endif
       }
       else{
 
         int first_zero=0;
-  	uint32_t value;
+        uint32_t value;
         if(fread(&value, sizeof(uint32_t), 1, fvc)!=1)
-	  quit("Cannot read a .vc file");
+          quit("Cannot read a .vc file");
         if(value==0) first_zero++;
         fseek(fvc, 0, SEEK_SET);
 
@@ -730,121 +882,121 @@ int main (int argc, char **argv) {
         }
 
         /*
-        if(debug){
-          cout<<"A2 (rle) = ";
-          for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
-        }
-        */
+           if(debug){
+           cout<<"A2 (rle) = ";
+           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
+           }
+           */
 
-        #if ENCODE_32
-          fvc = fopen(fname_A2,"wb");
-          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-          if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
-            quit("Error writing to .vc file");
-          fclose(fvc);
-        #else
-          #if SPLIT_A2 == 0 
-             sdsl::int_vector<> row_iv(row.size(), 0);
-             uint32_t i=0;
-             for(auto &v:row) row_iv[i++]=v;
-             sdsl::util::bit_compress(row_iv);
-             sdsl::store_to_file(row_iv, fname_A2);
-          #else
-            sdsl::int_vector<> row_iv_1(nzeros-first_zero, 0);
-            sdsl::int_vector<> row_iv_2(row.size()-(nzeros-first_zero)-nzeros, 0);
-            sdsl::int_vector<> row_iv_3(nzeros, 0);
-            uint32_t i=0, j=0, k=0;
-            bool first=true, rle=false;
-            for(auto &v:row){
-              if(not first and not rle){
-                row_iv_2[j++]=v;
-                if(v==0) rle=true;
-              }
-              else if(first){
-                if(v==0){
-                  row_iv_2[j++]=v;
-                  rle=true;
-                }
-                else{
-                  row_iv_1[i++]=v;
-                }
-                first=false;
-              }
-              else if(rle){
-                row_iv_3[k++]=v;
-                rle=false;
-                first=true;
-              }
+#if ENCODE_32
+        fvc = fopen(fname_A2,"wb");
+        if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+        if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
+          quit("Error writing to .vc file");
+        fclose(fvc);
+#else
+#if SPLIT_A2 == 0 
+        sdsl::int_vector<> row_iv(row.size(), 0);
+        uint32_t i=0;
+        for(auto &v:row) row_iv[i++]=v;
+        sdsl::util::bit_compress(row_iv);
+        sdsl::store_to_file(row_iv, fname_A2);
+#else
+        sdsl::int_vector<> row_iv_1(nzeros-first_zero, 0);
+        sdsl::int_vector<> row_iv_2(row.size()-(nzeros-first_zero)-nzeros, 0);
+        sdsl::int_vector<> row_iv_3(nzeros, 0);
+        uint32_t i=0, j=0, k=0;
+        bool first=true, rle=false;
+        for(auto &v:row){
+          if(not first and not rle){
+            row_iv_2[j++]=v;
+            if(v==0) rle=true;
+          }
+          else if(first){
+            if(v==0){
+              row_iv_2[j++]=v;
+              rle=true;
             }
+            else{
+              row_iv_1[i++]=v;
+            }
+            first=false;
+          }
+          else if(rle){
+            row_iv_3[k++]=v;
+            rle=false;
+            first=true;
+          }
+        }
 
-            sdsl::util::bit_compress(row_iv_1);
-            sdsl::util::bit_compress(row_iv_2);
-            sdsl::util::bit_compress(row_iv_3);
+        sdsl::util::bit_compress(row_iv_1);
+        sdsl::util::bit_compress(row_iv_2);
+        sdsl::util::bit_compress(row_iv_3);
 
-            std::ofstream out(fname_A2, std::ios::binary);
+        std::ofstream out(fname_A2, std::ios::binary);
 
-            row_iv_1.serialize(out);
-            row_iv_2.serialize(out);
-            row_iv_3.serialize(out);
+        row_iv_1.serialize(out);
+        row_iv_2.serialize(out);
+        row_iv_3.serialize(out);
 
-            out.close();
-          #endif
-        #endif
+        out.close();
+#endif
+#endif
       }
-      
+
 
       if(debug){
 
         if(not rle_zeros){
-          #if ENCODE_32
-            fvc = fopen(fname_A2,"rb");
-            if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-            uint32_t v;
-            cout<<"A2 (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
-            fclose(fvc);
-          #else
-            #if SPLIT_A2 == 0
-               sdsl::int_vector<> row_iv;
-               sdsl::load_from_file(row_iv, fname_A2);
-               cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
-            #else
-              std::ifstream in(fname_A2, std::ios::binary);
-              sdsl::int_vector<> v1, v2;
+#if ENCODE_32
+          fvc = fopen(fname_A2,"rb");
+          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+          uint32_t v;
+          cout<<"A2 (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+          fclose(fvc);
+#else
+#if SPLIT_A2 == 0
+          sdsl::int_vector<> row_iv;
+          sdsl::load_from_file(row_iv, fname_A2);
+          cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+#else
+          std::ifstream in(fname_A2, std::ios::binary);
+          sdsl::int_vector<> v1, v2;
 
-              v1.load(in);
-              v2.load(in);
-              cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
-              cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
+          v1.load(in);
+          v2.load(in);
+          cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
 
-              in.close();
-            #endif
-          #endif
+          in.close();
+#endif
+#endif
         }
         else{
-          #if ENCODE_32
-            fvc = fopen(fname_A2,"rb");
-            if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-            uint32_t v;
-            cout<<"A2 (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
-            fclose(fvc);
-          #else
-            #if SPLIT_A2 == 0
-               sdsl::int_vector<> row_iv;
-               sdsl::load_from_file(row_iv, fname_A2);
-               cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
-            #else
-              std::ifstream in(fname_A2, std::ios::binary);
-              sdsl::int_vector<> v1, v2, v3;
+#if ENCODE_32
+          fvc = fopen(fname_A2,"rb");
+          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+          uint32_t v;
+          cout<<"A2 (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+          fclose(fvc);
+#else
+#if SPLIT_A2 == 0
+          sdsl::int_vector<> row_iv;
+          sdsl::load_from_file(row_iv, fname_A2);
+          cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
+#else
+          std::ifstream in(fname_A2, std::ios::binary);
+          sdsl::int_vector<> v1, v2, v3;
 
-              v1.load(in);
-              v2.load(in);
-              v3.load(in);
-              cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
-              cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
-              cout<<"A2_3 = "; for(auto v:v3) cout<<"<"<<v<<"> "; cout<<endl;
-              in.close();
-            #endif
-          #endif
+          v1.load(in);
+          v2.load(in);
+          v3.load(in);
+          cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"A2_3 = "; for(auto v:v3) cout<<"<"<<v<<"> "; cout<<endl;
+          in.close();
+#endif
+#endif
         }
       }
     }
