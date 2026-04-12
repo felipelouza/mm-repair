@@ -166,9 +166,10 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 
 }
 
-// reorder row according the most frequent pairs (taking into account only topk symbols)
-void reorder_row(vector<uint32_t>& row, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq){
+// PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
+void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq){
 
+/*
   vector<uint32_t> A, B;
 
   for(size_t i=0; i<row.size()-1; i++){//-1 removes zero
@@ -177,36 +178,55 @@ void reorder_row(vector<uint32_t>& row, const unordered_set<uint32_t>& is_top, c
     else B.push_back(w); //others
   }
 
+  if(A.size()<=2) return;
+*/
+  vector<uint32_t> A(row);
+
   map<pair<uint32_t,uint32_t>, int> pair_wcode;
 
-  for(size_t i=0; i<A.size(); i++){ 
-    for(size_t j=i+1; j<A.size(); j++){
+  for(size_t i=0; i<A.size()-1; i++){ 
+    for(size_t j=i+1; j<A.size()-1; j++){
       uint32_t a = A[i], b = A[j];
-      if(a>b) swap(a, b);
-      pair_wcode[{a,b}] = pair_freq.at({a,b});
+      if(is_top.count(a) and is_top.count(b)){
+        if(a>b) swap(a, b);
+        pair_wcode[{a,b}] = pair_freq.at({a,b});
+      }
     }
   }
 
-  vector<pair<pair<uint32_t,uint32_t>, int>> v(pair_wcode.begin(), pair_wcode.end());
-  sort(v.begin(), v.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
+  vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_wcode.begin(), pair_wcode.end());
+  sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
 
   unordered_set<uint32_t> setA(A.begin(), A.end());
+  vector<uint32_t> C(A);
   A.clear();
 
-  for(const auto& [p, freq] : v){
+  int count=0;
+  // PathCover
+  for(const auto& [p, freq] : edges){
     uint32_t a = p.first, b = p.second;
     if(setA.count(a) and setA.count(b)){
-      A.push_back(p.first);
-      A.push_back(p.second);
+      A.push_back(a); A.push_back(b);
       setA.erase(a); setA.erase(b);
     }
+    if(count++>k) break;
+    /*
+       if(setA.count(a)){
+       A.push_back(a); setA.erase(a); 
+       }
+       if(setA.count(b)){
+       A.push_back(b); setA.erase(b); 
+       }
+       */
   }
 
-  for(auto &v: setA) A.push_back(v);
+  //for(auto &v: setA) A.push_back(v);
+  for(auto &v: C)
+    if(setA.count(v))A.push_back(v);
 
   size_t t=0;
   for(size_t i=0; i<A.size(); i++) row[t++] = A[i];
-  for(size_t i=0; i<B.size(); i++) row[t++] = B[i];
+  //for(size_t i=0; i<B.size(); i++) row[t++] = B[i];
 
   return;
 }
@@ -612,7 +632,8 @@ int main (int argc, char **argv) {
       unordered_map<uint32_t, int> wcode_freq;
       get_wcode_freq(fname, wcode_freq);
 
-      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, k+1); //+1 because of the zeros
+      //TODO
+      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 100+1); //+1 because of the zeros
 
       if(debug){
         for(auto& w:topk) cout<<"<"<<w.first<<">: "<<w.second<<endl;
@@ -643,7 +664,7 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
-          reorder_row(row, is_top, pair_freq);
+          reorder_row(row, k, is_top, pair_freq, wcode_freq);
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
             quit("Error writing to .vc file");
