@@ -633,7 +633,7 @@ int main (int argc, char **argv) {
       get_wcode_freq(fname, wcode_freq);
 
       //TODO
-      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 100+1); //+1 because of the zeros
+      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 1000+1); //+1 because of the zeros
 
       if(debug){
         for(auto& w:topk) cout<<"<"<<w.first<<">: "<<w.second<<endl;
