@@ -188,7 +188,7 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
     for(size_t j=i+1; j<A.size()-1; j++){
       uint32_t a = A[i], b = A[j];
       if(is_top.count(a) and is_top.count(b)){
-        if(a>b) swap(a, b);
+        //if(a>b) swap(a, b);
         pair_wcode[{a,b}] = pair_freq.at({a,b});
       }
     }
@@ -209,7 +209,6 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
       A.push_back(a); A.push_back(b);
       setA.erase(a); setA.erase(b);
     }
-    if(count++>k) break;
     /*
        if(setA.count(a)){
        A.push_back(a); setA.erase(a); 
@@ -217,7 +216,8 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
        if(setA.count(b)){
        A.push_back(b); setA.erase(b); 
        }
-       */
+    */
+    if(count++>k) break;
   }
 
   //for(auto &v: setA) A.push_back(v);
@@ -255,6 +255,25 @@ vector<pair<uint32_t,int>> get_wcode_topk(unordered_map<uint32_t, int> &wcode_fr
   return result;
 }
 
+// compute the most frequent symbol at each column
+vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> &wcode_freq, int cols){
+
+  typedef pair<uint32_t, int> pui;
+  vector<pui> result(cols, {0u, 0});
+
+  for (const auto& [wcode, freq] : wcode_freq) {
+    if(wcode==0) continue;
+    int w = wcode - 1;
+    int j = w%cols;
+    //int l = w/cols;
+    if(freq > result[j].second){
+      result[j] = {wcode,freq};
+    }
+  }
+  sort(result.begin(), result.end(), [](auto& a, auto& b) { return a.second > b.second; });
+  return result;
+}
+
 // compute pair frequencies (only for the topk symbols)
 map<pair<uint32_t,uint32_t>, int> get_pair_freq(char* fname, unordered_set<uint32_t> is_top){
 
@@ -271,8 +290,9 @@ map<pair<uint32_t,uint32_t>, int> get_pair_freq(char* fname, unordered_set<uint3
         for(size_t j=i+1; j<row.size()-1; j++){
           uint32_t a = row[i], b = row[j];
           if(is_top.count(a) and is_top.count(b)){
-            if(a>b) swap(a, b);
+            //if(a>b) swap(a, b);
             pair_freq[{a,b}]++;
+            pair_freq[{b,a}]++;
           }
         }
       }
@@ -369,7 +389,7 @@ unsigned long map_alphabet(char *fname, char *fname_alpha, int debug){
 }
 
 // open the string file to count frequencies of wcodes
-void get_wcode_freq(char *fname, unordered_map<uint32_t, int> &wcode_freq){
+void get_wcode_freq(char *fname, unordered_map<uint32_t, int> &wcode_freq, int cols){
 
   FILE *fvc = fopen(fname,"r+b");
   if(fvc==NULL) quit("Cannot open a .vc/.dv file");
@@ -378,6 +398,9 @@ void get_wcode_freq(char *fname, unordered_map<uint32_t, int> &wcode_freq){
   while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
     if(wcode_freq.find(value)==wcode_freq.end()) wcode_freq[value]=1;
     else wcode_freq[value]++;
+
+    //int w = value - 1, l = w/cols, j = w%cols;
+    //cout<<value<<" --> <"<<l<<", "<<j<<">\n";
   }
   fclose(fvc);
 }
@@ -591,12 +614,23 @@ int main (int argc, char **argv) {
     }
     fclose(fvc);
 
+    if(debug){
+      fvc = fopen(fname,"rb");
+      if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+      uint32_t value;
+      cout<<"A = ";
+      while(fread(&value, sizeof(uint32_t), 1, fvc)==1)
+        cout<<"<"<<value<<"> "; 
+      cout<<endl;
+      fclose(fvc);
+    }
+
     //open and overwrite the file with reordered elements (inside each line)
     if(reorder){
 
       //open the file and get wcode_freq
       unordered_map<uint32_t, int> wcode_freq;
-      get_wcode_freq(fname, wcode_freq);
+      get_wcode_freq(fname, wcode_freq, cols);
 
       if(debug){
         for(auto& w:wcode_freq) cout<<"<"<<w.first<<">: "<<w.second<<endl;
@@ -625,15 +659,16 @@ int main (int argc, char **argv) {
     //open and overwrite the file with reordered elements (inside each line)
     if(reorder_pair){
 
-      fprintf(stderr,"Reordering option: %d\n", reorder);
+      fprintf(stderr,"Reordering option: %d\n", reorder_pair);
       int k = reorder_pair; //top-k
 
       //open the file and get wcode_freq
       unordered_map<uint32_t, int> wcode_freq;
-      get_wcode_freq(fname, wcode_freq);
+      get_wcode_freq(fname, wcode_freq, cols);
 
       //TODO
-      vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 1000+1); //+1 because of the zeros
+      //vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 10000+1); //+1 because of the zeros
+      vector<pair<uint32_t, int>> topk = get_wcode_top_by_column(wcode_freq, cols); 
 
       if(debug){
         for(auto& w:topk) cout<<"<"<<w.first<<">: "<<w.second<<endl;
@@ -645,7 +680,6 @@ int main (int argc, char **argv) {
       }
 
       map<pair<uint32_t,uint32_t>, int> pair_freq = get_pair_freq(fname, is_top);
-
 
       if(debug){
         for (const auto& [p, freq] : pair_freq) {
@@ -700,7 +734,7 @@ int main (int argc, char **argv) {
 
       //open the file and get wcode_freq
       unordered_map<uint32_t, int> wcode_freq;
-      get_wcode_freq(fname, wcode_freq);
+      get_wcode_freq(fname, wcode_freq, cols);
 
       if(debug==2)
         for(auto& w:wcode_freq) cout<<"<"<<w.first<<">: "<<w.second<<endl;
