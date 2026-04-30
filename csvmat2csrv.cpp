@@ -169,30 +169,22 @@ void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_fre
 // PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
 void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq){
 
-/*
-  vector<uint32_t> A, B;
-
-  for(size_t i=0; i<row.size()-1; i++){//-1 removes zero
-    auto w = row[i];
-    if(is_top.count(w)) A.push_back(w); //topk
-    else B.push_back(w); //others
-  }
-
-  if(A.size()<=2) return;
-*/
   vector<uint32_t> A(row);
-
   map<pair<uint32_t,uint32_t>, int> pair_wcode;
 
   for(size_t i=0; i<A.size()-1; i++){ 
+    uint32_t a = A[i];
+    if(is_top.count(a)==0) continue;
     for(size_t j=i+1; j<A.size()-1; j++){
-      uint32_t a = A[i], b = A[j];
-      if(is_top.count(a) and is_top.count(b)){
+      uint32_t b = A[j];
+      if(is_top.count(b)){
         //if(a>b) swap(a, b);
         pair_wcode[{a,b}] = pair_freq.at({a,b});
       }
     }
   }
+
+  //TODO: change edges by a PQ
 
   vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_wcode.begin(), pair_wcode.end());
   sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
@@ -209,24 +201,14 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
       A.push_back(a); A.push_back(b);
       setA.erase(a); setA.erase(b);
     }
-    /*
-       if(setA.count(a)){
-       A.push_back(a); setA.erase(a); 
-       }
-       if(setA.count(b)){
-       A.push_back(b); setA.erase(b); 
-       }
-    */
     if(count++>k) break;
   }
 
-  //for(auto &v: setA) A.push_back(v);
   for(auto &v: C)
     if(setA.count(v))A.push_back(v);
 
   size_t t=0;
   for(size_t i=0; i<A.size(); i++) row[t++] = A[i];
-  //for(size_t i=0; i<B.size(); i++) row[t++] = B[i];
 
   return;
 }
@@ -270,7 +252,7 @@ vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> 
       result[j] = {wcode,freq};
     }
   }
-  sort(result.begin(), result.end(), [](auto& a, auto& b) { return a.second > b.second; });
+  //sort(result.begin(), result.end(), [](auto& a, auto& b) { return a.second > b.second; });
   return result;
 }
 
@@ -287,12 +269,13 @@ map<pair<uint32_t,uint32_t>, int> get_pair_freq(char* fname, unordered_set<uint3
     row.push_back(value);
     if(value==0){
       for(size_t i=0; i<row.size()-1; i++){ //-1 removes zero
+        uint32_t a = row[i];
+        if(is_top.count(a)==0) continue;
         for(size_t j=i+1; j<row.size()-1; j++){
-          uint32_t a = row[i], b = row[j];
-          if(is_top.count(a) and is_top.count(b)){
+          uint32_t b = row[j];
+          if(is_top.count(b)){
             //if(a>b) swap(a, b);
             pair_freq[{a,b}]++;
-            pair_freq[{b,a}]++;
           }
         }
       }
