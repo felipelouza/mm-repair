@@ -213,6 +213,32 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
   return;
 }
 
+// PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
+void reorder_row_v2(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq, vector<uint32_t>& PI, int cols){
+
+  vector<uint32_t> A(cols);
+
+  for(auto& wcode:row){
+    int w = wcode - 1;
+    int j = w%cols;
+    int l = w/cols;
+    A[j] = wcode;
+  }
+
+  vector<uint32_t> B(cols,0);
+  for(size_t i=0; i<cols; i++) B[i] = A[PI[i]];
+
+  int t=0;
+  for(size_t i=0; i<cols; i++){
+    if(B[i]){
+      row[t++] = B[i];
+    }
+  }
+
+
+  return;
+}
+
 // compute topk most frequent symbols
 vector<pair<uint32_t,int>> get_wcode_topk(unordered_map<uint32_t, int> &wcode_freq, int k){
 
@@ -238,8 +264,10 @@ vector<pair<uint32_t,int>> get_wcode_topk(unordered_map<uint32_t, int> &wcode_fr
 }
 
 // compute the most frequent symbol at each column
-vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> &wcode_freq, int cols){
+vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> &wcode_freq, int cols, int k){
 
+  //TODO: take the top-k (now k=1)
+  
   typedef pair<uint32_t, int> pui;
   vector<pui> result(cols, {0u, 0});
 
@@ -651,7 +679,7 @@ int main (int argc, char **argv) {
 
       //TODO
       //vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 10000+1); //+1 because of the zeros
-      vector<pair<uint32_t, int>> topk = get_wcode_top_by_column(wcode_freq, cols); 
+      vector<pair<uint32_t, int>> topk = get_wcode_top_by_column(wcode_freq, cols, k); 
 
       if(debug){
         for(auto& w:topk) cout<<"<"<<w.first<<">: "<<w.second<<endl;
@@ -671,6 +699,44 @@ int main (int argc, char **argv) {
         }
       }
 
+      /**/
+      // defines the permutation
+      vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_freq.begin(), pair_freq.end());
+      sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
+
+      vector<uint32_t> A(cols);
+      std::iota(A.begin(), A.end(), 0);
+
+      unordered_set<uint32_t> setA(A.begin(), A.end());
+      A.clear();
+
+      int count=0;
+      // PathCover
+      for(const auto& [p, freq] : edges){
+        uint32_t a = p.first, b = p.second;
+
+        int w1 = a - 1, w2 = b - 1;
+        int j1 = w1%cols, j2 = w2%cols;
+        //int l1 = w1/cols;
+        //
+        if(debug)cout<<"<"<<j1<<", "<<j2<<">: "<<freq<<"\n";
+        
+        if(setA.count(j1) and setA.count(j2)){
+          A.push_back(j1); A.push_back(j2);
+          setA.erase(j1); setA.erase(j2);
+        }
+        if(count++>k) break;
+      }
+
+      for(int v=0; v<cols; v++)
+        if(setA.count(v))A.push_back(v);
+
+      if(debug){
+        for(int v=0; v<cols; v++) cout<<A[v]<<" "; cout<<endl;
+      }
+      /**/
+
+
 
       FILE *fvc = fopen(fname,"r+b");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
@@ -681,7 +747,8 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
-          reorder_row(row, k, is_top, pair_freq, wcode_freq);
+          //reorder_row(row, k, is_top, pair_freq, wcode_freq);
+          reorder_row_v2(row, k, is_top, pair_freq, wcode_freq, A, cols);
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
             quit("Error writing to .vc file");
