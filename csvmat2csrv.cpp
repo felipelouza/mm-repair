@@ -250,6 +250,7 @@ vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, i
     if(a != b) parent[a] = b;
   };
 
+  int count=cols;
   // PATHCOVER
   for(const auto& [p, freq] : edges){
 
@@ -270,6 +271,8 @@ vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, i
     deg[j1]++; deg[j2]++;
 
     unite(j1, j2);
+
+    if(count-- == 1) break;
   }
 
 
