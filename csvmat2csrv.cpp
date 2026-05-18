@@ -54,7 +54,7 @@ using namespace std;
  * as doubles, so values that become equal after the conversion are not 
  * considered equal in the csrv representation. */ 
  
- 
+int debug=0; 
 
 static void usage_and_exit(char *name)
 {
@@ -213,6 +213,115 @@ void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is
   return;
 }
 
+vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, int cols){
+
+  //compute the graph
+  map<pair<int,int>, int> col_pair_freq;
+  for(const auto& [p, freq] : pair_freq){
+
+    //decode columns ids
+    int w1 = p.first  - 1;
+    int w2 = p.second - 1;
+
+    int j1 = w1 % cols;
+    int j2 = w2 % cols;
+
+    col_pair_freq[{j1,j2}] += freq;
+    //col_pair_freq[{j1,j2}] += (1000 * freq) / (abs(j1-j2) + 1);
+  }
+
+  vector<pair<pair<uint32_t,uint32_t>, int>> edges(col_pair_freq.begin(), col_pair_freq.end());
+  sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
+
+  // pathcover structures
+  vector<int> deg(cols, 0);
+  vector<vector<int>> adj(cols);
+  vector<int> parent(cols);
+  for(int j = 0; j < cols; j++) parent[j] = j;
+
+  //Kruskal functions
+  function<int(int)> find = [&](int x) {
+    if(parent[x] == x) return x;
+    return parent[x] = find(parent[x]);
+  };
+
+  auto unite = [&](int a, int b) {
+    a = find(a); b = find(b);
+    if(a != b) parent[a] = b;
+  };
+
+  // PATHCOVER
+  for(const auto& [p, freq] : edges){
+
+    // column ids
+    int j1 = p.first;
+    int j2 = p.second;
+
+    // max degree 2
+    if(deg[j1] >= 2 || deg[j2] >= 2) continue;
+
+    // avoid cycles
+    if(find(j1) == find(j2)) continue;
+
+    // accept edge
+    adj[j1].push_back(j2);
+    adj[j2].push_back(j1);
+
+    deg[j1]++; deg[j2]++;
+
+    unite(j1, j2);
+  }
+
+
+  // extract paths -> permutation PI
+  vector<uint32_t> PI;
+  vector<bool> visited(cols, false);
+
+
+  // start from endpoints
+  for(int q = 0; q < cols; q++){
+
+    if(visited[q]) continue;
+    if(deg[q] > 1) continue;
+
+    int prev = -1;
+    int cur  = q;
+
+    while(true){
+
+      PI.push_back(cur);
+      visited[cur] = true;
+
+      int nxt = -1;
+
+      //sort(adj[cur].begin(), adj[cur].end());
+      for(auto x : adj[cur]){
+        if(x != prev){
+          nxt = x;
+          break;
+        }
+      }
+
+      if(nxt == -1) break;
+      prev = cur;
+      cur  = nxt;
+    }
+  }
+
+  // isolated vertices / remaining columns
+  for(int j = 0; j < cols; j++){
+    if(!visited[j]) PI.push_back(j);
+  }
+
+  if(debug){
+    cout << "PI:\n";
+    for(auto j : PI) cout << j << " ";
+    cout << endl;
+  }
+  
+  return PI;
+}
+
 // PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
 void reorder_row_v2(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq, vector<uint32_t>& PI, int cols){
 
@@ -230,11 +339,8 @@ void reorder_row_v2(vector<uint32_t>& row, int k, const unordered_set<uint32_t>&
 
   int t=0;
   for(size_t i=0; i<cols; i++){
-    if(B[i]){
-      row[t++] = B[i];
-    }
+    if(B[i]) row[t++] = B[i];
   }
-
 
   return;
 }
@@ -266,18 +372,43 @@ vector<pair<uint32_t,int>> get_wcode_topk(unordered_map<uint32_t, int> &wcode_fr
 // compute the most frequent symbol at each column
 vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> &wcode_freq, int cols, int k){
 
-  //TODO: take the top-k (now k=1)
-  
   typedef pair<uint32_t, int> pui;
-  vector<pui> result(cols, {0u, 0});
 
-  for (const auto& [wcode, freq] : wcode_freq) {
-    if(wcode==0) continue;
+  auto cmp = [](const pui& a, const pui& b){
+    return a.second > b.second;
+  };
+
+  using MinHeap = priority_queue<pui, vector<pui>, decltype(cmp)>;
+
+  vector<MinHeap> heaps;
+  for(int j = 0; j < cols; j++)
+    heaps.emplace_back(cmp);
+
+  // process all codes
+  for(const auto& [wcode, freq] : wcode_freq){
+
+    if(wcode == 0) continue;
     int w = wcode - 1;
-    int j = w%cols;
-    //int l = w/cols;
-    if(freq > result[j].second){
-      result[j] = {wcode,freq};
+    int j = w % cols;
+
+    auto& pq = heaps[j];
+
+    if((int)pq.size() < k){
+      pq.push({wcode, freq});
+    }
+    else if(freq > pq.top().second){
+      pq.pop();
+      pq.push({wcode, freq});
+    }
+  }
+
+  // extract result
+  vector<pui> result;
+  for(int j = 0; j < cols; j++){
+    auto& pq = heaps[j];
+    while(!pq.empty()){
+      result.push_back(pq.top());
+      pq.pop();
     }
   }
   //sort(result.begin(), result.end(), [](auto& a, auto& b) { return a.second > b.second; });
@@ -420,7 +551,7 @@ void get_wcode_freq(char *fname, unordered_map<uint32_t, int> &wcode_freq, int c
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;
-  int verbose=0,vtype=0, reorder=0, reorder_pair=0, map_alpha=0, split=0, debug=0;
+  int verbose=0,vtype=0, reorder=0, reorder_pair=0, map_alpha=0, split=0;
   int c,rows,cols,nblocks=1;
   char fname[PATH_MAX];
   time_t start_wc = time(NULL);
@@ -699,44 +830,8 @@ int main (int argc, char **argv) {
         }
       }
 
-      /**/
-      // defines the permutation
-      vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_freq.begin(), pair_freq.end());
-      sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
-
-      vector<uint32_t> A(cols);
-      std::iota(A.begin(), A.end(), 0);
-
-      unordered_set<uint32_t> setA(A.begin(), A.end());
-      A.clear();
-
-      int count=0;
-      // PathCover
-      for(const auto& [p, freq] : edges){
-        uint32_t a = p.first, b = p.second;
-
-        int w1 = a - 1, w2 = b - 1;
-        int j1 = w1%cols, j2 = w2%cols;
-        //int l1 = w1/cols;
-        //
-        if(debug)cout<<"<"<<j1<<", "<<j2<<">: "<<freq<<"\n";
-        
-        if(setA.count(j1) and setA.count(j2)){
-          A.push_back(j1); A.push_back(j2);
-          setA.erase(j1); setA.erase(j2);
-        }
-        if(count++>k) break;
-      }
-
-      for(int v=0; v<cols; v++)
-        if(setA.count(v))A.push_back(v);
-
-      if(debug){
-        for(int v=0; v<cols; v++) cout<<A[v]<<" "; cout<<endl;
-      }
-      /**/
-
-
+      //TODO: pathcover
+      vector<uint32_t> PI = pathcover(pair_freq, cols);
 
       FILE *fvc = fopen(fname,"r+b");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
@@ -748,7 +843,7 @@ int main (int argc, char **argv) {
         if(value==0){
 
           //reorder_row(row, k, is_top, pair_freq, wcode_freq);
-          reorder_row_v2(row, k, is_top, pair_freq, wcode_freq, A, cols);
+          reorder_row_v2(row, k, is_top, pair_freq, wcode_freq, PI, cols);
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
             quit("Error writing to .vc file");
