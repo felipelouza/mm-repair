@@ -126,93 +126,7 @@ struct ComplexHasher
   }
 };
 
-// reorder elements within the same line
-void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_freq, int reorder_opt){
-
-  uint32_t diff;
-  switch (reorder_opt)
-    {
-    case 1:
-        sort(row.begin(), row.end()-1);
-        break;
-    case 2:
-        sort(row.begin(), row.end()-1, std::greater<uint32_t>());
-        break;
-    case 3:
-        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] < wcode_freq[b];});
-        break;
-    case 4:
-        sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] > wcode_freq[b];});
-        break;
-    case 5:
-        sort(row.begin(), row.end()-1);
-        diff=0;
-        for(int i=0; i<row.size()-1; i++){
-          row[i] -= diff;
-          diff += row[i];
-        }
-        break;
-    case 6: //LMS
-        vector<uint32_t> tmp(row.begin(), row.end()-1);
-        sort(tmp.begin(), tmp.end());
-        int n=tmp.size(), m=(n%2)?n/2+1:n/2, j=0;
-        for(int i=0; i<n/2; i++){
-          row[j++] = tmp[i];
-          row[j++] = tmp[m++];
-        }
-        if(n%2!=0) row[j]=tmp[n/2];
-        break;
-    }
-
-}
-
-// PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
-void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq){
-
-  vector<uint32_t> A(row);
-  map<pair<uint32_t,uint32_t>, int> pair_wcode;
-
-  for(size_t i=0; i<A.size()-1; i++){ 
-    uint32_t a = A[i];
-    if(is_top.count(a)==0) continue;
-    for(size_t j=i+1; j<A.size()-1; j++){
-      uint32_t b = A[j];
-      if(is_top.count(b)){
-        //if(a>b) swap(a, b);
-        pair_wcode[{a,b}] = pair_freq.at({a,b});
-      }
-    }
-  }
-
-  //TODO: change edges by a PQ
-
-  vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_wcode.begin(), pair_wcode.end());
-  sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
-
-  unordered_set<uint32_t> setA(A.begin(), A.end());
-  vector<uint32_t> C(A);
-  A.clear();
-
-  int count=0;
-  // PathCover
-  for(const auto& [p, freq] : edges){
-    uint32_t a = p.first, b = p.second;
-    if(setA.count(a) and setA.count(b)){
-      A.push_back(a); A.push_back(b);
-      setA.erase(a); setA.erase(b);
-    }
-    if(count++>k) break;
-  }
-
-  for(auto &v: C)
-    if(setA.count(v))A.push_back(v);
-
-  size_t t=0;
-  for(size_t i=0; i<A.size(); i++) row[t++] = A[i];
-
-  return;
-}
-
+//PathCover
 vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, int cols){
 
   //compute the graph
@@ -226,13 +140,25 @@ vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, i
     int j1 = w1 % cols;
     int j2 = w2 % cols;
 
-    col_pair_freq[{j1,j2}] += freq;
+    if(freq>1) col_pair_freq[{j1,j2}] += freq;
     //col_pair_freq[{j1,j2}] += (1000 * freq) / (abs(j1-j2) + 1);
   }
 
   vector<pair<pair<uint32_t,uint32_t>, int>> edges(col_pair_freq.begin(), col_pair_freq.end());
   sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
 
+  /**/
+  int n = edges.size();
+  int mid = n/2;
+  vector<pair<pair<uint32_t,uint32_t>, int>> reordered(n);
+  int idx = 0;
+  reordered[idx++] = edges[mid];
+  for (int d = 1; idx < n; ++d) {
+    if (mid - d >= 0) reordered[idx++] = edges[mid - d];
+    if (mid + d < n) reordered[idx++] = edges[mid + d];
+  }
+  edges = std::move(reordered);
+  /**/
   // pathcover structures
   vector<int> deg(cols, 0);
   vector<vector<int>> adj(cols);
@@ -321,9 +247,118 @@ vector<uint32_t> pathcover(const map<pair<uint32_t,uint32_t>, int>& pair_freq, i
     for(auto j : PI) cout << j << " ";
     cout << endl;
   }
-  
+
   return PI;
 }
+
+// reorder elements within the same line
+void reorder_line(vector<uint32_t>& row, unordered_map<uint32_t, int>& wcode_freq, int reorder_opt){
+
+  uint32_t diff;
+  switch (reorder_opt)
+  {
+    case 1:
+      sort(row.begin(), row.end()-1);
+      break;
+    case 2:
+      sort(row.begin(), row.end()-1, std::greater<uint32_t>());
+      break;
+    case 3:
+      sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] < wcode_freq[b];});
+      break;
+    case 4:
+      sort(row.begin(), row.end()-1, [&](uint32_t a, uint32_t b){return wcode_freq[a] > wcode_freq[b];});
+      break;
+    case 5:
+      sort(row.begin(), row.end()-1);
+      diff=0;
+      for(int i=0; i<row.size()-1; i++){
+        row[i] -= diff;
+        diff += row[i];
+      }
+      break;
+    case 6: //LMS
+      vector<uint32_t> tmp(row.begin(), row.end()-1);
+      sort(tmp.begin(), tmp.end());
+      int n=tmp.size(), m=(n%2)?n/2+1:n/2, j=0;
+      for(int i=0; i<n/2; i++){
+        row[j++] = tmp[i];
+        row[j++] = tmp[m++];
+      }
+      if(n%2!=0) row[j]=tmp[n/2];
+      break;
+  }
+
+}
+
+// PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
+void reorder_row(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq, int cols){
+
+  vector<uint32_t> A(row);
+  map<pair<uint32_t,uint32_t>, int> pair_wcode;
+
+  for(size_t i=0; i<A.size()-1; i++){ 
+    uint32_t a = A[i];
+    if(is_top.count(a)==0) continue;
+    for(size_t j=i+1; j<A.size()-1; j++){
+      uint32_t b = A[j];
+      if(is_top.count(b)){
+        //if(a>b) swap(a, b);
+        pair_wcode[{a,b}] = pair_freq.at({a,b});
+      }
+    }
+  }
+
+  vector<uint32_t> PI = pathcover(pair_wcode, cols);
+
+  vector<uint32_t> B(cols);
+
+  for(auto& wcode:row){
+    int w = wcode - 1;
+    int j = w%cols;
+    int l = w/cols;
+    B[j] = wcode;
+  }
+
+  vector<uint32_t> C(cols,0);
+  for(size_t i=0; i<cols; i++) C[i] = B[PI[i]];
+
+  int t=0;
+  for(size_t i=0; i<cols; i++){
+    if(C[i]) row[t++] = C[i];
+  }
+
+
+  //TODO: change edges by a PQ
+  /*
+     vector<pair<pair<uint32_t,uint32_t>, int>> edges(pair_wcode.begin(), pair_wcode.end());
+     sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {return a.second > b.second; });
+
+     unordered_set<uint32_t> setA(A.begin(), A.end());
+     vector<uint32_t> C(A);
+     A.clear();
+
+     int count=0;
+  // PathCover
+  for(const auto& [p, freq] : edges){
+  uint32_t a = p.first, b = p.second;
+  if(setA.count(a) and setA.count(b)){
+  A.push_back(a); A.push_back(b);
+  setA.erase(a); setA.erase(b);
+  }
+  if(count++>k) break;
+  }
+
+  for(auto &v: C)
+  if(setA.count(v))A.push_back(v);
+
+  size_t t=0;
+  for(size_t i=0; i<A.size(); i++) row[t++] = A[i];
+
+  return;
+  */
+}
+
 
 // PathCover: reorder row according the most frequent pairs (taking into account only topk symbols)
 void reorder_row_v2(vector<uint32_t>& row, int k, const unordered_set<uint32_t>& is_top, const map<pair<uint32_t,uint32_t>, int>& pair_freq, unordered_map<uint32_t, int> &wcode_freq, vector<uint32_t>& PI, int cols){
@@ -845,7 +880,7 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
 
-          //reorder_row(row, k, is_top, pair_freq, wcode_freq);
+          //reorder_row(row, k, is_top, pair_freq, wcode_freq, cols);
           reorder_row_v2(row, k, is_top, pair_freq, wcode_freq, PI, cols);
           fseek(fvc, (-1)*(row.size()*sizeof(uint32_t)), SEEK_CUR);
           if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
