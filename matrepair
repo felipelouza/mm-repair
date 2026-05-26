@@ -249,6 +249,12 @@ def main():
           print("==== OLE\nCommand:", command)
           if(execute_command(command,logfile)!=True):
            sys.exit(6)
+          if args.split: 
+            command = "{exe} {mfile}.A2.vc".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ole_exe), mfile=basename)
+            print("Command:",command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
           ansf_time += time.time()-start
           print("OLE time: {0:.4f}".format(ansf_time))
 
