@@ -134,7 +134,7 @@ def main():
     args.vc_ext = args.vc_A_ext
   
   # init time counters 
-  vc_time = repair_time = iv_time = ansf_time = 0
+  vc_time = repair_time = iv_time = ansf_time = ole_time = 0
 
   logfile_name = args.input + ".log"
   # get absolute path to main matrepair directory 
@@ -249,14 +249,9 @@ def main():
           print("==== OLE\nCommand:", command)
           if(execute_command(command,logfile)!=True):
            sys.exit(6)
-          if args.split: 
-            command = "{exe} {mfile}.A2.vc".format(ext=args.vc_ext,
-                      exe = os.path.join(args.main_dir,ole_exe), mfile=basename)
-            print("Command:",command)
-            if(execute_command(command,logfile)!=True):
-             sys.exit(6)
-          ansf_time += time.time()-start
-          print("OLE time: {0:.4f}".format(ansf_time))
+
+          ole_time += time.time()-start
+          print("OLE time: {0:.4f}".format(ole_time))
 
         # ---- apply ans_fold-1 to the .vc.C file 
         if args.y and not need_rebuild(basename+args.vc_ext+".C", ".ansf.1"):
