@@ -22,10 +22,10 @@ MALLOC_FILES=tools/malloc_count.c tools/malloc_count.h
 endif
 
 # targets not producing a file declared phony
-.PHONY: all brepair ans sdsl clean
+.PHONY: all brepair ans sdsl ole clean
 
 # main target
-all: $(EXECS) brepair ansf sdsl
+all: $(EXECS) brepair ansf sdsl ole
 
 # general rules for the targets in this directory
 %: %.c
@@ -103,9 +103,14 @@ ansf:
 sdsl:
 	make -C sdsl
 
+# directory containing Off-set listing encoding-decoding tools 
+ole:
+	make -C ole
+
 
 clean:
 	rm -f $(EXECS)
 	make -C brepair clean
 	make -C ans clean
 	make -C sdsl clean
+	make -C ole clean

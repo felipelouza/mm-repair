@@ -62,8 +62,35 @@ class Graph:
             parent.append(node)
             rank.append(0)
         i,e = 0,0
+
+        ## FELIPE
         #sorting edges by decreasing weight
         self.graph = sorted(self.graph, key=lambda item: item[2])
+
+        n = len(self.graph)
+        mid = n // 2
+
+        reordered = [None] * n
+
+        idx = 0
+        reordered[idx] = self.graph[mid]
+        idx += 1
+
+        d = 1
+        while idx < n:
+            if mid - d >= 0:
+                reordered[idx] = self.graph[mid - d]
+                idx += 1
+            if idx < n and mid + d < n:
+                reordered[idx] = self.graph[mid + d]
+                idx += 1
+            d += 1
+
+        self.graph = reordered
+        ## FELIPE
+        ##
+
+
         #every node in a (column) path has degree two at most
         neigh = [2] * self.V
 

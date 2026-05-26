@@ -39,6 +39,8 @@ mat2csrv_exe = "csvmat2csrv"
 ansf_exe = "ans/encode.x"
 # tool to compress a sequence of int32 using an integer vector from sdsl   
 iv_exe = "sdsl/encode.x"
+# tool to transform a sequence of int32 using offset listing encoding 
+ole_exe = "ole/encode.x"
 
 
 def main():
@@ -68,6 +70,7 @@ def main():
   parser.add_argument('--reorder',  help='stop after the conversion phase (debug only)',type=int, default=0)
   parser.add_argument('--mapping',  help='alphabet mapping (crsv)',action='store_true')
   parser.add_argument('--split',  help='split string S into A1 and A2 (crsv)',type=int, default=0)
+  parser.add_argument('--ole',  help='enable offset listing encoding for string C',action='store_true')
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -239,6 +242,17 @@ def main():
           print("Integer vector compression time: {0:.4f}".format(iv_time))
         
         # ---- apply ans_fold-1 to the .vc.C file 
+        if(args.ole):
+          start = time.time()
+          command = "{exe} {mfile}{ext}.C ".format(ext=args.vc_ext,
+                    exe = os.path.join(args.main_dir,ole_exe), mfile=basename)
+          print("==== OLE\nCommand:", command)
+          if(execute_command(command,logfile)!=True):
+           sys.exit(6)
+          ansf_time += time.time()-start
+          print("OLE time: {0:.4f}".format(ansf_time))
+
+        # ---- apply ans_fold-1 to the .vc.C file 
         if args.y and not need_rebuild(basename+args.vc_ext+".C", ".ansf.1"):
           print("---- Skipping ans-fold")
         else:
@@ -276,6 +290,7 @@ def main():
           #
           ansf_time += time.time()-start
           print("Ans-fold time: {0:.4f}".format(ansf_time))
+
       # end for on row blocks
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      

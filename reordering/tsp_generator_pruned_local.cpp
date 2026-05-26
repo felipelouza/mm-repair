@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <queue>
 #include <cassert>
+#include <cstdint>
 
 /*
 Computing the column similarity matrix via local pruning.
