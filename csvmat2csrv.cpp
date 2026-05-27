@@ -454,6 +454,32 @@ vector<pair<uint32_t,int>> get_wcode_top_by_column(unordered_map<uint32_t, int> 
 }
 
 // compute pair frequencies (only for the topk symbols)
+map<pair<uint32_t,uint32_t>, int> get_all_pair_freq(char* fname){
+
+  map<pair<uint32_t,uint32_t>, int> pair_freq;
+  FILE *fvc = fopen(fname,"rb");
+  if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+
+  vector<uint32_t> row;
+  uint32_t value;
+  while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
+    row.push_back(value);
+    if(value==0){
+      for(size_t i=0; i<row.size()-1; i++){ //-1 removes zero
+        uint32_t a = row[i];
+        uint32_t b = row[i+1];
+        //if(a>b) swap(a, b);
+        pair_freq[{a,b}]++;
+      }
+      row.clear();
+    }
+  }
+  fclose(fvc);
+
+  return pair_freq;
+}
+
+// compute pair frequencies (only for the topk symbols)
 map<pair<uint32_t,uint32_t>, int> get_pair_freq(char* fname, unordered_set<uint32_t> is_top){
 
   map<pair<uint32_t,uint32_t>, int> pair_freq;
@@ -915,12 +941,25 @@ int main (int argc, char **argv) {
 
     if(split){
 
+      /*
       //open the file and get wcode_freq
       unordered_map<uint32_t, int> wcode_freq;
       get_wcode_freq(fname, wcode_freq, cols);
-
+      
       if(debug==2)
         for(auto& w:wcode_freq) cout<<"<"<<w.first<<">: "<<w.second<<endl;
+      */
+
+      /**/
+      //FELIPE
+      map<pair<uint32_t,uint32_t>, int> pair_freq = get_all_pair_freq(fname);
+      if(debug){
+        for (const auto& [p, freq] : pair_freq) {
+          std::cout << "(" << p.first << ", " << p.second << ") -> "
+            << freq << "\n";
+        }
+      }
+      /**/
 
       fvc = fopen(fname,"rb");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
@@ -946,6 +985,7 @@ int main (int argc, char **argv) {
         if(value==0){
 
           vector<uint32_t> row_A1, row_A2;
+          /*
           for(auto it=row.begin(); it != std::prev(row.end()); it++){
             auto r = *it;
             if(wcode_freq[r]>split) row_A1.push_back(r);
@@ -953,9 +993,52 @@ int main (int argc, char **argv) {
               row_A2.push_back(r);
             }
           }
+          */
+          /**/
+          //FELIPE
+          // first symbol
+          //TODO: ordenar (e remover) pela mediana de wcode_freq 
+          size_t n = row.size()-1;
+
+          if(n>1 && pair_freq[{row[0],row[1]}] < split ){
+            row_A2.push_back(row[0]);
+          }
+          else{
+            row_A1.push_back(row[0]);
+          }
+
+          for(size_t i = 1; i < n-1; i++){
+
+            auto a = row[i-1];
+            auto b = row[i];
+            auto c = row[i+1];
+
+            bool left_small  = (pair_freq[{a,b}] < split);
+            bool right_small = (pair_freq[{b,c}] < split);
+
+            if(left_small && right_small){
+              row_A2.push_back(b);
+            }
+            else{
+              row_A1.push_back(b);
+            }
+          }
+
+          // last symbol
+          if(n>1){
+            if(pair_freq[{row[n-2],row[n-1]}] < split ){
+          //    cout<<"==> "<<row[n-1]<<endl;
+              row_A2.push_back(row[n-1]);
+            }
+            else{
+              row_A1.push_back(row[n-1]);
+            }
+          }
+          /**/
 
           n_A1 += row_A1.size();
           n_A2 += row_A2.size();
+
 
           row_A1.push_back(*row.rbegin());
           //gap-encode below
@@ -974,6 +1057,7 @@ int main (int argc, char **argv) {
           row.clear();
         }
       }      
+      cout<<n_A1<<" + "<<n_A2<<endl;
       fclose(fvc_A1);
       fclose(fvc_A2);
 
