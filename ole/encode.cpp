@@ -18,18 +18,20 @@ void run(std::vector<uint32_t> input, std::string input_name){
   size_t start = 0;
   for (size_t i = 0; i <= input.size(); ++i) {
     if (i == input.size() || input[i] == 0) { // end of sequence
-      sort(input.begin() + start, input.begin() + i);
-      // replace values by gaps inside the same sequence
-      for (size_t j = i - 1; j > start; --j) {
-        input[j] = input[j] - input[j-1];
+      if(i > start+1){
+        sort(input.begin() + start, input.begin() + i);
+        // replace values by gaps inside the same sequence
+        for (size_t j = i - 1; j > start; --j) {
+          input[j] = input[j] - input[j-1];
+        }
       }
       start = i + 1;
     }
   }
 
-  /*
+  /*  
   for(auto &v: input) cout<<v<<" ";
-  cout<<endl;
+     cout<<endl;
   */
 
   // save file (overwrite)
