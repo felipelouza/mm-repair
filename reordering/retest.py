@@ -13,13 +13,13 @@ Currently supported algorithms:
   
 """
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m']
+Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
 
 Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
-         'airline78':(14462943, 29)}
+         'airline78':(14462943, 29), 'imagenet':(1262102,900)}
 
-Data_dir = '../data/'
+Data_dir = '/mnt/data/datasets/machine-learning-matrices-reorder/'
 Logfile_name = "retest.log"
 Time_exe = "/usr/bin/time"
 Timelimit = 180000
