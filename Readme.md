@@ -20,7 +20,7 @@ Clone/download then `make`
 
 Given the [covtype](https://www.kaggle.com/giovannimanzini/some-machine-learning-matrices?select=covtype) matrix in csv format (581012 rows, 54 columns) we compress it with the command:
 ```bash
-matrepair -r somedir/covtype.csv 581012 54
+matrepair -r somedir/covtype 581012 54
 ```
 that creates in the directory `somedir` the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see [Available Matrix Compression Formats](Available-Matrix-Compression-Formats)). 
 
@@ -238,3 +238,26 @@ Tool to strip the initial or final columns and/or the initial rows from a csv ma
 
 ### others/mat2csrv.py
 Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8 byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by `csvmat2csrv` and  `bin2csrv[if]`.
+
+### Citation
+
+If you use this software or the techniques described herein in your research, please cite the following paper:
+
+```bibtex
+@article{10.14778/3547305.3547321,
+author = {Ferragina, Paolo and Manzini, Giovanni and Gagie, Travis and K\"{o}ppl, Dominik and Navarro, Gonzalo and Striani, Manuel and Tosoni, Francesco},
+title = {Improving matrix-vector multiplication via lossless grammar-compressed matrices},
+year = {2022},
+issue_date = {June 2022},
+publisher = {VLDB Endowment},
+volume = {15},
+number = {10},
+issn = {2150-8097},
+url = {https://doi.org/10.14778/3547305.3547321},
+doi = {10.14778/3547305.3547321},
+journal = {Proc. VLDB Endow.},
+month = jun,
+pages = {2175–2187},
+numpages = {13}
+}
+```

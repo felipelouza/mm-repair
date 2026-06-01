@@ -21,7 +21,7 @@ def hash(s, separator='\.') :
     #check whether s represent 0
     regex = '^[+-]?([0-9]+)({separator}([0-9]+))?'.format(separator=separator)
     res = re.search(regex, s)
-    assert(res)
+    assert(res), f"Called with [{s}], res={res}"
     
     is_zero = True
     for ch in res.group(1) :
@@ -78,7 +78,7 @@ if __name__ == '__main__' :
 
     infile = open(infilepath, 'r')
     for i,line in _readlines(infile) :
-        values = [hash(s) for s in line[:-1].split(',')]
+        values = [hash(s.lstrip()) for s in line[:-1].split(',')]
         assert(len(values) == ncols)
         for v,f in zip(values,outfiles) :
             if v :

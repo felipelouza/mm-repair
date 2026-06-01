@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import subprocess, os.path, sys, argparse, time, struct
+from pathlib import Path
 
 Description = """
 Split into row blocks and reorder a collection of files
@@ -18,10 +19,7 @@ Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174)
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
          'airline78':(14462943, 29)}
 
-#Files = ['covtype']
-#Sizes = {'covtype':(581012, 54)}
-
-Data_dir = '/mnt/data/datasets/machine-learning-matrices-reorder/'
+Data_dir = '../data/'
 Logfile_name = "retest.log"
 Time_exe = "/usr/bin/time"
 Timelimit = 180000
@@ -91,6 +89,10 @@ def main():
   parser.add_argument('-d',    help='data directory (def. %s)' % Data_dir, type=str, default=Data_dir)
   parser.add_argument('-b',    help='number of row blocks (def 4)', default=4, type=int)
   parser.add_argument('-k',    help='pruning parameter (default: 16)', type=int, default=16)
+  parser.add_argument('--files',help="colon separated list of file names eg matA:matB",type=str,default="")
+  parser.add_argument('--sizes',help="colon separated list of matrix sizes eg. 1000x30:5000x20\n"
+                                     "SIZES must contain the sizes of the matrices in FILES",type=str,default="")
+
   args = parser.parse_args()
 
   #params
@@ -99,6 +101,11 @@ def main():
     algos_s = '|'.join(algolist)
     print('Unknown algorithm: must be', algos_s)
     sys.exit(1)
+
+  #check --sizes was not given without --files
+  if len(args.sizes)>0 and len(args.files)==0:
+    print("Error: option --sizes requires --files")
+    sys.exit(1)
      
   absdir = os.path.abspath(args.d)
   if os.path.isdir(absdir):
@@ -106,6 +113,21 @@ def main():
   else:
     print("ERROR: Invalid data directory")
     sys.exit(2)
+
+  # get file list if available
+  global Files, Sizes
+  if len(args.files)>0:
+    Files = args.files.split(':')
+    # check if argument --size was given as well
+    if len(args.sizes)>0:
+      sizes = args.sizes.split(':')
+      if len(Files)!=len(sizes):
+        print("Error: --files and --sizes must have the same number of elements")
+        sys.exit(1)
+      # add sizes to global dictionary Sizes
+      for i in range(len(Files)):
+        Sizes[Files[i]] = tuple([int(x) for x in sizes[i].split('x')])
+        Sizes[Files[i]] = tuple([int(x) for x in sizes[i].split('x')])
     
   if args.b<1:
     print("ERROR: Invalid number of blocks (must be >0)") 
@@ -171,4 +193,6 @@ def main():
 
        
 if __name__ == '__main__':
+  print("Setting the working directory to:", Path(__file__).resolve().parent) 
+  os.chdir(Path(__file__).resolve().parent)
   main()
