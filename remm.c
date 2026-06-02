@@ -55,7 +55,6 @@ static void *block_main(void *v);
 static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n);
 static void remat_mult_mth(rematrix *m,vector *x,vector *yv, tdata *td, int n);
 
-
 int main (int argc, char **argv) { 
   extern char *optarg;
   extern int optind, opterr, optopt;

@@ -63,10 +63,11 @@ class Graph:
             rank.append(0)
         i,e = 0,0
 
-        ## FELIPE
         #sorting edges by decreasing weight
         self.graph = sorted(self.graph, key=lambda item: item[2])
 
+        ## FELIPE
+        """
         n = len(self.graph)
         mid = n // 2
 
@@ -87,7 +88,7 @@ class Graph:
             d += 1
 
         self.graph = reordered
-        ## FELIPE
+        """
         ##
 
 

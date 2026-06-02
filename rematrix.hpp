@@ -43,6 +43,10 @@
 
 #define VFILE_EXT ".val"
 
+#ifdef WCODE
+  #define WFILE_EXT ".wcode"
+#endif 
+
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
 
@@ -87,6 +91,11 @@ typedef struct {
 #else
   sdsl::int_vector<> Ccseq; // int-vector C from repair
 #endif  
+#ifdef WCODE
+  FILE *Wf;       
+  int32_t *W;
+  size_t Wsize;
+#endif
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
 } rematrix;  
@@ -127,6 +136,27 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   
   // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
+
+  // --- open WCODE file
+  #ifdef WCODE
+  strcpy(fname,basename);
+  strcat(fname,WFILE_EXT);
+  f = fopen(fname, "rb"); 
+  if(f == NULL) die("Cannot open WCODE file");
+  if(fseek(f, 0, SEEK_END)) die("Error seeking WCODE file");
+  long size = ftell(f);
+  if(size < 0) die("Error reading WCODE file size");
+  rewind(f);
+  m->Wsize = size / sizeof(int32_t);
+  m->W = (int32_t *) malloc(m->Wsize * sizeof(int32_t));
+  if(m->W == NULL)  die("Cannot allocate WCODE array");
+  if(fread(m->W, sizeof(int32_t), m->Wsize, f) != m->Wsize)
+    die("Cannot read WCODE file");
+  int i=0;
+  for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
+  fclose(f); 
+  #endif
+  
   
   // --- open and read C file
   strcpy(fname,basename);
@@ -204,7 +234,7 @@ void remat_mult(rematrix *m, vector *x, vector *y)
      sum += m->NTval[i];
     }
     else if(i>0) {// terminal representing a matrix entry
-     sum += decode_mult_entry(i-1,m,x);
+     sum += decode_mult_entry(i,m,x);
     }
     else { // i==0 row completed
      y->v[ycur] = (matval) sum;
@@ -258,7 +288,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
       m->NTval[i] += y->v[ycur];
     }
     else if(i>0) {// terminal representing a matrix entry
-      a = decode_entry(i-1,m,&col);
+      a = decode_entry(i,m,&col);
       assert(col<x->size);
       x->v[col] += a * y->v[ycur];
     }
@@ -293,6 +323,10 @@ void remat_destroy(rematrix *m, bool free_vals)
 // get value and column from terminal representing a matrix entry
 xmatval decode_entry(int p, rematrix *m, size_t *c)
 {
+  #ifdef WCODE
+    p = m->W[p];
+  #endif
+  p = p-1;
   *c = p % m->cols;
   size_t pval = p/m->cols;
   if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_entry)");
@@ -305,6 +339,10 @@ xmatval decode_entry(int p, rematrix *m, size_t *c)
 // value is multiplied by the corresponding X entry 
 xmatval decode_mult_entry(int p, rematrix *m, vector *x)
 {
+  #ifdef WCODE
+    p = m->W[p];
+  #endif
+  p = p-1;
   size_t pcol = p % m->cols;
   size_t pval = p/m->cols;
   if(pval>=m->Mnum) die("Illegal value reference found in terminal symbol (decode_mult_entry)");
@@ -367,7 +405,7 @@ static void propagate_NTval(rematrix *m, vector *x)
       }
       else { // terminal symbol
         if(p==0) die("Unique row separator found in rule (propagate_NTval)");
-        a = decode_entry(p-1,m,&col);
+        a = decode_entry(p,m,&col);
         assert(col<x->size);
         x->v[col] += a * s;
       }
@@ -406,7 +444,7 @@ static void fill_NTval(rematrix *m, vector *x, bool share)
           if(DEBUG) printf("%d-sep: %d  ",j,p);//!!!!!!!!
           die("Unique row separator found in rule");
         }
-        sum += decode_mult_entry(p-1,m,x);
+        sum += decode_mult_entry(p,m,x);
         #ifndef INT_VALS 
         if(DEBUG) printf("%d-t: col:%d val:%f ",j,(p-1)%m->cols,m->Mval[(p-1)/m->cols]);//!!!!!!!
         #else

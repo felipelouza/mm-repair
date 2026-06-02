@@ -15,13 +15,13 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet']
+Files = ['susy','higgs','airline78','covtype.csv', 'census', 'optical', 'mnist2m', 'imagenet']
 
 Data_dir = 'data/'
 Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
 
-Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
+Sizes = {'covtype.csv':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
          'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
          'airline78':(14462943, 29),'imagenet':(1262102, 900) }
 
@@ -147,7 +147,7 @@ def test_compress(args, logfile, drv=False):
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -y -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols}"
+    command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
