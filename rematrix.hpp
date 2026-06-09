@@ -24,6 +24,7 @@
 #include <sdsl/int_vector.hpp>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #ifdef USE_ANSIV
   #include <algorithm>
@@ -45,6 +46,7 @@
 
 #ifdef WCODE
   #define WFILE_EXT ".wcode"
+  #define WFILE_EXT_ANS ".wcode.ansf.1"
 #endif 
 
 // set to 1 to print a lot of debug information 
@@ -140,46 +142,66 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   // --- open WCODE file
   #ifdef WCODE
   strcpy(fname,basename);
-  strcat(fname,WFILE_EXT);
-  f = fopen(fname, "rb"); 
-  if(f == NULL) die("Cannot open WCODE file");
-  if(fseek(f, 0, SEEK_END)) die("Error seeking WCODE file");
-  long size = ftell(f);
-  if(size < 0) die("Error reading WCODE file size");
-  rewind(f);
-  m->Wsize = size / sizeof(int32_t);
-  m->W = (int32_t *) malloc(m->Wsize * sizeof(int32_t));
-  if(m->W == NULL)  die("Cannot allocate WCODE array");
-  if(fread(m->W, sizeof(int32_t), m->Wsize, f) != m->Wsize)
-    die("Cannot read WCODE file");
-  int i=0;
-  for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
-  fclose(f); 
+    #ifdef USE_ANSIV
+      strcat(fname,WFILE_EXT_ANS);
+      std::vector<uint8_t> in_u8;
+      in_u8 = read_file_u8(fname);
+      // size of compressed data
+      size_t cSrcSize = in_u8.size()-sizeof(size_t);
+      // retrieve decompressed file size
+      size_t original_size = *((size_t *) in_u8.data() );
+      auto ans_dec = ANSf_decoder<1>();
+      ans_dec.init(in_u8.data()+sizeof(size_t), cSrcSize, original_size);
+      m->Wsize = original_size;
+      m->W = (int32_t*) malloc(m->Wsize*sizeof(int32_t));
+      if(m->W == NULL)  die("Cannot allocate WCODE array");
+      size_t decoded = 0;
+      while(decoded < m->Wsize) {
+        size_t d = ans_dec.decode((uint32_t*)(m->W + decoded), std::min((size_t)(1<<BUF_LOG2), m->Wsize - decoded));
+        if(d == 0) die("Error decoding WCODE file");
+        decoded += d;
+      }   
+    #else
+      strcat(fname,WFILE_EXT);
+      f = fopen(fname, "rb"); 
+      if(f == NULL) die("Cannot open WCODE file");
+      if(fseek(f, 0, SEEK_END)) die("Error seeking WCODE file");
+      long size = ftell(f);
+      if(size < 0) die("Error reading WCODE file size");
+      rewind(f);
+      m->Wsize = size / sizeof(int32_t);
+      m->W = (int32_t *) malloc(m->Wsize * sizeof(int32_t));
+      if(m->W == NULL)  die("Cannot allocate WCODE array");
+      if(fread(m->W, sizeof(int32_t), m->Wsize, f) != m->Wsize)
+        die("Cannot read WCODE file");
+      fclose(f); 
+    #endif
+    int i=0;
+    for(i=1;i<m->Wsize; i++) m->W[i]+=m->W[i-1];
   #endif
-  
   
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
   if (stat (fname,&s) != 0) die("Cannot stat C (" CFILE_EXT ") file");
-#ifdef USE_ANSIV  
-  f = fopen (fname,"r");
-  if (f == NULL) die("Cannot open C (" CFILE_EXT ") file");
-  m->Cclen = s.st_size;
-  m->Ccseq = new uint8_t[m->Cclen];
-  if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,f)!=m->Cclen)
-   die("Cannot read " CFILE_EXT " file");    
-  if(fclose(f)) 
-    die("Error closing C (" CFILE_EXT ") file");
-  // extract decompressed length and remove it from compressed data 
-  m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
-  m->Ccseq += sizeof(size_t);
-  m->Cclen -= sizeof(size_t);  
-#else
-  // much simpler if Ccseq is just an int_vector
-  load_from_file(m->Ccseq,std::string(fname));
-  m->Clen = m->Ccseq.size();
-#endif
+  #ifdef USE_ANSIV  
+    f = fopen (fname,"r");
+    if (f == NULL) die("Cannot open C (" CFILE_EXT ") file");
+    m->Cclen = s.st_size;
+    m->Ccseq = new uint8_t[m->Cclen];
+    if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,f)!=m->Cclen)
+     die("Cannot read " CFILE_EXT " file");    
+    if(fclose(f)) 
+      die("Error closing C (" CFILE_EXT ") file");
+    // extract decompressed length and remove it from compressed data 
+    m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
+    m->Ccseq += sizeof(size_t);
+    m->Cclen -= sizeof(size_t);  
+  #else
+    // much simpler if Ccseq is just an int_vector
+    load_from_file(m->Ccseq,std::string(fname));
+    m->Clen = m->Ccseq.size();
+  #endif
   // allocate decompressed buffer
   m->Cseq = (int *) malloc((1<<BUF_LOG2)*sizeof(int));
   if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
