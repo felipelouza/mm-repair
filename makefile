@@ -66,7 +66,7 @@ remm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 
 # sdsl IV for R, ANS for C
 remm2: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
-	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV -DWCODE
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV -DWCODE -DOLE
 
 
 # not reported in the VLDB paper: not an interesting time/space tradeoff for the dataset

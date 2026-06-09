@@ -33,7 +33,7 @@
   #define CFILE_EXT ".vc.C.ansf.1"
   #include "ans/decode.hpp"
   #define RFILE_EXT ".vc.R.iv"
-  #define BUF_LOG2 20                  // log of (size decompression buffer)  
+  #define BUF_LOG2 2                  // log of (size decompression buffer)  
 #else
   #define CFILE_EXT ".vc.C.iv"
   #define RFILE_EXT ".vc.R.iv"
@@ -144,6 +144,21 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   strcpy(fname,basename);
     #ifdef USE_ANSIV
       strcat(fname,WFILE_EXT_ANS);
+      if (stat (fname,&s) != 0) die("Cannot stat WCODE (" WFILE_EXT_ANS ") file");
+      f = fopen (fname,"r");
+      if (f == NULL) die("Cannot open WCODE (" WFILE_EXT_ANS ") file");
+      size_t fsize = s.st_size;
+      uint8_t *in_u8 = new uint8_t[fsize];
+      if(fread(in_u8,sizeof(uint8_t),fsize,f)!=fsize) die("Cannot read WCODE " WFILE_EXT_ANS " file");    
+      if(fclose(f)) die("Error closing WCODE (" WFILE_EXT_ANS") file");
+      // size of compressed data
+      size_t cSrcSize = fsize-sizeof(size_t);
+      // retrieve decompressed file size
+      size_t original_size = *((size_t *) in_u8);
+      auto ans_dec = ANSf_decoder<1>();
+      ans_dec.init(in_u8+sizeof(size_t), cSrcSize, original_size);
+    /*
+      strcat(fname,WFILE_EXT_ANS);
       std::vector<uint8_t> in_u8;
       in_u8 = read_file_u8(fname);
       // size of compressed data
@@ -152,6 +167,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
       size_t original_size = *((size_t *) in_u8.data() );
       auto ans_dec = ANSf_decoder<1>();
       ans_dec.init(in_u8.data()+sizeof(size_t), cSrcSize, original_size);
+    */
       m->Wsize = original_size;
       m->W = (int32_t*) malloc(m->Wsize*sizeof(int32_t));
       if(m->W == NULL)  die("Cannot allocate WCODE array");
@@ -161,6 +177,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
         if(d == 0) die("Error decoding WCODE file");
         decoded += d;
       }   
+      delete[] in_u8;
     #else
       strcat(fname,WFILE_EXT);
       f = fopen(fname, "rb"); 
@@ -238,6 +255,7 @@ void remat_mult(rematrix *m, vector *x, vector *y)
   #endif
   int ycur = 0;
   xmatval sum=0;
+  uint32_t acc=0;
   for(size_t j=0; j < m->Clen; j++) {
     if((j & BUF_MASK) ==0) {
       // fill the buffer 
@@ -248,6 +266,15 @@ void remat_mult(rematrix *m, vector *x, vector *y)
       #else
       for(size_t d = 0; d < to_read; d++)
         m->Cseq[d] = m->Ccseq[d+j];  // decode a bunch of packed ints
+      #endif
+      #ifdef OLE
+      size_t j = 0;
+      while(j < to_read){
+        if(m->Cseq[j]==0) acc=0;
+        else m->Cseq[j] += acc;
+        acc = m->Cseq[j];
+        j++;
+      }
       #endif
     }
     int i = m->Cseq[j&BUF_MASK]; // read a single int from buffer    
@@ -291,6 +318,7 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0;
+  uint32_t acc=0;
   for(size_t j=0; j<m->Clen;j++) {  
     if((j & BUF_MASK) ==0) {
       size_t to_read = std::min((size_t)(1<<BUF_LOG2), m->Clen -j);
@@ -300,6 +328,15 @@ void remat_left_mult(vector *y, rematrix *m, vector *x)
       #else
       for(size_t d = 0; d < to_read; d++)
         m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+      #endif
+      #ifdef OLE
+      size_t j = 0;
+      while(j < to_read){
+        if(m->Cseq[j]==0) acc=0;
+        else m->Cseq[j] += acc;
+        acc = m->Cseq[j];
+        j++;
+      }
       #endif
     }
     int i = m->Cseq[j&BUF_MASK];    // read a single int from buffer

@@ -18,7 +18,7 @@ format with entries respectively of type int32, float32 and float64.
 Files = ['susy','higgs','airline78','covtype.csv', 'census', 'optical', 'mnist2m', 'imagenet']
 
 Data_dir = 'data/'
-Logfile_name = "errors.log"
+Logfile_name = "errors2.log"
 Time_exe = "/usr/bin/time"
 
 Sizes = {'covtype.csv':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
@@ -31,7 +31,7 @@ Algos = ['remm2']
 
 # name of files containing the input/output vectors
 # these files are created by this script at each execution
-Xvname = "x1.dbl"
+Xvname = "x2.dbl"
 Yvname = "y.dbl"
 Zvname = "z.dbl"
 Evname = "ein.dbl"
@@ -148,7 +148,7 @@ def test_compress(args, logfile, drv=False):
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --mapping"
+    command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --mapping --ole"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
