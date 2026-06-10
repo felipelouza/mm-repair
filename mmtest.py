@@ -15,15 +15,15 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy','higgs','airline78','covtype.csv', 'census', 'optical', 'mnist2m', 'imagenet']
+Files = ['susy.csv','higgs.csv','airline78.csv','covtype.csv', 'census.csv', 'optical.csv', 'mnist2m.csv', 'imagenet.csv']
 
 Data_dir = 'data/'
-Logfile_name = "errors.log"
+Logfile_name = "errors2.log"
 Time_exe = "/usr/bin/time"
 
-Sizes = {'covtype.csv':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
-         'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),  
-         'airline78':(14462943, 29),'imagenet':(1262102, 900) }
+Sizes = {'covtype.csv':(581012, 54), 'census.csv':(2458285, 68), 'optical.csv':(325834, 174),
+         'susy.csv':(5000000, 18), 'higgs.csv': (11000000,  28), 'mnist2m.csv':(2000000,784),
+         'airline78.csv':(14462943, 29),'imagenet.csv':(1262102, 900) }
 
 # matrix mutiplication algorithms to be tested
 Algos = ['csrvmm', 're32mm','reivmm','remm']
