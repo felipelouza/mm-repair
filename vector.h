@@ -124,6 +124,14 @@ xmatval vector_scalar_prod(vector *v, vector *w)
   }
   return sp;  
 }
+// sum of two vector
+void vector_sum(vector *v, vector *w)
+{
+  assert(v->size==w->size);
+  for(int i=0;i<w->size;i++) {
+    v->v[i] += w->v[i];
+  }
+}
 // set an existing vector to 0
 void vector_set_zero(vector *v, int dim)
 {

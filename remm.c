@@ -15,6 +15,11 @@
 #else
 #include "rematrix.h"
 #endif
+
+#if SPLIT 
+#include "csrmatrix.hpp"
+#endif
+
 #ifdef MALLOC_COUNT
 #include "tools/malloc_count.h"
 #endif
@@ -122,6 +127,17 @@ int main (int argc, char **argv) {
     m = remat_create(rows,cols,argv[1],true); 
   else 
     rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+
+  #if SPLIT
+  // ------------ read matrix or row blocks
+  csr_rematrix *csr_m = NULL;
+  csr_rematrix **csr_rblocks = NULL; 
+  if(nblocks==1)
+    csr_m = csr_remat_create(rows,cols,argv[1],true); 
+//TODO
+//  else 
+//    csr_rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+  #endif
     
   // ------------ read input vector
   f = fopen(argv[4],"rb");
@@ -136,7 +152,14 @@ int main (int argc, char **argv) {
   vector_set_zero(y,rows);
   vector *z = vector_create(); // do we really need z?
   vector_set_zero(z,cols);     // maybe we can just compute y=Mx, x^t = y^t M 
+  #if SPLIT
+    vector *y2 = vector_create();
+    vector_set_zero(y2,rows);
+    vector *z2 = vector_create();
+    vector_set_zero(z2,cols);     
+  #endif
 
+//TODO
   // data structures for multithread computation (nblocks>1)
   vector *yv = NULL;  // array of subvectors
   tdata td[nblocks];
@@ -144,6 +167,7 @@ int main (int argc, char **argv) {
   sem_t tsem_in[nblocks];
   sem_t tsem_out[nblocks];
   
+//TODO
   // initialize thread data
   if(nblocks>1) {
     // yv entries coincide with those of y  
@@ -161,7 +185,15 @@ int main (int argc, char **argv) {
   // compute products  
   if(nblocks==1) {
     remat_mult(m,x,y);    // y = Mx
+    #if SPLIT
+      csr_remat_mult(csr_m,x,y2);
+      vector_sum(y, y2);
+    #endif
     remat_left_mult(y,m,z);   // z = y^t M
+    #if SPLIT
+      csr_remat_left_mult(y,csr_m,z2);
+      vector_sum(z, z2);
+    #endif
   }
   else {
     remat_mult_mth(m,x,yv,td,nblocks);    // y = Mx
@@ -176,13 +208,27 @@ int main (int argc, char **argv) {
     #endif 
     memcpy(x->v,z->v,sizeof(matval)*cols);  // copy z entries to x 
     lambda = vector_normalize(x); 
-    if(nblocks==1) remat_mult(m,x,y);
+    if(nblocks==1){ 
+      remat_mult(m,x,y);
+    #if SPLIT
+      vector_set_zero(y2,rows);
+      csr_remat_mult(csr_m,x,y2);
+      vector_sum(y, y2);
+    #endif
+    }
     else remat_mult_mth(m,x,yv,td,nblocks);
     #ifdef DETAILED_TIMING
     t2 = times(&ignored);
     m1 += (t2-t1);
     #endif
-    if(nblocks==1) remat_left_mult(y,m,z);
+    if(nblocks==1){
+      remat_left_mult(y,m,z);
+    #if SPLIT
+      vector_set_zero(z2,cols);
+      csr_remat_left_mult(y,csr_m,z2);
+      vector_sum(z, z2); 
+    #endif
+    }
     else remat_left_mult_mth(yv,m,z,td,nblocks);
     #ifdef DETAILED_TIMING
     t3 = times(&ignored);
@@ -219,6 +265,10 @@ int main (int argc, char **argv) {
   // destroy 
   vector_destroy(z);
   vector_destroy(y);
+  #if SPLIT
+    vector_destroy(z2);
+    vector_destroy(y2);
+  #endif
   vector_destroy(x);
   if(nblocks==1) 
     remat_destroy(m,true);

@@ -250,7 +250,15 @@ def main():
           if(execute_command(command,logfile)!=True):
            sys.exit(6)
 
-          ole_time += time.time()-start
+          if(args.split):
+            start = time.time()
+            command = "{exe} {mfile}.B.vc ".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ole_exe), mfile=basename)
+            print("Command:", command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
+
+          ole_time = time.time()-start
           print("OLE time: {0:.4f}".format(ole_time))
 
         # ---- apply ans_fold-1 to the .vc.C file 
@@ -272,18 +280,6 @@ def main():
              sys.exit(6)
           #
           if args.split: 
-
-            if(args.ole):
-              start = time.time()
-              command = "{exe} {mfile}.B.vc ".format(ext=args.vc_ext,
-                        exe = os.path.join(args.main_dir,ole_exe), mfile=basename)
-              print("==== OLE\nCommand:", command)
-              if(execute_command(command,logfile)!=True):
-               sys.exit(6)
-
-              ole_time += time.time()-start
-              print("OLE time: {0:.4f}".format(ole_time))
-
             command = "{exe} {mfile}.B.vc".format(ext=args.vc_ext,
                       exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
             print("Command:",command)

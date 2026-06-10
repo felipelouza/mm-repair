@@ -30,13 +30,23 @@
   #include <algorithm>
   #include <cstdint>
   #define ANSf 1
-  #define CFILE_EXT ".vc.C.ansf.1"
+  #ifdef SPLIT
+    #define CFILE_EXT ".A.vc.C.ansf.1"
+    #define RFILE_EXT ".A.vc.R.iv"
+  #else
+    #define CFILE_EXT ".vc.C.ansf.1"
+    #define RFILE_EXT ".vc.R.iv"
+  #endif
   #include "ans/decode.hpp"
-  #define RFILE_EXT ".vc.R.iv"
-  #define BUF_LOG2 2                  // log of (size decompression buffer)  
+  #define BUF_LOG2 20                  // log of (size decompression buffer)  
 #else
-  #define CFILE_EXT ".vc.C.iv"
-  #define RFILE_EXT ".vc.R.iv"
+  #ifdef SPLIT
+    #define CFILE_EXT ".A.vc.C.iv"
+    #define RFILE_EXT ".A.vc.R.iv"
+  #else
+    #define CFILE_EXT ".vc.C.iv"
+    #define RFILE_EXT ".vc.R.iv"
+  #endif
   #define BUF_LOG2 18                  // log of (size decompression buffer)  
 #endif
 
@@ -45,8 +55,13 @@
 #define VFILE_EXT ".val"
 
 #ifdef WCODE
-  #define WFILE_EXT ".wcode"
-  #define WFILE_EXT_ANS ".wcode.ansf.1"
+  #ifdef SPLIT
+    #define WFILE_EXT ".A.wcode"
+    #define WFILE_EXT_ANS ".A.wcode.ansf.1"
+  #else
+    #define WFILE_EXT ".wcode"
+    #define WFILE_EXT_ANS ".wcode.ansf.1"
+  #endif
 #endif 
 
 // set to 1 to print a lot of debug information 
@@ -157,17 +172,6 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
       size_t original_size = *((size_t *) in_u8);
       auto ans_dec = ANSf_decoder<1>();
       ans_dec.init(in_u8+sizeof(size_t), cSrcSize, original_size);
-    /*
-      strcat(fname,WFILE_EXT_ANS);
-      std::vector<uint8_t> in_u8;
-      in_u8 = read_file_u8(fname);
-      // size of compressed data
-      size_t cSrcSize = in_u8.size()-sizeof(size_t);
-      // retrieve decompressed file size
-      size_t original_size = *((size_t *) in_u8.data() );
-      auto ans_dec = ANSf_decoder<1>();
-      ans_dec.init(in_u8.data()+sizeof(size_t), cSrcSize, original_size);
-    */
       m->Wsize = original_size;
       m->W = (int32_t*) malloc(m->Wsize*sizeof(int32_t));
       if(m->W == NULL)  die("Cannot allocate WCODE array");
@@ -194,9 +198,11 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
       fclose(f); 
     #endif
     int i=0;
-    for(i=1;i<m->Wsize; i++) m->W[i]+=m->W[i-1];
+    for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
   #endif
-  
+
+
+
   // --- open and read C file
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT);
@@ -375,6 +381,9 @@ void remat_destroy(rematrix *m, bool free_vals)
   sdsl::util::clear(m->Ccseq);
 #endif
   if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
+#ifdef WCODE
+  free(m->W);
+#endif
   delete m;
 }
 
