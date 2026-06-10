@@ -43,7 +43,7 @@ using namespace std;
 #define COMPLEX_INPUT 4
 #define NO_COL_ID 8
 
-#define SPLIT_A2 1
+#define SPLIT_AB 1
 #define ENCODE_32 1
 
 /* Note: the option to store the values in the .val file as floats or int32s 
@@ -65,7 +65,7 @@ static void usage_and_exit(char *name)
     fprintf(stderr,"\t\t-i             save entries as int32s (debug only)\n");
     fprintf(stderr,"\t\t-n             don't store col id (drv format, debug only)\n");
     fprintf(stderr,"\t\t-r opt         reorder elements within each row (independently)\n");
-    fprintf(stderr,"\t\t-s opt         split S into A1 and A2 (according to some criteria)\n");
+    fprintf(stderr,"\t\t-s             split S into A and B\n");
     fprintf(stderr,"\t\t-m             map values in string C to [1..wcodes]\n");
     fprintf(stderr,"\t\t-d             debug prints\n");
     fprintf(stderr,"\t\t-v             verbose\n");
@@ -623,7 +623,7 @@ int main (int argc, char **argv) {
 
   /* ------------- read options from command line ----------- */
   opterr = 0;
-  while ((c=getopt(argc, argv, "b:cfir:s:mdnv")) != -1) {
+  while ((c=getopt(argc, argv, "b:cfir:smdnv")) != -1) {
     switch (c) 
     {
       case 'v':
@@ -641,7 +641,7 @@ int main (int argc, char **argv) {
       case 'm':
         map_alpha++; break;
       case 's':
-        split=atoi(optarg); break;
+        split++; break;
       case 'd':
         debug++; break;
       case 'b':
@@ -714,7 +714,7 @@ int main (int argc, char **argv) {
   const char *mext_wcode = ".wcode";
 
   // main loop reading csv file 
-  size_t n=0, n_A1=0, n_A2=0;
+  size_t n=0, n_A=0, n_B=0;
   char *buffer=NULL;
   for(int bn=0;bn<nblocks;bn++) {
     if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
@@ -872,7 +872,6 @@ int main (int argc, char **argv) {
       unordered_map<uint32_t, int> wcode_freq;
       get_wcode_freq(fname, wcode_freq, cols);
 
-      //TODO
       //vector<pair<uint32_t, int>> topk = get_wcode_topk(wcode_freq, 10000+1); //+1 because of the zeros
       vector<pair<uint32_t, int>> topk = get_wcode_top_by_column(wcode_freq, cols, k); 
 
@@ -894,7 +893,6 @@ int main (int argc, char **argv) {
         }
       }
 
-      //TODO: pathcover
       vector<uint32_t> PI = pathcover(pair_freq, cols);
 
       FILE *fvc = fopen(fname,"r+b");
@@ -941,17 +939,6 @@ int main (int argc, char **argv) {
 
     if(split){
 
-      /*
-      //open the file and get wcode_freq
-      unordered_map<uint32_t, int> wcode_freq;
-      get_wcode_freq(fname, wcode_freq, cols);
-      
-      if(debug==2)
-        for(auto& w:wcode_freq) cout<<"<"<<w.first<<">: "<<w.second<<endl;
-      */
-
-      /**/
-      //FELIPE
       map<pair<uint32_t,uint32_t>, int> pair_freq = get_all_pair_freq(fname);
       if(debug){
         for (const auto& [p, freq] : pair_freq) {
@@ -959,53 +946,33 @@ int main (int argc, char **argv) {
             << freq << "\n";
         }
       }
-      /**/
-
       fvc = fopen(fname,"rb");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
 
       //open_file()
-      char fname_A1[PATH_MAX];
-      if(nblocks==1) snprintf(fname_A1,PATH_MAX,"%s.%s%s",argv[1],"A1", mext);
-      else snprintf(fname_A1,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "A1",mext);
-      FILE *fvc_A1 = fopen(fname_A1,"w");
-      if(fvc_A1==NULL) quit("Cannot open a .vc/.dv file");
+      char fname_A[PATH_MAX];
+      if(nblocks==1) snprintf(fname_A,PATH_MAX,"%s.%s%s",argv[1],"A", mext);
+      else snprintf(fname_A,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "A",mext);
+      FILE *fvc_A = fopen(fname_A,"w");
+      if(fvc_A==NULL) quit("Cannot open a .vc/.dv file");
 
       //open_file()
-      char fname_A2[PATH_MAX];
-      if(nblocks==1) snprintf(fname_A2,PATH_MAX,"%s.%s%s",argv[1],"A2", mext);
-      else snprintf(fname_A2,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A2",mext);
-      FILE *fvc_A2 = fopen(fname_A2,"w");
-      if(fvc_A2==NULL) quit("Cannot open a .vc/.dv file");
+      char fname_B[PATH_MAX];
+      if(nblocks==1) snprintf(fname_B,PATH_MAX,"%s.%s%s",argv[1],"B", mext);
+      else snprintf(fname_B,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"B",mext);
+      FILE *fvc_B = fopen(fname_B,"w");
+      if(fvc_B==NULL) quit("Cannot open a .vc/.dv file");
 
       vector<uint32_t> row, ones;
       uint32_t value, wr_modified=0;
       while(fread(&value, sizeof(uint32_t), 1, fvc)==1){
         row.push_back(value);
         if(value==0){
-
-          vector<uint32_t> row_A1, row_A2;
-          /*
-          for(auto it=row.begin(); it != std::prev(row.end()); it++){
-            auto r = *it;
-            if(wcode_freq[r]>split) row_A1.push_back(r);
-            else{
-              row_A2.push_back(r);
-            }
-          }
-          */
-          /**/
-          //FELIPE
-          // first symbol
+          vector<uint32_t> row_A, row_B;
           //TODO: ordenar (e remover) pela mediana de wcode_freq 
           size_t n = row.size()-1;
-
-          if(n>1 && pair_freq[{row[0],row[1]}] < split ){
-            row_A2.push_back(row[0]);
-          }
-          else{
-            row_A1.push_back(row[0]);
-          }
+          if(n>1 && pair_freq[{row[0],row[1]}] <= split ) row_B.push_back(row[0]);
+          else row_A.push_back(row[0]);
 
           for(size_t i = 1; i < n-1; i++){
 
@@ -1013,66 +980,52 @@ int main (int argc, char **argv) {
             auto b = row[i];
             auto c = row[i+1];
 
-            bool left_small  = (pair_freq[{a,b}] < split);
-            bool right_small = (pair_freq[{b,c}] < split);
+            bool left_small  = (pair_freq[{a,b}] <= split);
+            bool right_small = (pair_freq[{b,c}] <= split);
 
-            if(left_small && right_small){
-              row_A2.push_back(b);
-            }
-            else{
-              row_A1.push_back(b);
-            }
+            if(left_small && right_small) row_B.push_back(b);
+            else row_A.push_back(b);
           }
-
           // last symbol
           if(n>1){
-            if(pair_freq[{row[n-2],row[n-1]}] < split ){
-          //    cout<<"==> "<<row[n-1]<<endl;
-              row_A2.push_back(row[n-1]);
-            }
-            else{
-              row_A1.push_back(row[n-1]);
-            }
+            if(pair_freq[{row[n-2],row[n-1]}] <= split ) row_B.push_back(row[n-1]);
+            else row_A.push_back(row[n-1]);
           }
-          /**/
+          n_A += row_A.size();
+          n_B += row_B.size();
 
-          n_A1 += row_A1.size();
-          n_A2 += row_A2.size();
-
-
-          row_A1.push_back(*row.rbegin());
-          //gap-encode below
-          if(row_A2.size()>0){
+          row_A.push_back(*row.rbegin());
+          if(row_B.size()>0){
             wr_modified++;
-            sort(row_A2.begin(), row_A2.end());
+            //gap-encode below
+            //sort(row_B.begin(), row_B.end());
           }
-          row_A2.push_back(*row.rbegin());
+          row_B.push_back(*row.rbegin());
 
-
-          if(fwrite(row_A1.data(), sizeof(uint32_t), row_A1.size(), fvc_A1)!=row_A1.size())
-            quit("Error writing to .A1.vc file");
-          if(fwrite(row_A2.data(), sizeof(uint32_t), row_A2.size(), fvc_A2)!=row_A2.size())
-            quit("Error writing to .A2.vc file");
+          if(fwrite(row_A.data(), sizeof(uint32_t), row_A.size(), fvc_A)!=row_A.size())
+            quit("Error writing to .A.vc file");
+          if(fwrite(row_B.data(), sizeof(uint32_t), row_B.size(), fvc_B)!=row_B.size())
+            quit("Error writing to .B.vc file");
 
           row.clear();
         }
       }      
-      cout<<n_A1<<" + "<<n_A2<<endl;
-      fclose(fvc_A1);
-      fclose(fvc_A2);
+      cout<<n_A<<" + "<<n_B<<endl;
+      fclose(fvc_A);
+      fclose(fvc_B);
 
       if(map_alpha){
-        //new alphabet for A1
-        char fname_A1_alpha[PATH_MAX];
-        if(nblocks==1) snprintf(fname_A1_alpha,PATH_MAX,"%s.%s%s",argv[1],"A1",mext_wcode);
-        else snprintf(fname_A1_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A1",mext_wcode);
-        maxcode = map_alphabet(fname_A1, fname_A1_alpha, debug);
+        //new alphabet for A
+        char fname_A_alpha[PATH_MAX];
+        if(nblocks==1) snprintf(fname_A_alpha,PATH_MAX,"%s.%s%s",argv[1],"A",mext_wcode);
+        else snprintf(fname_A_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A",mext_wcode);
+        maxcode = map_alphabet(fname_A, fname_A_alpha, debug);
 
-        //new alphabet for A2
-        char fname_A2_alpha[PATH_MAX];
-        if(nblocks==1) snprintf(fname_A2_alpha,PATH_MAX,"%s.%s%s",argv[1],"A2",mext_wcode);
-        else snprintf(fname_A2_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A2",mext_wcode);
-        maxcode = map_alphabet(fname_A2, fname_A2_alpha, debug);
+        //new alphabet for B
+        char fname_B_alpha[PATH_MAX];
+        if(nblocks==1) snprintf(fname_B_alpha,PATH_MAX,"%s.%s%s",argv[1],"B",mext_wcode);
+        else snprintf(fname_B_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"B",mext_wcode);
+        maxcode = map_alphabet(fname_B, fname_B_alpha, debug);
       }
 
       cout<<"wr = "<<wr<<endl;
@@ -1083,24 +1036,25 @@ int main (int argc, char **argv) {
       if(wr_modified > wr/2) rle_zeros = false;
 
       if(debug){
-        //A1
-        fvc = fopen(fname_A1,"rb");
+        //A
+        fvc = fopen(fname_A,"rb");
         if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-        cout<<"A1 = ";
+        cout<<"A = ";
         uint32_t value;
         while(fread(&value, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<value<<"> "; cout<<endl;
         fclose(fvc);
-        //A2
-        fvc = fopen(fname_A2,"rb");
+        //B
+        fvc = fopen(fname_B,"rb");
         if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-        cout<<"A2 = ";
+        cout<<"B = ";
         value;
         while(fread(&value, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<value<<"> "; cout<<endl;
         fclose(fvc);
       }
 
-      //iv compress string A2
-      fvc = fopen(fname_A2,"rb");
+/*
+      //iv compress string B
+      fvc = fopen(fname_B,"rb");
       if(fvc==NULL) quit("Cannot open a .vc/.dv file");
 
       if(not rle_zeros){
@@ -1118,57 +1072,11 @@ int main (int argc, char **argv) {
         }
         fclose(fvc);
 
-        /*
-           if(debug){
-           cout<<"A2 (delta) = ";
-           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
-           }
-           */
-
-#if ENCODE_32
-        fvc = fopen(fname_A2,"wb");
+        fvc = fopen(fname_B,"wb");
         if(fvc==NULL) quit("Cannot open a .vc/.dv file");
         if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
           quit("Error writing to .vc file");
         fclose(fvc);
-#else
-#if SPLIT_A2 == 0
-        sdsl::int_vector<> row_iv(row.size(), 0);
-        uint32_t i=0;
-        for(auto &v:row) row_iv[i++]=v;
-        sdsl::util::bit_compress(row_iv);
-        sdsl::store_to_file(row_iv, fname_A2);
-#else
-        sdsl::int_vector<> row_iv_1(wr_modified, 0);
-        sdsl::int_vector<> row_iv_2(row.size()-wr_modified, 0);
-
-        uint32_t i=0, j=0, k=0;
-        bool first=true;
-        for(auto &v:row){
-          if(not first and v!=0){
-            row_iv_2[j++]=v;
-          }
-          else{
-            if(v==0){
-              row_iv_2[j++]=v;
-              first=true;
-            }
-            else{
-              row_iv_1[i++]=v;
-              first=false;
-            }
-          }
-        }
-
-        sdsl::util::bit_compress(row_iv_1);
-        sdsl::util::bit_compress(row_iv_2);
-        std::ofstream out(fname_A2, std::ios::binary);
-        row_iv_1.serialize(out);
-        row_iv_2.serialize(out);
-
-        out.close();
-#endif
-#endif
       }
       else{
 
@@ -1203,122 +1111,33 @@ int main (int argc, char **argv) {
           nzeros++;
         }
 
-        /*
-           if(debug){
-           cout<<"A2 (rle) = ";
-           for(auto v:row) cout<<"<"<<v<<"> "; cout<<endl;
-           }
-           */
 
 #if ENCODE_32
-        fvc = fopen(fname_A2,"wb");
+        fvc = fopen(fname_B,"wb");
         if(fvc==NULL) quit("Cannot open a .vc/.dv file");
         if(fwrite(row.data(), sizeof(uint32_t), row.size(), fvc)!=row.size())
           quit("Error writing to .vc file");
         fclose(fvc);
-#else
-#if SPLIT_A2 == 0 
-        sdsl::int_vector<> row_iv(row.size(), 0);
-        uint32_t i=0;
-        for(auto &v:row) row_iv[i++]=v;
-        sdsl::util::bit_compress(row_iv);
-        sdsl::store_to_file(row_iv, fname_A2);
-#else
-        sdsl::int_vector<> row_iv_1(nzeros-first_zero, 0);
-        sdsl::int_vector<> row_iv_2(row.size()-(nzeros-first_zero)-nzeros, 0);
-        sdsl::int_vector<> row_iv_3(nzeros, 0);
-        uint32_t i=0, j=0, k=0;
-        bool first=true, rle=false;
-        for(auto &v:row){
-          if(not first and not rle){
-            row_iv_2[j++]=v;
-            if(v==0) rle=true;
-          }
-          else if(first){
-            if(v==0){
-              row_iv_2[j++]=v;
-              rle=true;
-            }
-            else{
-              row_iv_1[i++]=v;
-            }
-            first=false;
-          }
-          else if(rle){
-            row_iv_3[k++]=v;
-            rle=false;
-            first=true;
-          }
-        }
-
-        sdsl::util::bit_compress(row_iv_1);
-        sdsl::util::bit_compress(row_iv_2);
-        sdsl::util::bit_compress(row_iv_3);
-
-        std::ofstream out(fname_A2, std::ios::binary);
-
-        row_iv_1.serialize(out);
-        row_iv_2.serialize(out);
-        row_iv_3.serialize(out);
-
-        out.close();
-#endif
 #endif
       }
+*/
 
 
       if(debug){
 
         if(not rle_zeros){
-#if ENCODE_32
-          fvc = fopen(fname_A2,"rb");
+          fvc = fopen(fname_B,"rb");
           if(fvc==NULL) quit("Cannot open a .vc/.dv file");
           uint32_t v;
-          cout<<"A2 (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"B (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
           fclose(fvc);
-#else
-#if SPLIT_A2 == 0
-          sdsl::int_vector<> row_iv;
-          sdsl::load_from_file(row_iv, fname_A2);
-          cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
-#else
-          std::ifstream in(fname_A2, std::ios::binary);
-          sdsl::int_vector<> v1, v2;
-
-          v1.load(in);
-          v2.load(in);
-          cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
-          cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
-
-          in.close();
-#endif
-#endif
         }
         else{
-#if ENCODE_32
-          fvc = fopen(fname_A2,"rb");
+          fvc = fopen(fname_B,"rb");
           if(fvc==NULL) quit("Cannot open a .vc/.dv file");
           uint32_t v;
-          cout<<"A2 (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+          cout<<"B (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
           fclose(fvc);
-#else
-#if SPLIT_A2 == 0
-          sdsl::int_vector<> row_iv;
-          sdsl::load_from_file(row_iv, fname_A2);
-          cout<<"A2 = "; for(auto v:row_iv) cout<<"<"<<v<<"> "; cout<<endl;
-#else
-          std::ifstream in(fname_A2, std::ios::binary);
-          sdsl::int_vector<> v1, v2, v3;
-
-          v1.load(in);
-          v2.load(in);
-          v3.load(in);
-          cout<<"A2_1 = "; for(auto v:v1) cout<<"<"<<v<<"> "; cout<<endl;
-          cout<<"A2_2 = "; for(auto v:v2) cout<<"<"<<v<<"> "; cout<<endl;
-          cout<<"A2_3 = "; for(auto v:v3) cout<<"<"<<v<<"> "; cout<<endl;
-          in.close();
-#endif
-#endif
         }
       }
     }
@@ -1336,8 +1155,8 @@ int main (int argc, char **argv) {
   fprintf(stderr, "%zd distinct nonzeros values\n", dnonz);
   fprintf(stderr,"Largest codeword: %lu   Bits x codeword: %d\n", maxcode, bits(maxcode));
   if(split){
-    fprintf(stderr,"A1.size(): %zu\t %.2lf%%\n",n_A1, (double)(n_A1)/(n_A1+n_A2)*100.0);  
-    fprintf(stderr,"A2.size(): %zu\t %.2lf%%\n",n_A2, (double)(n_A2)/(n_A1+n_A2)*100.0);  
+    fprintf(stderr,"A.size(): %zu\t %.2lf%%\n",n_A, (double)(n_A)/(n_A+n_B)*100.0);  
+    fprintf(stderr,"B.size(): %zu\t %.2lf%%\n",n_B, (double)(n_B)/(n_A+n_B)*100.0);  
   }
 
   fprintf(stderr,"==== Done\n");
