@@ -37,32 +37,12 @@ const int NUM_RUNS = 1;
 template <class t_compressor>
 void run(std::vector<uint32_t>& input, std::string input_name)
 {
-
-/*
-  if (input.size() < 100) {
-    std::string outfile = input_name + ".ansf." + std::to_string(t_compressor::fold_fidelity);
-    auto fd = fopen_or_fail(outfile, "w");
-
-    size_t isize = input.size();
-    size_t e = fwrite(&isize, sizeof(isize), 1, fd);
-    if (e != 1) quit("Error writing input file size");
-
-    for(int i=0; i<isize; i++){
-      uint32_t val = input[i];
-      e = fwrite(&val, sizeof(val), 1, fd);
-      if (e != 1) quit("Error writing single value");
-    }
-
-    fclose_or_fail(fd);
-    return;
-  }
-*/
   // (0) compute entropy
   auto [input_entropy, sigma] = compute_entropy(input);
 
   // (1) encode
-  std::vector<uint8_t> encoded_data(input.size() * 8);
-  std::vector<uint8_t> tmp_buf(input.size() * 8);
+  std::vector<uint8_t> encoded_data(input.size() * 8 * 2);
+  std::vector<uint8_t> tmp_buf(input.size() * 8 * 2);
 
   size_t encoded_bytes;
   size_t encoding_time_ns_min = std::numeric_limits<size_t>::max();
@@ -90,6 +70,10 @@ void run(std::vector<uint32_t>& input, std::string input_name)
   auto fd = fopen_or_fail(outfile, "w");
   // write input size in sizeof(size_t) bytes  
   size_t isize = input.size(); 
+
+  fprintf(stderr, "isize = %d\n", isize*4);
+  fprintf(stderr, "encoded_bytes = %d\n", encoded_bytes);
+
   size_t e = fwrite(&isize,sizeof(isize),1,fd);
   if(e!=1) quit("Error writing input file size");    
   // write compressed data
