@@ -38,6 +38,7 @@ template <class t_compressor>
 void run(std::vector<uint32_t>& input, std::string input_name)
 {
 
+/*
   if (input.size() < 100) {
     std::string outfile = input_name + ".ansf." + std::to_string(t_compressor::fold_fidelity);
     auto fd = fopen_or_fail(outfile, "w");
@@ -55,7 +56,7 @@ void run(std::vector<uint32_t>& input, std::string input_name)
     fclose_or_fail(fd);
     return;
   }
-
+*/
   // (0) compute entropy
   auto [input_entropy, sigma] = compute_entropy(input);
 

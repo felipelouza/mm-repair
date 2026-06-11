@@ -221,6 +221,14 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     #endif
     int i=0;
     for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
+  
+    //TODO 
+    /**/
+    for(size_t j=0; j < m->CSRlen; j++) {
+      m->CSRseq[j] = m->W[m->CSRseq[j]];
+    }
+    free(m->W);
+    /**/
   #endif
 
 
@@ -292,9 +300,9 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
     if(fclose(m->CSRf)) die("Error closing .vc file");
     m->CSRf=NULL;
   }
-  #ifdef WCODE
-    free(m->W);
-  #endif
+//  #ifdef WCODE
+//    free(m->W);
+//  #endif
   free(m);
 }
 
@@ -302,9 +310,9 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
 // get value and column from terminal representing a matrix entry
 xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c)
 {
-  #ifdef WCODE
-    p = m->W[p];
-  #endif
+//  #ifdef WCODE
+//    p = m->W[p];
+//  #endif
   p = p-1;
   *c = p % m->cols;
   size_t pval = p/m->cols;
@@ -318,9 +326,9 @@ xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c)
 // value is multiplied by the corresponding X entry 
 xmatval csr_decode_mult_entry(int p, csr_rematrix *m, vector *x)
 {
-  #ifdef WCODE
-    p = m->W[p];
-  #endif
+//  #ifdef WCODE
+//    p = m->W[p];
+//  #endif
   p = p-1;
   size_t pcol = p % m->cols;
   size_t pval = p/m->cols;
