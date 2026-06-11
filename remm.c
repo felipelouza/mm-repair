@@ -39,6 +39,9 @@ typedef struct {
   int op;           // operation to be performed
   sem_t *in;        // semaphore for input shared with the main thread
   sem_t *out;       // semaphore for output shared with the main thread
+  #if SPLIT
+    csr_rematrix *csr_m;
+  #endif
 } tdata;
 
 
@@ -55,6 +58,9 @@ static void usage_and_exit(char *name)
 }
 
 static rematrix **remat_create_multipart(int, int,const char *, int blocks);
+#ifdef SPLIT
+static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n);
+#endif
 static void remat_destroy_multipart(rematrix **b,int n);
 static void *block_main(void *v);
 static void remat_left_mult_mth(vector *yv, rematrix *m,vector *x, tdata *td, int n);
@@ -134,9 +140,8 @@ int main (int argc, char **argv) {
   csr_rematrix **csr_rblocks = NULL; 
   if(nblocks==1)
     csr_m = csr_remat_create(rows,cols,argv[1],true); 
-//TODO
-//  else 
-//    csr_rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+  else 
+    csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks);
   #endif
     
   // ------------ read input vector
@@ -159,7 +164,6 @@ int main (int argc, char **argv) {
     vector_set_zero(z2,cols);     
   #endif
 
-//TODO
   // data structures for multithread computation (nblocks>1)
   vector *yv = NULL;  // array of subvectors
   tdata td[nblocks];
@@ -167,13 +171,15 @@ int main (int argc, char **argv) {
   sem_t tsem_in[nblocks];
   sem_t tsem_out[nblocks];
   
-//TODO
   // initialize thread data
   if(nblocks>1) {
     // yv entries coincide with those of y  
     yv = vector_split(y,nblocks);
     for(int i=0;i<nblocks;i++) {
       td[i].m = rblocks[i];
+      #if SPLIT
+        td[i].csr_m = csr_rblocks[i];
+      #endif
       td[i].in = &tsem_in[i];
       td[i].out = &tsem_out[i];
       xsem_init(&tsem_in[i],0,0,__LINE__,__FILE__);
@@ -216,7 +222,9 @@ int main (int argc, char **argv) {
       vector_sum(y, y2);
     #endif
     }
-    else remat_mult_mth(m,x,yv,td,nblocks);
+    else{
+      remat_mult_mth(m,x,yv,td,nblocks);
+    }
     #ifdef DETAILED_TIMING
     t2 = times(&ignored);
     m1 += (t2-t1);
@@ -229,7 +237,9 @@ int main (int argc, char **argv) {
       vector_sum(z, z2); 
     #endif
     }
-    else remat_left_mult_mth(yv,m,z,td,nblocks);
+    else{
+      remat_left_mult_mth(yv,m,z,td,nblocks);
+    }
     #ifdef DETAILED_TIMING
     t3 = times(&ignored);
     m2 += (t3-t2);
@@ -309,6 +319,11 @@ static void *block_main(void *v)
   vector *auxv = vector_create(); // used as a temp vector for left multiplication 
   vector_set_zero(auxv,td->m->cols);  
   
+  #ifdef SPLIT
+    vector *y2 = vector_create();
+    vector *z2 = vector_create();
+  #endif
+
   while(true) {
     // wait for input 
     xsem_wait(td->in,__LINE__,__FILE__);
@@ -318,22 +333,33 @@ static void *block_main(void *v)
       assert(td->rightv==NULL);  // cannot store result in global vector
       td->rightv = auxv; // store result in local vector
       remat_left_mult(td->leftv,td->m,td->rightv);
+      #if SPLIT
+        vector_set_zero(z2,td->m->cols);  
+        csr_remat_left_mult(td->leftv,td->csr_m,z2);
+        vector_sum(td->rightv, z2);
+      #endif
     }
     else if(td->op==1) { //right mult
       assert(td->rightv!=NULL); // the input is a row vector
       assert(td->leftv!=NULL);  // output is stored in this global vector 
       remat_mult(td->m,td->rightv,td->leftv);
+      #if SPLIT
+        vector_set_zero(y2,td->m->rows);  
+        csr_remat_mult(td->csr_m,td->rightv,y2);
+        vector_sum(td->leftv, y2);
+      #endif
     }
     else die("Unknown operation");
     // output ready 
     xsem_post(td->out,__LINE__,__FILE__);
   }
   vector_destroy(auxv); // deallocate temp vector
+  #ifdef SPLIT
+    vector_destroy(y2);
+    vector_destroy(z2);
+  #endif
   return NULL;
 }
-
-
-
 
 // read matrix consisting of n blocks  
 static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n)
@@ -391,6 +417,56 @@ static void remat_destroy_multipart(rematrix **b,int n)
     remat_destroy(b[i],false);
   free(b);
 }
+
+#ifdef SPLIT
+// read matrix consisting of n blocks  
+static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n)
+{
+  assert(n>1); // there must be at least 2 blocks 
+  
+  csr_rematrix **b = (csr_rematrix **) malloc(n*sizeof *b);
+  if(b==NULL) die("Not enough memory");
+  int maxblock = (rows+n-1)/n;
+  assert(maxblock>=1);
+  
+  // read everything except values
+  #ifdef U_MATRIX
+  FILE *fum = fopen(base,"r");
+  if(fum==NULL) die("Unable to open matrix file")
+  #else
+  char fname[PATH_MAX];
+  #endif  
+  int remaining = rows;
+  for(int i=0;i<n;i++) {
+    assert(remaining>0);
+    int r = (remaining>maxblock? maxblock : remaining);
+    assert(r>0);
+    #ifdef U_MATRIX
+    b[i] = umat_create(r,col,fum);
+    #else
+    snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
+    b[i] = csr_remat_create(r,cols,fname,false);// false=> do not read .val file
+    #endif
+    remaining -= r;
+  }
+  assert(remaining==0);
+  #ifdef U_MATRIX
+  fclose(fum);
+  #endif
+  
+  // read values and assign them to all matrices in  b[] 
+  snprintf(fname,PATH_MAX,"%s%s",base,VFILE_EXT);
+  FILE *f = fopen(fname,"rb");
+  if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
+  b[0]->Mval = csr_read_vals(f,&b[0]->Mnum);
+  // copy Mval/Mnum to the other blocks
+  if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  for(int i=1;i<n;i++) {
+    b[i]->Mval = b[0]->Mval; b[i]->Mnum = b[0]->Mnum;
+  }  
+  return b;
+}
+#endif
 
 // execute multithread right multiplication 
 // x has size m_cols, yv is an array of n vectors of total size m_rows 

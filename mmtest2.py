@@ -140,6 +140,8 @@ def test_compress(args, logfile, drv=False):
   else:
     args.name = "csrv"           
     args.mext = ".vc"
+    args.mext_A = ".A.vc"
+    args.mext_B = ".B.vc"
   # init latex table containing the results
   table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
            f" file     & rows &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
@@ -170,14 +172,21 @@ def test_compress(args, logfile, drv=False):
       print(" Test failed:", str(ex))
       sys.exit(2)
     v = os.path.getsize(name+args.val_ext)
-    vcsize = getsize_multipart(name,args.b,args.mext) 
-    csize = getsize_multipart(name,args.b,args.mext+".C") 
-    rsize = getsize_multipart(name,args.b,args.mext+".R") 
-    csizeiv = getsize_multipart(name,args.b,args.mext+".C.iv") 
-    rsizeiv = getsize_multipart(name,args.b,args.mext+".R.iv") 
-    ans_csize = getsize_multipart(name,args.b,args.mext+".C.ansf.1")
+
+    vcsize = getsize_multipart(name,args.b,args.mext_A) 
+    csize = getsize_multipart(name,args.b,args.mext_A+".C") 
+    rsize = getsize_multipart(name,args.b,args.mext_A+".R") 
+    csizeiv = getsize_multipart(name,args.b,args.mext_A+".C.iv") 
+    rsizeiv = getsize_multipart(name,args.b,args.mext_A+".R.iv") 
+    ans_csize = getsize_multipart(name,args.b,args.mext_A+".C.ansf.1")
+    ans_wcode = getsize_multipart(name,args.b,".A.wcode.ansf.1")
+
+    vcsize += getsize_multipart(name,args.b,args.mext_B) 
+    ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")
+    ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
+
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
-                    v+ans_csize+rsizeiv))
+                    v+ans_csize+rsizeiv+ans_wcode))
     # tests for current file completed
     table.append(makerow_mz(args,f, tablerow))
   # all files processed

@@ -151,7 +151,6 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     if(fread(m->CSRseq,sizeof(int),m->CSRlen,m->CSRf)!=m->CSRlen)
      die("Cannot read .vc file");
   #endif
-  //FELIPE
   #if OLE
   uint32_t acc=0;
   for(size_t j=0; j < m->CSRlen; j++) {
