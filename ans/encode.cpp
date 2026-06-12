@@ -70,10 +70,6 @@ void run(std::vector<uint32_t>& input, std::string input_name)
   auto fd = fopen_or_fail(outfile, "w");
   // write input size in sizeof(size_t) bytes  
   size_t isize = input.size(); 
-
-  fprintf(stderr, "isize = %d\n", isize*4);
-  fprintf(stderr, "encoded_bytes = %d\n", encoded_bytes);
-
   size_t e = fwrite(&isize,sizeof(isize),1,fd);
   if(e!=1) quit("Error writing input file size");    
   // write compressed data
