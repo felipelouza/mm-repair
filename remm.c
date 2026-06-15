@@ -158,10 +158,10 @@ int main (int argc, char **argv) {
   vector *z = vector_create(); // do we really need z?
   vector_set_zero(z,cols);     // maybe we can just compute y=Mx, x^t = y^t M 
   #if SPLIT
-    vector *y2 = vector_create();
-    vector_set_zero(y2,rows);
-    vector *z2 = vector_create();
-    vector_set_zero(z2,cols);     
+    //vector *y2 = vector_create();
+    //vector_set_zero(y2,rows);
+    //vector *z2 = vector_create();
+    //vector_set_zero(z2,cols);     
   #endif
 
   // data structures for multithread computation (nblocks>1)
@@ -192,13 +192,15 @@ int main (int argc, char **argv) {
   if(nblocks==1) {
     remat_mult(m,x,y);    // y = Mx
     #if SPLIT
-      csr_remat_mult(csr_m,x,y2);
-      vector_sum(y, y2);
+      csr_remat_mult(csr_m,x,y);
+      //csr_remat_mult(csr_m,x,y2);
+      //vector_sum(y, y2);
     #endif
     remat_left_mult(y,m,z);   // z = y^t M
     #if SPLIT
-      csr_remat_left_mult(y,csr_m,z2);
-      vector_sum(z, z2);
+      csr_remat_left_mult(y,csr_m,z);
+      //csr_remat_left_mult(y,csr_m,z2);
+      //vector_sum(z, z2);
     #endif
   }
   else {
@@ -217,9 +219,10 @@ int main (int argc, char **argv) {
     if(nblocks==1){ 
       remat_mult(m,x,y);
     #if SPLIT
-      vector_set_zero(y2,rows);
-      csr_remat_mult(csr_m,x,y2);
-      vector_sum(y, y2);
+      csr_remat_mult(csr_m,x,y);
+      //vector_set_zero(y2,rows);
+      //csr_remat_mult(csr_m,x,y2);
+      //vector_sum(y, y2);
     #endif
     }
     else{
@@ -232,9 +235,10 @@ int main (int argc, char **argv) {
     if(nblocks==1){
       remat_left_mult(y,m,z);
     #if SPLIT
-      vector_set_zero(z2,cols);
-      csr_remat_left_mult(y,csr_m,z2);
-      vector_sum(z, z2); 
+      csr_remat_left_mult(y,csr_m,z);
+      //vector_set_zero(z2,cols);
+      //csr_remat_left_mult(y,csr_m,z2);
+      //vector_sum(z, z2); 
     #endif
     }
     else{
@@ -276,8 +280,8 @@ int main (int argc, char **argv) {
   vector_destroy(z);
   vector_destroy(y);
   #if SPLIT
-    vector_destroy(z2);
-    vector_destroy(y2);
+    //vector_destroy(z2);
+    //vector_destroy(y2);
   #endif
   vector_destroy(x);
   if(nblocks==1) 
@@ -320,8 +324,8 @@ static void *block_main(void *v)
   vector_set_zero(auxv,td->m->cols);  
   
   #ifdef SPLIT
-    vector *y2 = vector_create();
-    vector *z2 = vector_create();
+    //vector *y2 = vector_create();
+    //vector *z2 = vector_create();
   #endif
 
   while(true) {
@@ -334,9 +338,10 @@ static void *block_main(void *v)
       td->rightv = auxv; // store result in local vector
       remat_left_mult(td->leftv,td->m,td->rightv);
       #if SPLIT
-        vector_set_zero(z2,td->m->cols);  
-        csr_remat_left_mult(td->leftv,td->csr_m,z2);
-        vector_sum(td->rightv, z2);
+        csr_remat_left_mult(td->leftv,td->csr_m,td->rightv);
+        //vector_set_zero(z2,td->m->cols);  
+        //csr_remat_left_mult(td->leftv,td->csr_m,z2);
+        //vector_sum(td->rightv, z2);
       #endif
     }
     else if(td->op==1) { //right mult
@@ -344,9 +349,10 @@ static void *block_main(void *v)
       assert(td->leftv!=NULL);  // output is stored in this global vector 
       remat_mult(td->m,td->rightv,td->leftv);
       #if SPLIT
-        vector_set_zero(y2,td->m->rows);  
-        csr_remat_mult(td->csr_m,td->rightv,y2);
-        vector_sum(td->leftv, y2);
+        csr_remat_mult(td->csr_m,td->rightv,td->leftv);
+        //vector_set_zero(y2,td->m->rows);  
+        //csr_remat_mult(td->csr_m,td->rightv,y2);
+        //vector_sum(td->leftv, y2);
       #endif
     }
     else die("Unknown operation");
@@ -355,8 +361,8 @@ static void *block_main(void *v)
   }
   vector_destroy(auxv); // deallocate temp vector
   #ifdef SPLIT
-    vector_destroy(y2);
-    vector_destroy(z2);
+    //vector_destroy(y2);
+    //vector_destroy(z2);
   #endif
   return NULL;
 }
