@@ -24,7 +24,10 @@
     #define CFILE_EXT_CSR ".vc.ansf.1"
   #endif
   //#include "ans/decode.hpp"
-  #define BUF_LOG2 20                  // log of (size decompression buffer)  
+  #ifndef BUF_LOG2
+    #define BUF_LOG2 10                  // log of (size decompression buffer)  
+   // #define BUF_LOG2 20                  // log of (size decompression buffer)  
+  #endif
 #else
   #if SPLIT
     #define CFILE_EXT_CSR ".B.vc"
@@ -251,7 +254,7 @@ void csr_remat_mult(csr_rematrix *m, vector *x, vector *y)
      sum += csr_decode_mult_entry(i,m,x);
     }
     else { // i==0 row completed
-     y->v[ycur] = (matval) sum;
+     y->v[ycur] += (matval) sum;
      sum = 0;
      if(++ycur==y->size) assert(j+1==m->CSRlen);
     }
@@ -269,7 +272,7 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
   if(m->rows!=y->size) die("Dimension mismatch (csr_remat_left_mult y)");   
   if(m->cols!=x->size) die("Dimension mismatch (csr_remat_left_mult x)");   
   // clean x
-  for(size_t i=0;i<x->size;i++) x->v[i]=0;
+  //for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
   // variables used by csr_decode_entry 
   xmatval a; size_t col;   
