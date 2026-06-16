@@ -38,8 +38,7 @@
     #define RFILE_EXT ".vc.R.iv"
   #endif
   #include "ans/decode.hpp"
-  #define BUF_LOG2 10                  // log of (size decompression buffer)  
-  //#define BUF_LOG2 20                  // log of (size decompression buffer)  
+  #define BUF_LOG2 20                  // log of (size decompression buffer)  
 #else
   #ifdef SPLIT
     #define CFILE_EXT ".A.vc.C.iv"

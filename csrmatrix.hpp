@@ -23,11 +23,7 @@
   #else
     #define CFILE_EXT_CSR ".vc.ansf.1"
   #endif
-  //#include "ans/decode.hpp"
-  #ifndef BUF_LOG2
-    #define BUF_LOG2 10                  // log of (size decompression buffer)  
-   // #define BUF_LOG2 20                  // log of (size decompression buffer)  
-  #endif
+  #define CSR_BUF_LOG2 10                  // log of (size decompression buffer)  
 #else
   #if SPLIT
     #define CFILE_EXT_CSR ".B.vc"
@@ -38,15 +34,17 @@
 
 #define VFILE_EXT ".val"
 
-#ifdef WCODE
-  #ifdef SPLIT
-    #define CSR_WFILE_EXT ".B.wcode"
-    #define CSR_WFILE_EXT_ANS ".B.wcode.ansf.1"
-  #else
-    #define CSR_WFILE_EXT ".wcode"
-    #define CSR_WFILE_EXT_ANS ".wcode.ansf.1"
-  #endif
-#endif 
+//#ifdef WCODE
+//  #ifdef SPLIT
+//    #define CSR_WFILE_EXT ".B.wcode"
+//    #define CSR_WFILE_EXT_ANS ".B.wcode.ansf.1"
+//  #else
+//    #define CSR_WFILE_EXT ".wcode"
+//    #define CSR_WFILE_EXT_ANS ".wcode.ansf.1"
+//  #endif
+//#endif 
+
+#define CRS_BUF_MASK ((1<<CSR_BUF_LOG2)-1)     // mask to recognize beginning of buffer
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0
@@ -85,15 +83,17 @@ typedef struct {
   size_t Mnum;    // number of distinct non zero matrix values
   matval *Mval;   // set of distinct nonzero matrix values
   FILE *CSRf;       // C file 
+  size_t Clen;    // len of C array
+  int *Cseq;      // uncompressed array C from repair; here is only a buffer of size 1<<CSR_BUF_LOG2
 #ifdef USE_ANSIV
   uint8_t *Ccseq; // ans-compressed array C from repair
   size_t Cclen;   // length of ans-compressed array
 #endif
-#ifdef WCODE
-  FILE *Wf;       
-  int32_t *W;
-  size_t Wsize;
-#endif
+//#ifdef WCODE
+//  FILE *Wf;       
+//  int32_t *W;
+//  size_t Wsize;
+//#endif
 } csr_rematrix;  
 
 
@@ -125,6 +125,21 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
   {
     f = fopen (fname,"r");
     if (f == NULL) die("Cannot open csr (" CFILE_EXT_CSR ") file");
+    /**/
+    m->Cclen = s.st_size;
+    m->Ccseq = new uint8_t[m->Cclen];
+    if(fread(m->Ccseq,sizeof(uint8_t),m->Cclen,f)!=m->Cclen)
+     die("Cannot read " CFILE_EXT_CSR " file");    
+    if(fclose(f)) 
+      die("Error closing C (" CFILE_EXT_CSR ") file");
+    // extract decompressed length and remove it from compressed data 
+    m->Clen = *( (size_t *) m->Ccseq); // size of the decompressed C sequence 
+    m->Ccseq += sizeof(size_t);
+    m->Cclen -= sizeof(size_t);  
+    // allocate decompressed buffer
+    m->Cseq = (int *) malloc((1<<CSR_BUF_LOG2)*sizeof(int));
+    if(m->Cseq==NULL) die("Cannot allocate buffer for ANS decompression");
+    /*
     size_t fsize = s.st_size;
     uint8_t *csr_u8 = new uint8_t[fsize];
     if(fread(csr_u8,sizeof(uint8_t),fsize,f)!=fsize) die("Cannot read csr " CFILE_EXT_CSR " file");    
@@ -140,20 +155,26 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     if(m->CSRseq == NULL)  die("Cannot allocate csr array");
     size_t decoded = 0;
     while(decoded < m->CSRlen) {
-      size_t d = ans_dec.decode((uint32_t*)(m->CSRseq + decoded), std::min((size_t)(1<<BUF_LOG2), m->CSRlen - decoded));
+      size_t d = ans_dec.decode((uint32_t*)(m->CSRseq + decoded), std::min((size_t)(1<<CSR_BUF_LOG2), m->CSRlen - decoded));
       if(d == 0) die("Error decoding WCODE file");
       decoded += d;
-    }   
+    } 
     delete[] csr_u8;
+    */  
   }
   #else
     m->CSRf = fopen (fname,"r");
     if (m->CSRf == NULL)      die("Cannot open csr (" CFILE_EXT_CSR ") file");
     m->CSRlen = (s.st_size)/sizeof(int);
+   
     m->CSRseq = (int *) malloc(m->CSRlen*sizeof(int));
     if(fread(m->CSRseq,sizeof(int),m->CSRlen,m->CSRf)!=m->CSRlen)
      die("Cannot read .vc file");
+    
+    m->CSRseq = (int *) malloc((1<<CSR_BUF_LOG2)*sizeof(int));
+    if(m->CSRseq==NULL) die("Cannot allocate buffer for ANS decompression");
   #endif
+  /*
   #if OLE
   uint32_t acc=0;
   for(size_t j=0; j < m->CSRlen; j++) {
@@ -163,6 +184,7 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     acc = m->CSRseq[j];
   }
   #endif
+  */
   
   // ------------ read matrix values 
   if(read_values) {
@@ -177,62 +199,62 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     m->Mval=NULL; m->Mnum=0;
   }
 
-  // --- open WCODE file
-  #ifdef WCODE
-  strcpy(fname,basename);
-    #ifdef USE_ANSIV
-    {
-      strcat(fname,CSR_WFILE_EXT_ANS);
-      if (stat (fname,&s) != 0) die("Cannot stat WCODE (" CSR_WFILE_EXT_ANS ") file");
-      f = fopen (fname,"r");
-      if (f == NULL) die("Cannot open WCODE (" CSR_WFILE_EXT_ANS ") file");
-      size_t fsize = s.st_size;
-      uint8_t *in_u8 = new uint8_t[fsize];
-      if(fread(in_u8,sizeof(uint8_t),fsize,f)!=fsize) die("Cannot read WCODE " CSR_WFILE_EXT_ANS " file");    
-      if(fclose(f)) die("Error closing WCODE (" CSR_WFILE_EXT_ANS") file");
-      // size of compressed data
-      size_t cSrcSize = fsize-sizeof(size_t);
-      // retrieve decompressed file size
-      size_t original_size = *((size_t *) in_u8);
-      auto ans_dec = ANSf_decoder<1>();
-      ans_dec.init(in_u8+sizeof(size_t), cSrcSize, original_size);
-      m->Wsize = original_size;
-      m->W = (int32_t*) malloc(m->Wsize*sizeof(int32_t));
-      if(m->W == NULL)  die("Cannot allocate WCODE array");
-      size_t decoded = 0;
-      while(decoded < m->Wsize) {
-        size_t d = ans_dec.decode((uint32_t*)(m->W + decoded), std::min((size_t)(1<<BUF_LOG2), m->Wsize - decoded));
-        if(d == 0) die("Error decoding WCODE file");
-        decoded += d;
-      }   
-      delete[] in_u8;
-    }
-    #else
-      strcat(fname,CSR_WFILE_EXT);
-      f = fopen(fname, "rb"); 
-      if(f == NULL) die("Cannot open WCODE file");
-      if(fseek(f, 0, SEEK_END)) die("Error seeking WCODE file");
-      long size = ftell(f);
-      if(size < 0) die("Error reading WCODE file size");
-      rewind(f);
-      m->Wsize = size / sizeof(int32_t);
-      m->W = (int32_t *) malloc(m->Wsize * sizeof(int32_t));
-      if(m->W == NULL)  die("Cannot allocate WCODE array");
-      if(fread(m->W, sizeof(int32_t), m->Wsize, f) != m->Wsize)
-        die("Cannot read WCODE file");
-      fclose(f); 
-    #endif
-    int i=0;
-    for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
-  
-    //TODO 
-    /**/
-    for(size_t j=0; j < m->CSRlen; j++) {
-      m->CSRseq[j] = m->W[m->CSRseq[j]];
-    }
-    free(m->W);
-    /**/
-  #endif
+//  // --- open WCODE file
+//  #ifdef WCODE
+//  strcpy(fname,basename);
+//    #ifdef USE_ANSIV
+//    {
+//      strcat(fname,CSR_WFILE_EXT_ANS);
+//      if (stat (fname,&s) != 0) die("Cannot stat WCODE (" CSR_WFILE_EXT_ANS ") file");
+//      f = fopen (fname,"r");
+//      if (f == NULL) die("Cannot open WCODE (" CSR_WFILE_EXT_ANS ") file");
+//      size_t fsize = s.st_size;
+//      uint8_t *in_u8 = new uint8_t[fsize];
+//      if(fread(in_u8,sizeof(uint8_t),fsize,f)!=fsize) die("Cannot read WCODE " CSR_WFILE_EXT_ANS " file");    
+//      if(fclose(f)) die("Error closing WCODE (" CSR_WFILE_EXT_ANS") file");
+//      // size of compressed data
+//      size_t cSrcSize = fsize-sizeof(size_t);
+//      // retrieve decompressed file size
+//      size_t original_size = *((size_t *) in_u8);
+//      auto ans_dec = ANSf_decoder<1>();
+//      ans_dec.init(in_u8+sizeof(size_t), cSrcSize, original_size);
+//      m->Wsize = original_size;
+//      m->W = (int32_t*) malloc(m->Wsize*sizeof(int32_t));
+//      if(m->W == NULL)  die("Cannot allocate WCODE array");
+//      size_t decoded = 0;
+//      while(decoded < m->Wsize) {
+//        size_t d = ans_dec.decode((uint32_t*)(m->W + decoded), std::min((size_t)(1<<CSR_BUF_LOG2), m->Wsize - decoded));
+//        if(d == 0) die("Error decoding WCODE file");
+//        decoded += d;
+//      }   
+//      delete[] in_u8;
+//    }
+//    #else
+//      strcat(fname,CSR_WFILE_EXT);
+//      f = fopen(fname, "rb"); 
+//      if(f == NULL) die("Cannot open WCODE file");
+//      if(fseek(f, 0, SEEK_END)) die("Error seeking WCODE file");
+//      long size = ftell(f);
+//      if(size < 0) die("Error reading WCODE file size");
+//      rewind(f);
+//      m->Wsize = size / sizeof(int32_t);
+//      m->W = (int32_t *) malloc(m->Wsize * sizeof(int32_t));
+//      if(m->W == NULL)  die("Cannot allocate WCODE array");
+//      if(fread(m->W, sizeof(int32_t), m->Wsize, f) != m->Wsize)
+//        die("Cannot read WCODE file");
+//      fclose(f); 
+//    #endif
+//    int i=0;
+//    for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
+//  
+//    //TODO 
+//    ///**/
+//    //for(size_t j=0; j < m->CSRlen; j++) {
+//    //  m->CSRseq[j] = m->W[m->CSRseq[j]];
+//    //}
+//    //free(m->W);
+//    /**/
+//  #endif
 
 
 
@@ -246,17 +268,43 @@ void csr_remat_mult(csr_rematrix *m, vector *x, vector *y)
   if(m->rows!=y->size) die("Dimension mismatch (csr_remat_mult y)");   
 
   // --- compute output 
+  #ifdef USE_ANSIV
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<ANSf>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   int ycur = 0;
   xmatval sum=0;
-  for(size_t j=0; j < m->CSRlen; j++) {
-    int i = m->CSRseq[j];
+  uint32_t acc=0;
+  //for(size_t j=0; j < m->CSRlen; j++) {
+  for(size_t j=0; j < m->Clen; j++) {
+    if((j & CRS_BUF_MASK) ==0) {
+      // fill the buffer 
+      size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
+      #ifdef USE_ANSIV
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
+      if(d==0) die("Illegal decode call");
+      #endif
+      #ifdef OLE
+      size_t j2 = 0;
+      while(j2 < to_read){
+        if(m->Cseq[j2]==0) acc=0;
+        else m->Cseq[j2] += acc;
+        acc = m->Cseq[j2];
+        j2++;
+      }
+      #endif
+    }
+    //int i = m->CSRseq[j];
+    int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    
     if(i>0) {// symbol representing a matrix entry
      sum += csr_decode_mult_entry(i,m,x);
     }
     else { // i==0 row completed
      y->v[ycur] += (matval) sum;
      sum = 0;
-     if(++ycur==y->size) assert(j+1==m->CSRlen);
+     //if(++ycur==y->size) assert(j+1==m->CSRlen);
+     if(++ycur==y->size) assert(j+1==m->Clen);
     }
   }
   assert(ycur==y->size);
@@ -275,18 +323,46 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
   //for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
   // variables used by csr_decode_entry 
+  #ifdef USE_ANSIV
+  // create and initialize decoder
+  auto ans_dec = ANSf_decoder<ANSf>();
+  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #endif
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0; // ycur is the current row index 
-  for(size_t j=0; j<m->CSRlen;j++) {  
-    int i = m->CSRseq[j];
+  uint32_t acc=0;
+  //for(size_t j=0; j<m->CSRlen;j++) {  
+  for(size_t j=0; j<m->Clen;j++) {  
+    if((j & CRS_BUF_MASK) ==0) {
+      size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
+      #ifdef USE_ANSIV
+      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
+      if(d==0) die("Illegal decode call");
+      #else
+      for(size_t d = 0; d < to_read; d++)
+        m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+      #endif
+      #ifdef OLE
+      size_t j2 = 0;
+      while(j2 < to_read){
+        if(m->Cseq[j2]==0) acc=0;
+        else m->Cseq[j2] += acc;
+        acc = m->Cseq[j2];
+        j2++;
+      }
+      #endif
+    }
+    //int i = m->CSRseq[j];
+    int i = m->Cseq[j&CRS_BUF_MASK];    // read a single int from buffer
     if(i>0) {         // symbol representing a matrix entry
       a = csr_decode_entry(i,m,&col);
       assert(col<x->size);
       x->v[col] += a * y->v[ycur];
     }
     else { // i==0 row completed
-      if(++ycur==y->size) assert(j+1==m->CSRlen);
+      //if(++ycur==y->size) assert(j+1==m->CSRlen);
+      if(++ycur==y->size) assert(j+1==m->Clen);
     }
   }
   assert(ycur==y->size);
@@ -303,6 +379,13 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
     if(fclose(m->CSRf)) die("Error closing .vc file");
     m->CSRf=NULL;
   }
+  #ifdef USE_ANSIV
+    if(m->Ccseq!=NULL) {
+      delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
+      m->Ccseq = NULL;
+    } 
+  #endif
+  if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
 //  #ifdef WCODE
 //    free(m->W);
 //  #endif

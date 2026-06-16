@@ -183,7 +183,7 @@ def test_compress(args, logfile, drv=False):
 
     vcsize += getsize_multipart(name,args.b,args.mext_B) 
     ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")
-    ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
+    #ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
 
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv+ans_wcode))
