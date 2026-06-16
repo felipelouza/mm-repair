@@ -14,7 +14,7 @@
 #include <limits.h>
 #include <errno.h>
 
-#ifdef USE_ANSIV
+#ifdef USE_ANSIV2
   #include <algorithm>
   #include <cstdint>
   #define ANSf 1
@@ -23,7 +23,6 @@
   #else
     #define CFILE_EXT_CSR ".vc.ansf.1"
   #endif
-  #define CSR_BUF_LOG2 10                  // log of (size decompression buffer)  
 #else
   #if SPLIT
     #define CFILE_EXT_CSR ".B.vc"
@@ -31,6 +30,8 @@
     #define CFILE_EXT_CSR ".vc"
   #endif
 #endif
+
+#define CSR_BUF_LOG2 10                  // log of (size decompression buffer)  
 
 #define VFILE_EXT ".val"
 
@@ -85,7 +86,7 @@ typedef struct {
   FILE *CSRf;       // C file 
   size_t Clen;    // len of C array
   int *Cseq;      // uncompressed array C from repair; here is only a buffer of size 1<<CSR_BUF_LOG2
-#ifdef USE_ANSIV
+#ifdef USE_ANSIV2
   uint8_t *Ccseq; // ans-compressed array C from repair
   size_t Cclen;   // length of ans-compressed array
 #endif
@@ -121,7 +122,7 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
   strcpy(fname,basename);
   strcat(fname,CFILE_EXT_CSR);
   if (stat (fname,&s) != 0) die("Cannot stat csr (" CFILE_EXT_CSR ") file");
-  #ifdef USE_ANSIV  
+  #ifdef USE_ANSIV2  
   {
     f = fopen (fname,"r");
     if (f == NULL) die("Cannot open csr (" CFILE_EXT_CSR ") file");
@@ -167,24 +168,28 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     if (m->CSRf == NULL)      die("Cannot open csr (" CFILE_EXT_CSR ") file");
     m->CSRlen = (s.st_size)/sizeof(int);
    
+/*
+    fprintf(stderr, "fname = %s\t%d\n", fname, m->CSRlen);
     m->CSRseq = (int *) malloc(m->CSRlen*sizeof(int));
     if(fread(m->CSRseq,sizeof(int),m->CSRlen,m->CSRf)!=m->CSRlen)
      die("Cannot read .vc file");
-    
-    m->CSRseq = (int *) malloc((1<<CSR_BUF_LOG2)*sizeof(int));
-    if(m->CSRseq==NULL) die("Cannot allocate buffer for ANS decompression");
+*/
+    m->Cseq = (int *) malloc((1<<CSR_BUF_LOG2)*sizeof(int));
+    if(m->Cseq==NULL) die("Cannot allocate buffer for decompression");
+  
+/*
+    #if OLE
+    uint32_t acc=0;
+    for(size_t j=0; j < m->CSRlen; j++) {
+      int i = m->CSRseq[j];
+      if(i==0) acc=0;
+      else m->CSRseq[j] += acc;
+      acc = m->CSRseq[j];
+    }
+    #endif
+*/
+
   #endif
-  /*
-  #if OLE
-  uint32_t acc=0;
-  for(size_t j=0; j < m->CSRlen; j++) {
-    int i = m->CSRseq[j];
-    if(i==0) acc=0;
-    else m->CSRseq[j] += acc;
-    acc = m->CSRseq[j];
-  }
-  #endif
-  */
   
   // ------------ read matrix values 
   if(read_values) {
@@ -202,7 +207,7 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
 //  // --- open WCODE file
 //  #ifdef WCODE
 //  strcpy(fname,basename);
-//    #ifdef USE_ANSIV
+//    #ifdef USE_ANSIV2
 //    {
 //      strcat(fname,CSR_WFILE_EXT_ANS);
 //      if (stat (fname,&s) != 0) die("Cannot stat WCODE (" CSR_WFILE_EXT_ANS ") file");
@@ -268,22 +273,34 @@ void csr_remat_mult(csr_rematrix *m, vector *x, vector *y)
   if(m->rows!=y->size) die("Dimension mismatch (csr_remat_mult y)");   
 
   // --- compute output 
-  #ifdef USE_ANSIV
-  // create and initialize decoder
-  auto ans_dec = ANSf_decoder<ANSf>();
-  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #ifdef USE_ANSIV2
+    // create and initialize decoder
+    auto ans_dec = ANSf_decoder<ANSf>();
+    ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #else
+      rewind(m->CSRf);
   #endif
   int ycur = 0;
   xmatval sum=0;
-  uint32_t acc=0;
-  //for(size_t j=0; j < m->CSRlen; j++) {
+  #ifdef OLE
+    uint32_t acc=0;
+  #endif
+  #ifdef USE_ANSIV2
   for(size_t j=0; j < m->Clen; j++) {
+  #else
+  for(size_t j=0; j < m->CSRlen; j++) {
+  #endif
     if((j & CRS_BUF_MASK) ==0) {
       // fill the buffer 
-      size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
-      #ifdef USE_ANSIV
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
-      if(d==0) die("Illegal decode call");
+      #ifdef USE_ANSIV2
+        size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
+        size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
+        if(d==0) die("Illegal decode call");
+      #else
+        size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->CSRlen -j);
+        if(fread(m->Cseq,sizeof(int),to_read,m->CSRf)!=to_read){
+          die("Cannot read .vc file %d");
+        }
       #endif
       #ifdef OLE
       size_t j2 = 0;
@@ -295,16 +312,24 @@ void csr_remat_mult(csr_rematrix *m, vector *x, vector *y)
       }
       #endif
     }
-    //int i = m->CSRseq[j];
-    int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    
+//    #endif
+    #ifdef USE_ANSIV2
+      int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    
+    #else
+      int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    
+      //int i = m->CSRseq[j];
+    #endif
     if(i>0) {// symbol representing a matrix entry
      sum += csr_decode_mult_entry(i,m,x);
     }
     else { // i==0 row completed
      y->v[ycur] += (matval) sum;
      sum = 0;
-     //if(++ycur==y->size) assert(j+1==m->CSRlen);
-     if(++ycur==y->size) assert(j+1==m->Clen);
+     #ifdef USE_ANSIV2
+       if(++ycur==y->size) assert(j+1==m->Clen);
+     #else
+       if(++ycur==y->size) assert(j+1==m->CSRlen);
+     #endif
     }
   }
   assert(ycur==y->size);
@@ -323,25 +348,35 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
   //for(size_t i=0;i<x->size;i++) x->v[i]=0;
 
   // variables used by csr_decode_entry 
-  #ifdef USE_ANSIV
-  // create and initialize decoder
-  auto ans_dec = ANSf_decoder<ANSf>();
-  ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #ifdef USE_ANSIV2
+    // create and initialize decoder
+    auto ans_dec = ANSf_decoder<ANSf>();
+    ans_dec.init(m->Ccseq, m->Cclen, m->Clen);
+  #else
+      rewind(m->CSRf);
   #endif
   xmatval a; size_t col;   
   // propagate y-values to symbols in C
   int ycur=0; // ycur is the current row index 
-  uint32_t acc=0;
-  //for(size_t j=0; j<m->CSRlen;j++) {  
+  #ifdef OLE
+    uint32_t acc=0;
+  #endif
+  #if USE_ANSIV2
   for(size_t j=0; j<m->Clen;j++) {  
+  #else
+  for(size_t j=0; j<m->CSRlen;j++) {  
+  #endif
     if((j & CRS_BUF_MASK) ==0) {
-      size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
-      #ifdef USE_ANSIV
-      size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
-      if(d==0) die("Illegal decode call");
+      #if USE_ANSIV2
+        size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
+        size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
+        if(d==0) die("Illegal decode call");
       #else
-      for(size_t d = 0; d < to_read; d++)
-        m->Cseq[d] = m->Ccseq[d+j]; // decode a bunch of packed ints
+        size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->CSRlen -j);
+        if(fread(m->Cseq,sizeof(int),to_read,m->CSRf)!=to_read){
+          fprintf(stderr, "==> to_read = %d\t %d/%d\n", to_read, j, m->CSRlen);
+          die("Cannot read .vc file");
+        }
       #endif
       #ifdef OLE
       size_t j2 = 0;
@@ -353,16 +388,24 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
       }
       #endif
     }
-    //int i = m->CSRseq[j];
-    int i = m->Cseq[j&CRS_BUF_MASK];    // read a single int from buffer
+//    #endif
+    #if USE_ANSIV2
+      int i = m->Cseq[j&CRS_BUF_MASK];    // read a single int from buffer
+    #else
+      int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    
+      //int i = m->CSRseq[j];
+    #endif
     if(i>0) {         // symbol representing a matrix entry
       a = csr_decode_entry(i,m,&col);
       assert(col<x->size);
       x->v[col] += a * y->v[ycur];
     }
     else { // i==0 row completed
-      //if(++ycur==y->size) assert(j+1==m->CSRlen);
-      if(++ycur==y->size) assert(j+1==m->Clen);
+      #ifdef USE_ANSIV2
+        if(++ycur==y->size) assert(j+1==m->Clen);
+      #else
+        if(++ycur==y->size) assert(j+1==m->CSRlen);
+      #endif
     }
   }
   assert(ycur==y->size);
@@ -379,7 +422,7 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
     if(fclose(m->CSRf)) die("Error closing .vc file");
     m->CSRf=NULL;
   }
-  #ifdef USE_ANSIV
+  #ifdef USE_ANSIV2
     if(m->Ccseq!=NULL) {
       delete[] (m->Ccseq - sizeof(size_t)); // see initialization of m->Ccseq
       m->Ccseq = NULL;
