@@ -144,7 +144,11 @@ def test_compress(args, logfile, drv=False):
     args.mext_B = ".B.vc"
   # init latex table containing the results
   table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
-           f" file     & rows &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
+           f"file     & rows &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
+
+  print(table[0], end="")
+  print(table[1], end="")
+
   for f in Files:
     name  = os.path.join(args.d,f)
     exe_name = os.path.join(args.main_dir,"matrepair")
@@ -189,6 +193,7 @@ def test_compress(args, logfile, drv=False):
                     v+ans_csize+rsizeiv+ans_wcode))
     # tests for current file completed
     table.append(makerow_mz(args,f, tablerow))
+    print(table[-1], end="")
   # all files processed
   return table
 
@@ -212,18 +217,49 @@ def getsize_multipart(base,num,ext):
 def test_time(args,logfile):
   # build latex table containing the reuslts  
   table = ["### time x iteration and peak memory usage in kb for matrix multiplication; %d row-blocks\n" % args.b, 
-           " file     & cols "]
+           "file     & cols "]
   for a in Algos:
     table[1] += "& {name:12.9}&".format(name=a)         
   table[1] += "\\\\\n" 
+
+  print(table[0], end="")
+  print(table[1], end="")
+
   for f in Files:
     name  = os.path.join(args.d, f)
     rows,cols = Sizes[f]
     createx(cols)  # create file containing x vector
     tablerow = []  # row of the results table
     for a in Algos:
-      exe_name = os.path.join(args.main_dir,a)
+
+      time_decode = 0
+      peak_decode = 0
+      #decode B.vc.ansf.1
+      for b in range(args.b):
+        decode_name = os.path.join(args.main_dir,"ans/decode.x")
+        if args.b == 1:
+            nameB  = os.path.join(args.d, f+".B.vc.ansf.1")
+        else:
+            nameB  = os.path.join(args.d, f+"."+str(args.b)+"."+str(b)+".B.vc.ansf.1")
+        decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
+        decode = Time_exe +  ' -f%e:%M ' + decode
+        try:
+          ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
+                stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        except Exception as ex:
+          print("Command:", decode)
+          print(" Test failed:", str(ex))
+          sys.exit(2)
+          
+        timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+        #print(float(str(timespace[0])))
+        time_decode += float(str(timespace[0]))
+        peak_decode = max(peak_decode,int(str(timespace[1])))
+
+      #print(time_decode, peak_decode)
+
       # only save the eigenvalue
+      exe_name = os.path.join(args.main_dir,a)
       command = "{exe} -n {num} -b {blocks} -e {ename} -z {z} {name} {r} {c} {x}".format(ename=Evname,
                 exe = exe_name, num=args.n, blocks=args.b, name=name, r=rows, c=cols, x=Xvname, z=f+Zvname)
       command = Time_exe + ' -f%e:%M ' + command          
@@ -249,24 +285,25 @@ def test_time(args,logfile):
         sys.exit(2)
       # convert /bin/time output to elapsed, peak memory   
       timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
-      elapsed = float(str(timespace[0]))
-      peakmem = int(str(timespace[1]))
+      elapsed = float(str(timespace[0]))+time_decode
+      peakmem = max(int(str(timespace[1])), peak_decode)
       with open(Evname,"rb") as evf:
         e = struct.unpack("d",evf.read(8))[0]
       # a = algo, elapsed e=eigenvalue
       tablerow.append((a, elapsed/args.n,peakmem, e))
     # tests for current file completed
     table.append(makerow_mm(f, tablerow))
+    print(table[-1], end="")
   # all files processed
   return table
 
 def makerow_mm(f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][1])
+  s = "{name:10.9} & {col:<5}".format(name=f,col=Sizes[f][1])
   for p in a:
     # no eigenvalue
     # s += "&{:6.2f} &{:4.0f}  ".format(p[1],p[2]/1000000)
     # with eigenvalue
-    s += "&{:6.2f} &{:4.0f}&{:.5g} ".format(p[1],p[2],p[3])
+    s += "&{:6.2f} &{:4.0f} &{:.5g} ".format(p[1],p[2],p[3])
   s += "\\\\\n"
   return s
 
@@ -281,7 +318,7 @@ def makerow_mgzip(args,f, a):
 
 
 def makerow_mz(args,f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][0])
+  s = "{name:10.9} & {col:<5}".format(name=f,col=Sizes[f][0])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
     s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
@@ -373,7 +410,8 @@ def main():
       sys.exit(1)
   e1 = time.time()
   print("Elapsed time: %.3f\n" % (e1-s1),file=sys.stderr)
-  if args.op=='mm' or args.op=='mg' or args.op=='mz' or args.op=='md':  
+  #if args.op=='mm' or args.op=='mg' or args.op=='mz' or args.op=='md':  
+  if args.op=='mg' or args.op=='md':  
     for s in table:
       print(s,end="")
 

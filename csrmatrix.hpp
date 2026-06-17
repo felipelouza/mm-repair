@@ -25,7 +25,7 @@
   #endif
 #else
   #if SPLIT
-    #define CFILE_EXT_CSR ".B.vc"
+    #define CFILE_EXT_CSR ".B.vc.ansf.1.dec"
   #else
     #define CFILE_EXT_CSR ".vc"
   #endif
