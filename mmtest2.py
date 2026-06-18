@@ -187,7 +187,7 @@ def test_compress(args, logfile, drv=False):
 
     vcsize += getsize_multipart(name,args.b,args.mext_B) 
     ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")
-    #ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
+    ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
 
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv+ans_wcode))
@@ -235,26 +235,28 @@ def test_time(args,logfile):
       time_decode = 0
       peak_decode = 0
       #decode B.vc.ansf.1
-      for b in range(args.b):
-        decode_name = os.path.join(args.main_dir,"ans/decode.x")
-        if args.b == 1:
-            nameB  = os.path.join(args.d, f+".B.vc.ansf.1")
-        else:
-            nameB  = os.path.join(args.d, f+"."+str(args.b)+"."+str(b)+".B.vc.ansf.1")
-        decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
-        decode = Time_exe +  ' -f%e:%M ' + decode
-        try:
-          ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
-                stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        except Exception as ex:
-          print("Command:", decode)
-          print(" Test failed:", str(ex))
-          sys.exit(2)
-          
-        timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
-        #print(float(str(timespace[0])))
-        time_decode += float(str(timespace[0]))
-        peak_decode = max(peak_decode,int(str(timespace[1])))
+      #TODO: execute this loop in parallel
+      for ext_name in [".B.vc.ansf.1", ".B.wcode.ansf.1"]:
+        for b in range(args.b):
+          decode_name = os.path.join(args.main_dir,"ans/decode.x")
+          if args.b == 1:
+              nameB  = os.path.join(args.d, f+ext_name)
+          else:
+              nameB  = os.path.join(args.d, f+"."+str(args.b)+"."+str(b)+ext_name)
+          decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
+          decode = Time_exe +  ' -f%e:%M ' + decode
+          try:
+            ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
+                  stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+          except Exception as ex:
+            print("Command:", decode)
+            print(" Test failed:", str(ex))
+            sys.exit(2)
+            
+          timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+          #print(float(str(timespace[0])))
+          time_decode += float(str(timespace[0]))
+          peak_decode = max(peak_decode,int(str(timespace[1])))
 
       #print(time_decode, peak_decode)
 

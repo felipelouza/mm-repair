@@ -1021,11 +1021,11 @@ int main (int argc, char **argv) {
         else snprintf(fname_A_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"A",mext_wcode);
         maxcode = map_alphabet(fname_A, fname_A_alpha, debug);
 
-        ////new alphabet for B
-        //char fname_B_alpha[PATH_MAX];
-        //if(nblocks==1) snprintf(fname_B_alpha,PATH_MAX,"%s.%s%s",argv[1],"B",mext_wcode);
-        //else snprintf(fname_B_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"B",mext_wcode);
-        //maxcode = map_alphabet(fname_B, fname_B_alpha, debug);
+        //new alphabet for B
+        char fname_B_alpha[PATH_MAX];
+        if(nblocks==1) snprintf(fname_B_alpha,PATH_MAX,"%s.%s%s",argv[1],"B",mext_wcode);
+        else snprintf(fname_B_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"B",mext_wcode);
+        maxcode = map_alphabet(fname_B, fname_B_alpha, debug);
       }
 
       cout<<"wr = "<<wr<<endl;
