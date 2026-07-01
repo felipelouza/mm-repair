@@ -17,12 +17,11 @@
 Clone/download then `make`
 
 
-
 ---
 
 ## Input matrix format
 
-By default materepair-h assumes the inut matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
+By default materepair-h assumes the input matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
 
 * `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a text file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
 
@@ -34,22 +33,6 @@ By default materepair-h assumes the inut matrix is in textual `csv` format. This
 
 
 * `--i32` the input matrix is represented in dense format using one int32 per entry. The total file size  is $`4 \cdot rows \cdot columns`$ bytes
-
----
-
-## Parallel computation
-
-
-In order to exploits parallelism in matrix operations, we need to partition the matrix in blocks of rows and compress them separately. The command 
-```bash
-materepair-h -r -b3 somedir/covtype 581012 54
-```
-splits the input matrix into three blocks of rows which are compressed separately. The command therefore creates the files `covtype.val`, `covtype.3.0.vc`, `covtype.3.0.vc.R`, `covtype.3.0.vc.C`, `covtype.3.0.vc.R.iv`, `covtype.3.0.vc.C.iv`, and `covtype.3.0.vc.C.ansf.1`, and similarly `covtype.3.1.vc` ...  `covtype.3.1.vc.C.ansf.1`, `covtype.3.2.vc` ... `covtype.3.2.vc.C.ansf.1`. 
-
-Next, we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ in parallel using the above row blocks with the command:
-```bash
-remm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
-```
 
 ---
 
@@ -110,49 +93,23 @@ format with entries of type `int32`, `float32` and `float64`. Type `mmtest.py -h
 
 The command
 ```bash 
-mmtest.py mg -d /data
+mmtest2.py mg -d /data
 ```
 converts the input matrices from the `/data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
 
 
 The command
 ```bash 
-mmtest.py mz -b 8 -d /data
+mmtest2.py mz -b 8 -d /data
 ```
 computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks. Used for generating Table 1 in the paper.
 
 
 The command
 ```bash 
-mmtest.py mm -b 8 -d /data -n num
+mmtest2.py mm -b 8 -d /data -n num
 ```
 executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
-
-
----
-
-## PageRank computation 
-
-As an application of the boolean matrix compressed format we have implemented the PageRank algorithm. See the `pagerank` subfolder.
-
-
----
-
-## Column reordering
-
-For the column reordering algorithms, take a look at the `reordering` subfolder. Be warned that they only support input in `csv` format.
-
-
----
-
-## Experimental: the DRV format
-
-The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. This format will usully proved a better compression, but the matrix operations will have cost proportional to the size of the uncompressed matrix. At the moment matrix vector multiplication is not supported for the DRV format. To bulk test compression in the DRV format use `mmtest.py` with option `md`, for example:
-```bash 
-mmtest.py md -d /data
-```
-The purpose of this format is to explore the maximum compression acheivable using Repair.
-
 
 ---
 
@@ -171,7 +128,6 @@ Used by *materepair-h*. Outputs the `.vc` and `.[if]val` files.
 
 
 
-
 ### brepair/irepair0
 Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *materepair-h* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
 
@@ -182,14 +138,8 @@ Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the 
 Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *materepair-h* to generate the `.ansf.1` files.
 
 
-
 ### others/csvmat2bin.py
 Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
-
-
-### others/stripcsvmat.py
-
-Tool to strip the initial or final columns and/or the initial rows from a csv matrix, producing a smaller csv matrix. Used to remove unwanted data when preparing the test dataset.
 
 
 ### others/mat2csrv.py
