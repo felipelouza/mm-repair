@@ -45,7 +45,7 @@ This creates the files `input.csv.val`, `input.csv.vc.wcode`, `input.csv.A.vc.C.
 
 These files correspond to the compressed representations of the two components produced by the hybrid compression scheme: Part A, compressed with RePair, and Part B, compressed with ANS-fold.
 
-#### :hammer: Detais
+#### :hammer::hammer::hammer: Details
 
 The file `input.csv.val` stores the distinct nonzero values appearing in `input.csv`:
 
@@ -53,7 +53,7 @@ The file `input.csv.val` stores the distinct nonzero values appearing in `input.
 V = [5.3, 8.1, 6.0, 2.7]
 ```
 
-Next, the input matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers, and the mapping is stored in `input.csv.vc.wcode`.
+The CSV matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers, and the mapping is stored in `input.csv.vc.wcode`.
 
 The remapped CSRV sequence is then partitioned into two components:
 
@@ -67,22 +67,16 @@ RePair is applied to `input.csv.A.vc`:
 Command: /home/louza/mm-repair/brepair/irepair0 input.csv.A.vc 17733
 ```
 
-This step produces the grammar (`input.csv.A.vc.R`) and the compressed sequence (`input.csv.A.vc.C`).
+This step produces the grammar (`input.csv.A.vc.R`) and the final sequence (`input.csv.A.vc.C`).
 
-The grammar is then encoded as a packed integer vector using SDSL:
+The grammar is then encoded into as a packed integer vector using SDSL, producing `input.csv.A.vc.R.iv`. 
 
 ```bash
 ==== Integer vector compression
 Command: /home/louza/mm-repair/sdsl/encode.x input.csv.A.vc.R
 ```
 
-producing:
-
-```text
-input.csv.A.vc.R.iv
-```
-
-Finally, the RePair sequence (`input.csv.A.vc.C`) and the second CSRV component (`input.csv.B.vc`) are compressed using OLE and ANS-fold, producing the files:
+At the end, the RePair sequence (`input.csv.A.vc.C`) and the second CSRV component (`input.csv.B.vc`) are compressed using OLE and ANS-fold, producing the files:
 
 ```text
 input.csv.A.vc.C.ansf.1
