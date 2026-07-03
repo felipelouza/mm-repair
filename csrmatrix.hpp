@@ -26,7 +26,8 @@
   #endif
 #else
   #if SPLIT
-    #define CFILE_EXT_CSR ".B.vc.ansf.1.dec"
+    //#define CFILE_EXT_CSR ".B.vc.ansf.1.dec"
+    #define CFILE_EXT_CSR ".B.vc"
   #else
     #define CFILE_EXT_CSR ".vc"
   #endif
@@ -38,7 +39,8 @@
 
 #ifdef WCODE
   #ifdef SPLIT
-    #define CSR_WFILE_EXT ".B.wcode.ansf.1.dec"
+    //#define CSR_WFILE_EXT ".B.wcode.ansf.1.dec"
+    #define CSR_WFILE_EXT ".B.wcode"
     #define CSR_WFILE_EXT_ANS ".B.wcode.ansf.1"
   #else
     #define CSR_WFILE_EXT ".wcode"

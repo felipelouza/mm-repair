@@ -10,7 +10,7 @@ CXX_FLAGS=-std=c++17 -g -O3 -msse4.2 -Wno-deprecated-declarations
 
 # main executables in this directory
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
-EXECS=csrvmm re32mm remm remm2 reivmm reans32mm $(CONV_EXECS) $(PR_EXECS)
+EXECS=csrvmm re32mm remm remm-h reivmm reans32mm $(CONV_EXECS) $(PR_EXECS)
 # executables in pagerank directory
 PR_EXECS=pagerank/repagerank pagerank/repagerank_old  pagerank/reivpagerank pagerank/re32pagerank pagerank/csrvpagerank pagerank/reans32pagerank
 
@@ -65,7 +65,7 @@ remm: remm.c rematrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV
 
 # sdsl IV for R, ANS for C
-remm2: remm.c rematrix.hpp csrmatrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
+remm-h: remm.c rematrix.hpp csrmatrix.hpp vector.h ans/decode.hpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) -lsdsl -pthread -DUSE_ANSIV -DWCODE -DOLE -DSPLIT
 
 # not reported in the VLDB paper: not an interesting time/space tradeoff for the dataset

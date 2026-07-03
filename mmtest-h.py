@@ -27,7 +27,7 @@ Sizes = {'covtype.csv':(581012, 54), 'census.csv':(2458285, 68), 'optical.csv':(
 
 # matrix mutiplication algorithms to be tested
 #Algos = ['csrvmm', 're32mm','reivmm','remm','remm2']
-Algos = ['remm2']
+Algos = ['remm-h']
 
 # name of files containing the input/output vectors
 # these files are created by this script at each execution
@@ -77,7 +77,7 @@ def test_gzip(args,logfile):
            f" file     & rows &   dense size % &&     {zip1} % &&   {zip2} % &\\\\\n"]
   for f in Files:
     name= os.path.join(args.d,f)
-    exe_name = os.path.join(args.main_dir,"csvmat2bin.py")
+    exe_name = os.path.join(args.main_dir,"others/csvmat2bin.py")
 
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
