@@ -134,61 +134,11 @@ $ od -An -t f8 z.dbl
                    537.51                   667.88
 
 ```
-
-## Available Matrix Compression Formats
-
-### CSRV
-Compressed Sparse Row/Value format. The encoding consists of the files with extensions `.[if]val` and `.vc` where `.[if]val` can be either `.ival`, `.fval`, or `.val` according to the type of the input matrix entries (respectively int32, float32 or float64)
-
-The `.[if]val` file contains the *distinct* nonzero entries of the input matrix represented as 8 byte doubles or 4 byte float32 or int32. The `.vc` file contains for each nonzero element *a = A[i][j]* an encoding of the pair *(id,j)* where *j* is the column index and *id* is the index of the position in the `.val` file containing the actual value *a*. 
-
-
-### Re32
-The `.vc` file of the CSRV format is grammar compressed with RePair. All symbols are represented by 32 bit unsigned integers. The encoding consists of the files with extensions `.[if]val`, `.vc.R`, and `vc.C`
-
-
-### ReIV
-The `.vc.C` and `vc.R` files of the Re32 format are represented as packed arrays with the minimum number of bits per entry using the `int_vector` class from SDSL-lite.
-The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.iv`
-
-
-### ReANS
-The `.vc.C` file of the re32 format is compressed using the ANS-fold-1 algorithm. The `.vc.R` file is represented as a packed array. This is the option usually providing the best compression.
-The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `vc.C.ansf.1`
-
-
----
-
-## Tools
-
-### materepair-h
-
-Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` to specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
-Boolean (0/1) matrices are supported by the option `--bool`, which assumes that the input matrix consists of a text file containing a list of row/column pairs indicating the positions of the 1s. The list of pairs must be in row major order without duplicates, with one pair per row.  
-The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
-
-### remm-h
-Tool to compute a series of left and right matrix-vector multiplications reporting the overall running time and peak memory usage. Takes as input a compressed matrix in ReANS format (files `.val`, `.vc.R.iv`, `.vc.C.ansf.1`) of size *RxC*, a vector *x* of size *C* stored in a binary file (in float64 format) and an integer parameter *n*; computes *n* times the operations *y=Mx*, *z=y^t M*, *x = z/|z|*. You can use the tool `makevec.py` below to create an input vector *x* of the proper size.
-
-### csrvmm
-Analogous to *remm* (uses the same code) except that the input matrix is in Compressed Sparse Row Value (CSRV) format (just the files `.val` and `.vc`, no grammar compression) 
-
-### reivmm, re32mm 
-Analogous to *remm* except that the input matrix is expected to be in the format ReIV or Re32.
-
-### makevec.py
-Tool to create a vector of a given length and write it to a file in binary format (default float64 bit doubles, float32 and int32 formats are also supported). The vector is specified giving a set of values which are repeated cyclically.
-
-
 ---
 
 ## Bulk testing 
 
 The tool *mmtest-h.py* can be used to test compression and (parallel) matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The default content of the variables `Files` and `Sizes` can be overriden by the options `--files` and `-sizes`.
-By default the input matrix is assumed to contains doubles in csv format,
-the options `--i32`, `--f32`, and `--f64` signal that the input is in binary
-format with entries of type `int32`, `float32` and `float64`. Type `mmtest.py -h` for usage help. 
-
 
 The command
 ```bash 
