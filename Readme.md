@@ -1,5 +1,6 @@
-# Matrix multiplication on RePair compressed matrices
+# Better Matrix–Vector Multiplication via Hybrid Matrix Compression
 
+`mm-RePair-H` is a lossless matrix compression framework supporting matrix–vector multiplication directly over compressed data. It extends the original [**mm-RePair**](https://gitlab.com/manzai/mm-repair/) by combining **grammar compression** with **entropy coding**, improving compression ratio and reducing peak memory consumption while preserving efficient matrix–vector multiplication.
 
 ## Prerequisites 
 
@@ -16,57 +17,11 @@
 Clone/download then `make`
 
 
-## Sample computation
-
-Given the [covtype](https://www.kaggle.com/giovannimanzini/some-machine-learning-matrices?select=covtype) matrix in csv format (581012 rows, 54 columns) we compress it with the command:
-```bash
-matrepair -r somedir/covtype 581012 54
-```
-that creates in the directory `somedir` the files `covtype.val`, `covtype.vc`, `covtype.vc.R`, `covtype.vc.C`, `covtype.vc.R.iv`, `covtype.vc.C.iv`, and `covtype.vc.C.ansf.1`, representing the output of different grammar compression algorithms (see [Available Matrix Compression Formats](Available-Matrix-Compression-Formats)). 
-
-Next, we create a vector containing 54 entries equal to 1.0 and store it to the file `x54.dbl`:
-```bash
-makevec.py x54.dbl 54 1
-```
-Now we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ with the command:
-```bash
-remm  -y y.dbl -z z.dbl somedir/covtype 581012 54 x54.dbl
-```
-The output vector `y.dbl` has length 581012 and contains the sum of the entries of each row:
-```bash
-od -An -t f8 y.dbl | head
-                    10300                    10077
-                    13195                    13219
-                     9963                     9709
-                    10409                    10298
-                    10456                    10378
-                    10629                    13361
-                    12989                    10640
-                     9626                     9513
-                    10310                     9479
-                     9475                     9531
-```
-The output vector `z.dbl` has length 54 and contains the sum of the entries of each column of $`A^T A`$:
-```bash
-od -An -t f8 z.dbl | head
-           14549643830975             757939056719
-              65655800755            1372019643035
-             227139887795           13332507438427
-            1032604199658            1089965982517
-             697072520994           11059033547178
-               2526285260                225296661
-               1924930316                178077606
-                 12992451                 43226269
-                 24825698                 78839086
-                  7002929                 33807845
-```
-
-
 ---
 
 ## Input matrix format
 
-By default matrepair assumes the inut matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
+By default materepair-h assumes the input matrix is in textual `csv` format. This behaviour can be changed using the following command line options:
 
 * `--bool`  the input matrix has only 0/1 entries. The matrix is represente by a text file in which each line contains a pair of row and column indices denoting the position of a nonzero elements. The pairs must be ordered in row-major order without duplicates
 
@@ -78,22 +33,6 @@ By default matrepair assumes the inut matrix is in textual `csv` format. This be
 
 
 * `--i32` the input matrix is represented in dense format using one int32 per entry. The total file size  is $`4 \cdot rows \cdot columns`$ bytes
-
----
-
-## Parallel computation
-
-
-In order to exploits parallelism in matrix operations, we need to partition the matrix in blocks of rows and compress them separately. The command 
-```bash
-matrepair -r -b3 somedir/covtype 581012 54
-```
-splits the input matrix into three blocks of rows which are compressed separately. The command therefore creates the files `covtype.val`, `covtype.3.0.vc`, `covtype.3.0.vc.R`, `covtype.3.0.vc.C`, `covtype.3.0.vc.R.iv`, `covtype.3.0.vc.C.iv`, and `covtype.3.0.vc.C.ansf.1`, and similarly `covtype.3.1.vc` ...  `covtype.3.1.vc.C.ansf.1`, `covtype.3.2.vc` ... `covtype.3.2.vc.C.ansf.1`. 
-
-Next, we can compute the matrix vector products $`y=Mx`$ and $`z^T = y^T M`$ in parallel using the above row blocks with the command:
-```bash
-remm -b3 -y y.dbl -z z.dbl covtype 581012 54 x54.dbl
-```
 
 ---
 
@@ -124,7 +63,7 @@ The encoding consists of the files with extensions `.[if]val`, `.vc.R.iv`, and `
 
 ## Tools
 
-### matrepair
+### materepair-h
 Tool to compute the CSRV representation of a matrix and to grammar-compress it. By default assumes the input matrix be in `csv` format; use one of the options `--i32`, `--f32` or `--f64` to specify that the input matrix is in binary format. If `--i32` or `--f32` are used the matrix entries are stored  as `int32` or `float32` in the value file which is accordingly named with the extension `.ival` or `.fval`.
 Boolean (0/1) matrices are supported by the option `--bool`, which assumes that the input matrix consists of a text file containing a list of row/column pairs indicating the positions of the 1s. The list of pairs must be in row major order without duplicates, with one pair per row.  
 The option `-r` shows a nice report detailing running times and compression ratios for the different formats Re32, ReIV and ReAns
@@ -154,49 +93,23 @@ format with entries of type `int32`, `float32` and `float64`. Type `mmtest.py -h
 
 The command
 ```bash 
-mmtest.py mg -d /data
+mmtest2.py mg -d /data
 ```
 converts the input matrices from the `/data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
 
 
 The command
 ```bash 
-mmtest.py mz -b 8 -d /data
+mmtest2.py mz -b 8 -d /data
 ```
 computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks. Used for generating Table 1 in the paper.
 
 
 The command
 ```bash 
-mmtest.py mm -b 8 -d /data -n num
+mmtest2.py mm -b 8 -d /data -n num
 ```
 executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
-
-
----
-
-## PageRank computation 
-
-As an application of the boolean matrix compressed format we have implemented the PageRank algorithm. See the `pagerank` subfolder.
-
-
----
-
-## Column reordering
-
-For the column reordering algorithms, take a look at the `reordering` subfolder. Be warned that they only support input in `csv` format.
-
-
----
-
-## Experimental: the DRV format
-
-The DRV (Dense Row Values) format is suitable for dense matrices since it treats 0 as any other matrix entry. Each matrix entry (including 0) is represented by an int32 id. This format will usully proved a better compression, but the matrix operations will have cost proportional to the size of the uncompressed matrix. At the moment matrix vector multiplication is not supported for the DRV format. To bulk test compression in the DRV format use `mmtest.py` with option `md`, for example:
-```bash 
-mmtest.py md -d /data
-```
-The purpose of this format is to explore the maximum compression acheivable using Repair.
-
 
 ---
 
@@ -205,59 +118,29 @@ The purpose of this format is to explore the maximum compression acheivable usin
 
 ### csvmat2csrv
 Tool to compute the CSRV representation of a matrix. The input matrix is assumed to consists of `float64` (doubles) stored in `csv` format (one row per line). 
-Used by *matrepair*. Outputs the `.vc` and `.val` files. 
+Used by *materepair-h*. Outputs the `.vc` and `.val` files. 
 
 
 ### bin2csrv, bin2csrvf, bin2csrvi
 Tools to compute the CSRV representation of a matrix stored in binary form. 
 The three versions assume that the matrix entries are stored respectivley as float64 (double), float32, int32 and write such entries in the '[if]val' file in the same format. 
-Used by *matrepair*. Outputs the `.vc` and `.[if]val` files. 
-
+Used by *materepair-h*. Outputs the `.vc` and `.[if]val` files. 
 
 
 
 ### brepair/irepair0
-Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *matrepair* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
+Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *materepair-h* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
 
 ### sdsl/encode.x
-Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the minimum number of bits per entry from (https://github.com/simongog/sdsl-lite)[sdsl-lite]. Used by *matrepair* to generate the `.iv` files.
+Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the minimum number of bits per entry from (https://github.com/simongog/sdsl-lite)[sdsl-lite]. Used by *materepair-h* to generate the `.iv` files.
 
 ### ans/encode.x
-Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *matrepair* to generate the `.ansf.1` files.
-
+Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *materepair-h* to generate the `.ansf.1` files.
 
 
 ### others/csvmat2bin.py
 Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
 
 
-### others/stripcsvmat.py
-
-Tool to strip the initial or final columns and/or the initial rows from a csv matrix, producing a smaller csv matrix. Used to remove unwanted data when preparing the test dataset.
-
-
 ### others/mat2csrv.py
 Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8 byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by `csvmat2csrv` and  `bin2csrv[if]`.
-
-### Citation
-
-If you use this software or the techniques described herein in your research, please cite the following paper:
-
-```bibtex
-@article{10.14778/3547305.3547321,
-author = {Ferragina, Paolo and Manzini, Giovanni and Gagie, Travis and K\"{o}ppl, Dominik and Navarro, Gonzalo and Striani, Manuel and Tosoni, Francesco},
-title = {Improving matrix-vector multiplication via lossless grammar-compressed matrices},
-year = {2022},
-issue_date = {June 2022},
-publisher = {VLDB Endowment},
-volume = {15},
-number = {10},
-issn = {2150-8097},
-url = {https://doi.org/10.14778/3547305.3547321},
-doi = {10.14778/3547305.3547321},
-journal = {Proc. VLDB Endow.},
-month = jun,
-pages = {2175–2187},
-numpages = {13}
-}
-```
