@@ -64,7 +64,7 @@ $ od -An -v -t f8 x6.dbl
 Finally, we compute the matrix-vector products (y = Ax) and (z^T = y^T A) with
 
 ```bash
-$ ./remm-h  -y y.dbl -z z.dbl somedir/covtype 581012 54 x54.dbl
+$ ./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
 Elapsed time: 0 secs
 ```
 
