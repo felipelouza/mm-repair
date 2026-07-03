@@ -41,7 +41,54 @@ We compress it with the command:
 $ ./matrepair-h -r input.csv 8 6
 ```
 
-This creates the files `input.csv.val`, `input.vc.wcode`, `input.A.vc.C.ansf.1`, `input.A.vc.R.iv` and `input.csv.B.vc.ansf.1`, corresponding to the compressed representations of the components compressed with RePair (part A) and with ans-fold (part B).
+This creates the files `input.csv.val`, `input.csv.vc.wcode`, `input.csv.A.vc.C.ansf.1`, `input.csv.A.vc.R.iv` and `input.csv.B.vc.ansf.1`. 
+
+These files correspond to the compressed representations of the two components produced by the hybrid compression scheme: Part A, compressed with RePair, and Part B, compressed with ANS-fold.
+
+#### :hammer: Detais
+
+The file `input.csv.val` stores the distinct nonzero values appearing in `input.csv`:
+
+```text
+V = [5.3, 8.1, 6.0, 2.7]
+```
+
+Next, the input matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers, and the mapping is stored in `input.csv.vc.wcode`.
+
+The remapped CSRV sequence is then partitioned into two components:
+
+* `input.csv.A.vc`, containing the symbols that are compressed with RePair;
+* `input.csv.B.vc`, containing the remaining symbols, which are compressed directly with ANS-fold.
+
+RePair is applied to `input.csv.A.vc`:
+
+```bash
+==== RePair compression
+Command: /home/louza/mm-repair/brepair/irepair0 input.csv.A.vc 17733
+```
+
+This step produces the grammar (`input.csv.A.vc.R`) and the compressed sequence (`input.csv.A.vc.C`).
+
+The grammar is then encoded as a packed integer vector using SDSL:
+
+```bash
+==== Integer vector compression
+Command: /home/louza/mm-repair/sdsl/encode.x input.csv.A.vc.R
+```
+
+producing:
+
+```text
+input.csv.A.vc.R.iv
+```
+
+Finally, the RePair sequence (`input.csv.A.vc.C`) and the second CSRV component (`input.csv.B.vc`) are compressed using OLE and ANS-fold, producing the files:
+
+```text
+input.csv.A.vc.C.ansf.1
+input.csv.B.vc.ansf.1
+```
+
 
 ### :chocolate_bar: Matrix–Vector Multiplication 
 
