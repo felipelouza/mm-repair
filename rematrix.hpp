@@ -55,13 +55,13 @@
 #define VFILE_EXT ".val"
 
 #ifdef WCODE
-  #ifdef SPLIT
-    #define WFILE_EXT ".A.wcode"
-    #define WFILE_EXT_ANS ".A.wcode.ansf.1"
-  #else
-    #define WFILE_EXT ".wcode"
-    #define WFILE_EXT_ANS ".wcode.ansf.1"
-  #endif
+//  #ifdef SPLIT
+//    #define WFILE_EXT ".A.wcode"
+//    #define WFILE_EXT_ANS ".A.wcode.ansf.1"
+//  #else
+//    #define WFILE_EXT ".wcode"
+//    #define WFILE_EXT_ANS ".wcode.ansf.1"
+//  #endif
 #endif 
 
 // set to 1 to print a lot of debug information 
@@ -109,7 +109,6 @@ typedef struct {
   sdsl::int_vector<> Ccseq; // int-vector C from repair
 #endif  
 #ifdef WCODE
-  FILE *Wf;       
   int32_t *W;
   size_t Wsize;
 #endif
@@ -120,7 +119,11 @@ typedef struct {
 
 
 // main prototypes
+#ifdef WCODE
+rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize);
+#else
 rematrix *remat_create(int r, int c, char *basename, bool read_values);
+#endif
 void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 void remat_left_mult(vector *y, rematrix *m, vector *x);
@@ -134,12 +137,21 @@ static void clear_NTval(rematrix *m);
 static void propagate_NTval(rematrix *m, vector *x);
 
 // load compressed matrix information from files
+#ifdef WCODE
+rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize)
+#else
 rematrix *remat_create(int r, int c, char *basename, bool read_values)
+#endif
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
   rematrix *m= new rematrix;  
   m->rows=r; m->cols=c;
+
+  #ifdef WCODE
+    m->W = W;
+    m->Wsize = Wsize;
+  #endif
 
   // ------------ open and read rule file
   if(strlen(basename)+20>PATH_MAX) die("Illegal base name");
@@ -154,6 +166,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   // values are used only for right multiplication, no need to allocate now   
   m->NTval = NULL;
 
+/*
   // --- open WCODE file
   #ifdef WCODE
   strcpy(fname,basename);
@@ -200,7 +213,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
     int i=0;
     for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
   #endif
-
+*/
 
 
   // --- open and read C file
@@ -381,9 +394,9 @@ void remat_destroy(rematrix *m, bool free_vals)
   sdsl::util::clear(m->Ccseq);
 #endif
   if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
-#ifdef WCODE
-  free(m->W);
-#endif
+//#ifdef WCODE
+//  free(m->W);
+//#endif
   delete m;
 }
 

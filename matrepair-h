@@ -272,7 +272,7 @@ def main():
           if(execute_command(command,logfile)!=True):
            sys.exit(6)
           #
-          if args.mapping and not args.split: 
+          if args.mapping: # and not args.split: 
             command = "{exe} {mfile}.wcode ".format(ext=args.vc_ext,
                       exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
             print("Command:",command)
@@ -285,17 +285,17 @@ def main():
             print("Command:",command)
             if(execute_command(command,logfile)!=True):
              sys.exit(6)
-            if args.mapping:
-              command = "{exe} {mfile}.A.wcode ".format(ext=args.vc_ext,
-                        exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-              print("Command:",command)
-              if(execute_command(command,logfile)!=True):
-               sys.exit(6)
-              command = "{exe} {mfile}.B.wcode ".format(ext=args.vc_ext,
-                        exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
-              print("Command:",command)
-              if(execute_command(command,logfile)!=True):
-               sys.exit(6)
+            ##  if args.mapping:
+            ##    command = "{exe} {mfile}.A.wcode ".format(ext=args.vc_ext,
+            ##              exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            ##    print("Command:",command)
+            ##    if(execute_command(command,logfile)!=True):
+            ##     sys.exit(6)
+            ##    command = "{exe} {mfile}.B.wcode ".format(ext=args.vc_ext,
+            ##              exe = os.path.join(args.main_dir,ansf_exe), mfile=basename)
+            ##    print("Command:",command)
+            ##    if(execute_command(command,logfile)!=True):
+            ##     sys.exit(6)
           #
           ansf_time += time.time()-start
           print("Ans-fold time: {0:.4f}".format(ansf_time))
@@ -340,20 +340,22 @@ def compression_report(args,tconv,trepair,tiv,tans,ttot):
   vcsize += getsize_multipart(args.input,args.b,args.vc_ext) 
   wsize = 0
   if args.mapping:
-      if args.split: 
-        wsize += getsize_multipart(args.input,args.b,".A.wcode") 
-        wsize += getsize_multipart(args.input,args.b,".B.wcode") 
-      else:
-        wsize += getsize_multipart(args.input, args.b, ".wcode")
+      wsize += getsize_multipart(args.input, args.b, ".wcode")
+      #if args.split: 
+      #  wsize += getsize_multipart(args.input,args.b,".A.wcode") 
+      #  wsize += getsize_multipart(args.input,args.b,".B.wcode") 
+      #else:
+      #  wsize += getsize_multipart(args.input, args.b, ".wcode")
       print(" >> wcode: {0} bytes".format(wsize))  
   #
   wsize_ans = 0
   if args.mapping:
-      if args.split: 
-        wsize_ans += getsize_multipart(args.input,args.b,".A.wcode.ansf.1") 
-        wsize_ans += getsize_multipart(args.input,args.b,".B.wcode.ansf.1") 
-      else:
-        wsize_ans += getsize_multipart(args.input, args.b, ".wcode.ansf.1")
+      wsize_ans += getsize_multipart(args.input, args.b, ".wcode.ansf.1")
+      #if args.split: 
+      #  wsize_ans += getsize_multipart(args.input,args.b,".A.wcode.ansf.1") 
+      #  wsize_ans += getsize_multipart(args.input,args.b,".B.wcode.ansf.1") 
+      #else:
+      #  wsize_ans += getsize_multipart(args.input, args.b, ".wcode.ansf.1")
       print(" >> wcode_ans: {0} bytes".format(wsize_ans))  
   #
   nonzero = vcsize//4 - args.rows

@@ -38,14 +38,14 @@
 #define VFILE_EXT ".val"
 
 #ifdef WCODE
-  #ifdef SPLIT
-    //#define CSR_WFILE_EXT ".B.wcode.ansf.1.dec"
-    #define CSR_WFILE_EXT ".B.wcode"
-    #define CSR_WFILE_EXT_ANS ".B.wcode.ansf.1"
-  #else
+//  #ifdef SPLIT
+//    //#define CSR_WFILE_EXT ".B.wcode.ansf.1.dec"
+//    #define CSR_WFILE_EXT ".B.wcode"
+//    #define CSR_WFILE_EXT_ANS ".B.wcode.ansf.1"
+//  #else
     #define CSR_WFILE_EXT ".wcode"
     #define CSR_WFILE_EXT_ANS ".wcode.ansf.1"
-  #endif
+//  #endif
 #endif 
 
 #define CRS_BUF_MASK ((1<<CSR_BUF_LOG2)-1)     // mask to recognize beginning of buffer
@@ -94,7 +94,6 @@ typedef struct {
   size_t Cclen;   // length of ans-compressed array
 #endif
 #ifdef WCODE
-  FILE *Wf;       
   int32_t *W;
   size_t Wsize;
 #endif
@@ -103,15 +102,22 @@ typedef struct {
 
 
 // main prototypes
+#ifdef WCODE
+csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize);
+#else
 csr_rematrix *csr_remat_create(int r, int c, char *basename, bool csr_read_vals);
+#endif
 void csr_remat_destroy(csr_rematrix *v, bool free_vals);
 void csr_remat_mult(csr_rematrix *m, vector *x, vector *y);
 matval *csr_read_vals(FILE *f, size_t* size);
 xmatval csr_decode_mult_entry(int p, csr_rematrix *m, vector *x);
 xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c);
 
-
+#ifdef WCODE
+csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize)
+#else
 csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
+#endif
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
@@ -119,6 +125,12 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
   if(m==NULL) die("Cannot allocate matrix");
   
   m->rows=r; m->cols=c;
+
+  #ifdef WCODE
+    m->W = W;
+    m->Wsize = Wsize;
+  #endif
+
 
   // ------------ read csr values
   if(strlen(basename)+10>PATH_MAX) die("Illegal base name");
@@ -207,6 +219,7 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     m->Mval=NULL; m->Mnum=0;
   }
 
+/*
   // --- open WCODE file
   #ifdef WCODE
   strcpy(fname,basename);
@@ -256,14 +269,12 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
     for(i=1;i<m->Wsize; i++)m->W[i]+=m->W[i-1];
   
     //TODO 
-    ///**/
     //for(size_t j=0; j < m->CSRlen; j++) {
     //  m->CSRseq[j] = m->W[m->CSRseq[j]];
     //}
     //free(m->W);
-    /**/
   #endif
-
+*/
 
 
   return m;
@@ -431,9 +442,9 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
     } 
   #endif
   if(m->Cseq)    {free(m->Cseq); m->Cseq=NULL;}
-  #ifdef WCODE
-    free(m->W);
-  #endif
+  //#ifdef WCODE
+  //  free(m->W);
+  //#endif
   free(m);
 }
 

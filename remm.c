@@ -20,6 +20,11 @@
 #include "csrmatrix.hpp"
 #endif
 
+#ifdef WCODE
+    #define WFILE_EXT ".wcode.ansf.1.dec"
+    #define WFILE_EXT_ANS ".wcode.ansf.1"
+#endif
+
 #ifdef MALLOC_COUNT
 #include "tools/malloc_count.h"
 #endif
@@ -57,9 +62,18 @@ static void usage_and_exit(char *name)
     exit(1);
 }
 
-static rematrix **remat_create_multipart(int, int,const char *, int blocks);
+#ifdef WCODE
+static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize);
+#else
+static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n);
+#endif
+
 #ifdef SPLIT
-static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n);
+  #if WCODE
+    static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize);
+  #else
+    static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n);
+  #endif
 #endif
 static void remat_destroy_multipart(rematrix **b,int n);
 static void *block_main(void *v);
@@ -126,22 +140,61 @@ int main (int argc, char **argv) {
   cols  = atoi(argv[3]);
   if(cols<1) die("Invalid number of columns");
   
+  // ------------ read WCODE
+  #ifdef WCODE
+    char fname[PATH_MAX];
+    FILE *fw; 
+    strcpy(fname,argv[1]);
+    strcat(fname,WFILE_EXT);
+    fw = fopen(fname, "rb");
+    printf("==> %s\n", fname);
+    if(fw == NULL) die(fname);
+    if(fseek(fw, 0, SEEK_END)) die("Error seeking WCODE file");
+    long size = ftell(fw);
+    if(size < 0) die("Error reading WCODE file size");
+    rewind(fw);
+    size_t Wsize = size / sizeof(int32_t);
+    int32_t *W = (int32_t *) malloc(Wsize * sizeof(int32_t));
+    if(W == NULL)  die("Cannot allocate WCODE array");
+    if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize)
+      die("Cannot read WCODE file");
+    fclose(fw);
+    int i=0;
+    for(i=1;i<Wsize; i++)W[i]+=W[i-1];
+  #endif
+
   // ------------ read matrix or row blocks
   rematrix *m = NULL;
   rematrix **rblocks = NULL; 
   if(nblocks==1)
-    m = remat_create(rows,cols,argv[1],true); 
+    #ifdef WCODE
+      m = remat_create(rows,cols,argv[1],true, W, Wsize); 
+    #else
+      m = remat_create(rows,cols,argv[1],true); 
+    #endif
   else 
-    rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+    #ifdef WCODE
+      rblocks = remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
+    #else
+      rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
+    #endif
 
   #if SPLIT
   // ------------ read matrix or row blocks
   csr_rematrix *csr_m = NULL;
   csr_rematrix **csr_rblocks = NULL; 
   if(nblocks==1)
-    csr_m = csr_remat_create(rows,cols,argv[1],true); 
+    #ifdef WCODE
+      csr_m = csr_remat_create(rows,cols,argv[1],true, W, Wsize); 
+    #else
+      csr_m = csr_remat_create(rows,cols,argv[1],true); 
+    #endif
   else 
-    csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks);
+    #ifdef WCODE
+      csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
+    #else
+      csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks);
+    #endif
   #endif
     
   // ------------ read input vector
@@ -283,6 +336,9 @@ int main (int argc, char **argv) {
     //vector_destroy(z2);
     //vector_destroy(y2);
   #endif
+  //#ifdef WCODE
+  //  free(W);
+  //#endif
   vector_destroy(x);
   if(nblocks==1) 
     remat_destroy(m,true);
@@ -297,6 +353,7 @@ int main (int argc, char **argv) {
       xsem_destroy(td[i].out,__LINE__,__FILE__);
     }
   }
+
   #ifdef MALLOC_COUNT
     fprintf(stderr,"Peak memory allocation: %zu bytes, %.4lf bytes/entries\n",
            malloc_count_peak(), (double)malloc_count_peak()/(rows*cols));
@@ -368,7 +425,11 @@ static void *block_main(void *v)
 }
 
 // read matrix consisting of n blocks  
+#ifdef WCODE
+static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize)
+#else
 static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n)
+#endif
 {
   assert(n>1); // there must be at least 2 blocks 
   
@@ -393,7 +454,11 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
     b[i] = umat_create(r,col,fum);
     #else
     snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
-    b[i] = remat_create(r,cols,fname,false);// false=> do not read .val file
+      #ifdef WCODE
+        b[i] = remat_create(r,cols,fname,false, W, Wsize);// false=> do not read .val file
+      #else
+        b[i] = remat_create(r,cols,fname,false);// false=> do not read .val file
+      #endif
     #endif
     remaining -= r;
   }
@@ -426,7 +491,11 @@ static void remat_destroy_multipart(rematrix **b,int n)
 
 #ifdef SPLIT
 // read matrix consisting of n blocks  
+#ifdef WCODE
+static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize)
+#else
 static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n)
+#endif
 {
   assert(n>1); // there must be at least 2 blocks 
   
@@ -451,7 +520,11 @@ static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *b
     b[i] = umat_create(r,col,fum);
     #else
     snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
-    b[i] = csr_remat_create(r,cols,fname,false);// false=> do not read .val file
+    #ifdef WCODE
+      b[i] = csr_remat_create(r,cols,fname,false, W, Wsize);// false=> do not read .val file
+    #else
+      b[i] = csr_remat_create(r,cols,fname,false);// false=> do not read .val file
+    #endif
     #endif
     remaining -= r;
   }

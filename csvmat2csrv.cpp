@@ -916,7 +916,7 @@ int main (int argc, char **argv) {
 
     }                                                                                             
 
-    if(map_alpha and not split){
+    if(map_alpha){// and not split){
 
       //store the new alphabet
       char fname_alpha[PATH_MAX];
@@ -1014,6 +1014,7 @@ int main (int argc, char **argv) {
       fclose(fvc_A);
       fclose(fvc_B);
 
+/*
       if(map_alpha){
         //new alphabet for A
         char fname_A_alpha[PATH_MAX];
@@ -1027,7 +1028,7 @@ int main (int argc, char **argv) {
         else snprintf(fname_B_alpha,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn,"B",mext_wcode);
         maxcode = map_alphabet(fname_B, fname_B_alpha, debug);
       }
-
+*/
       cout<<"wr = "<<wr<<endl;
       cout<<"wr_modified = "<<wr_modified<<endl;
 

@@ -151,7 +151,7 @@ def test_compress(args, logfile, drv=False):
 
   for f in Files:
     name  = os.path.join(args.d,f)
-    exe_name = os.path.join(args.main_dir,"matrepair")
+    exe_name = os.path.join(args.main_dir,"matrepair-h")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
     command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --mapping --ole --split"
@@ -183,11 +183,12 @@ def test_compress(args, logfile, drv=False):
     csizeiv = getsize_multipart(name,args.b,args.mext_A+".C.iv") 
     rsizeiv = getsize_multipart(name,args.b,args.mext_A+".R.iv") 
     ans_csize = getsize_multipart(name,args.b,args.mext_A+".C.ansf.1")
-    ans_wcode = getsize_multipart(name,args.b,".A.wcode.ansf.1")
+    #ans_wcode = getsize_multipart(name,args.b,".A.wcode.ansf.1")
+    ans_wcode = getsize_multipart(name,args.b,".wcode.ansf.1")
 
     vcsize += getsize_multipart(name,args.b,args.mext_B) 
     ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")
-    ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
+    #ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
 
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
                     v+ans_csize+rsizeiv+ans_wcode))
@@ -236,7 +237,8 @@ def test_time(args,logfile):
       peak_decode = 0
       #decode B.vc.ansf.1
       #TODO: execute this loop in parallel
-      for ext_name in [".B.vc.ansf.1", ".B.wcode.ansf.1"]:
+      #for ext_name in [".B.vc.ansf.1", ".B.wcode.ansf.1"]:
+      for ext_name in [".B.vc.ansf.1"]:
         for b in range(args.b):
           decode_name = os.path.join(args.main_dir,"ans/decode.x")
           if args.b == 1:
@@ -253,12 +255,28 @@ def test_time(args,logfile):
             print(" Test failed:", str(ex))
             sys.exit(2)
             
-          timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
           #print(float(str(timespace[0])))
+          timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
           time_decode += float(str(timespace[0]))
           peak_decode = max(peak_decode,int(str(timespace[1])))
 
       #print(time_decode, peak_decode)
+      
+      for ext_name in [".wcode.ansf.1"]:
+        decode_name = os.path.join(args.main_dir,"ans/decode.x")
+        nameB  = os.path.join(args.d, f+ext_name)
+        decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
+        decode = Time_exe +  ' -f%e:%M ' + decode
+        try:
+          ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
+                stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        except Exception as ex:
+          print("Command:", decode)
+          print(" Test failed:", str(ex))
+          sys.exit(2)
+        timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+        time_decode += float(str(timespace[0]))
+        peak_decode = max(peak_decode,int(str(timespace[1])))
 
       # only save the eigenvalue
       exe_name = os.path.join(args.main_dir,a)
