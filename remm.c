@@ -21,7 +21,8 @@
 #endif
 
 #ifdef WCODE
-    #define WFILE_EXT ".wcode.ansf.1.dec"
+    //#define WFILE_EXT ".wcode.ansf.1.dec"
+    #define WFILE_EXT ".wcode"
     #define WFILE_EXT_ANS ".wcode.ansf.1"
 #endif
 
