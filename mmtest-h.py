@@ -183,8 +183,9 @@ def test_compress(args, logfile, drv=False):
     csizeiv = getsize_multipart(name,args.b,args.mext_A+".C.iv") 
     rsizeiv = getsize_multipart(name,args.b,args.mext_A+".R.iv") 
     ans_csize = getsize_multipart(name,args.b,args.mext_A+".C.ansf.1")
-    #ans_wcode = getsize_multipart(name,args.b,".A.wcode.ansf.1")
-    ans_wcode = getsize_multipart(name,args.b,".wcode.ansf.1")
+    ##ans_wcode = getsize_multipart(name,args.b,".A.wcode.ansf.1")
+    #ans_wcode = getsize_multipart(name,args.b,".wcode.ansf.1")
+    ans_wcode = os.path.getsize(name+".wcode.ansf.1")
 
     vcsize += getsize_multipart(name,args.b,args.mext_B) 
     ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")

@@ -102,22 +102,14 @@ typedef struct {
 
 
 // main prototypes
-#ifdef WCODE
-csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize);
-#else
-csr_rematrix *csr_remat_create(int r, int c, char *basename, bool csr_read_vals);
-#endif
+csr_rematrix *csr_remat_create(int r, int c, char *basename, bool csr_read_vals, int32_t *W, size_t Wsize);
 void csr_remat_destroy(csr_rematrix *v, bool free_vals);
 void csr_remat_mult(csr_rematrix *m, vector *x, vector *y);
 matval *csr_read_vals(FILE *f, size_t* size);
 xmatval csr_decode_mult_entry(int p, csr_rematrix *m, vector *x);
 xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c);
 
-#ifdef WCODE
 csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize)
-#else
-csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
-#endif
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
@@ -126,11 +118,11 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values)
   
   m->rows=r; m->cols=c;
 
+  // ------------ read WCODE
   #ifdef WCODE
     m->W = W;
     m->Wsize = Wsize;
   #endif
-
 
   // ------------ read csr values
   if(strlen(basename)+10>PATH_MAX) die("Illegal base name");

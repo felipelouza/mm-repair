@@ -55,13 +55,8 @@
 #define VFILE_EXT ".val"
 
 #ifdef WCODE
-//  #ifdef SPLIT
-//    #define WFILE_EXT ".A.wcode"
-//    #define WFILE_EXT_ANS ".A.wcode.ansf.1"
-//  #else
-//    #define WFILE_EXT ".wcode"
-//    #define WFILE_EXT_ANS ".wcode.ansf.1"
-//  #endif
+    #define WFILE_EXT ".wcode"
+    #define WFILE_EXT_ANS ".wcode.ansf.1"
 #endif 
 
 // set to 1 to print a lot of debug information 
@@ -148,6 +143,7 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   rematrix *m= new rematrix;  
   m->rows=r; m->cols=c;
 
+  // ------------ read WCODE
   #ifdef WCODE
     m->W = W;
     m->Wsize = Wsize;

@@ -63,18 +63,10 @@ static void usage_and_exit(char *name)
     exit(1);
 }
 
-#ifdef WCODE
 static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize);
-#else
-static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n);
-#endif
 
 #ifdef SPLIT
-  #if WCODE
     static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize);
-  #else
-    static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n);
-  #endif
 #endif
 static void remat_destroy_multipart(rematrix **b,int n);
 static void *block_main(void *v);
@@ -141,6 +133,9 @@ int main (int argc, char **argv) {
   cols  = atoi(argv[3]);
   if(cols<1) die("Invalid number of columns");
   
+  int32_t *W = NULL;
+  size_t Wsize=0;
+
   // ------------ read WCODE
   #ifdef WCODE
     char fname[PATH_MAX];
@@ -148,14 +143,13 @@ int main (int argc, char **argv) {
     strcpy(fname,argv[1]);
     strcat(fname,WFILE_EXT);
     fw = fopen(fname, "rb");
-    printf("==> %s\n", fname);
     if(fw == NULL) die(fname);
     if(fseek(fw, 0, SEEK_END)) die("Error seeking WCODE file");
     long size = ftell(fw);
     if(size < 0) die("Error reading WCODE file size");
     rewind(fw);
-    size_t Wsize = size / sizeof(int32_t);
-    int32_t *W = (int32_t *) malloc(Wsize * sizeof(int32_t));
+    Wsize = size / sizeof(int32_t);
+    W = (int32_t *) malloc(Wsize * sizeof(int32_t));
     if(W == NULL)  die("Cannot allocate WCODE array");
     if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize)
       die("Cannot read WCODE file");
@@ -174,28 +168,16 @@ int main (int argc, char **argv) {
       m = remat_create(rows,cols,argv[1],true); 
     #endif
   else 
-    #ifdef WCODE
-      rblocks = remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
-    #else
-      rblocks = remat_create_multipart(rows,cols,argv[1],nblocks);
-    #endif
+    rblocks = remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
 
   #if SPLIT
   // ------------ read matrix or row blocks
   csr_rematrix *csr_m = NULL;
   csr_rematrix **csr_rblocks = NULL; 
   if(nblocks==1)
-    #ifdef WCODE
-      csr_m = csr_remat_create(rows,cols,argv[1],true, W, Wsize); 
-    #else
-      csr_m = csr_remat_create(rows,cols,argv[1],true); 
-    #endif
+    csr_m = csr_remat_create(rows,cols,argv[1],true, W, Wsize); 
   else 
-    #ifdef WCODE
-      csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
-    #else
-      csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks);
-    #endif
+    csr_rblocks = csr_remat_create_multipart(rows,cols,argv[1],nblocks, W, Wsize);
   #endif
     
   // ------------ read input vector
@@ -337,9 +319,9 @@ int main (int argc, char **argv) {
     //vector_destroy(z2);
     //vector_destroy(y2);
   #endif
-  //#ifdef WCODE
-  //  free(W);
-  //#endif
+  #ifdef WCODE
+    free(W);
+  #endif
   vector_destroy(x);
   if(nblocks==1) 
     remat_destroy(m,true);
@@ -426,11 +408,7 @@ static void *block_main(void *v)
 }
 
 // read matrix consisting of n blocks  
-#ifdef WCODE
 static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize)
-#else
-static rematrix **remat_create_multipart(int rows,int cols,const char *base, int n)
-#endif
 {
   assert(n>1); // there must be at least 2 blocks 
   
@@ -468,7 +446,7 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   fclose(fum);
   #endif
   
-  // read values ad assign them to all matrices in  b[] 
+  // read values and assign them to all matrices in  b[] 
   snprintf(fname,PATH_MAX,"%s%s",base,VFILE_EXT);
   FILE *f = fopen(fname,"rb");
   if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
@@ -478,6 +456,8 @@ static rematrix **remat_create_multipart(int rows,int cols,const char *base, int
   for(int i=1;i<n;i++) {
     b[i]->Mval = b[0]->Mval; b[i]->Mnum = b[0]->Mnum;
   }  
+
+  //FELIPE
   return b;
 }
 
@@ -492,11 +472,7 @@ static void remat_destroy_multipart(rematrix **b,int n)
 
 #ifdef SPLIT
 // read matrix consisting of n blocks  
-#ifdef WCODE
 static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n, int32_t *W, size_t Wsize)
-#else
-static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *base, int n)
-#endif
 {
   assert(n>1); // there must be at least 2 blocks 
   
@@ -521,11 +497,7 @@ static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *b
     b[i] = umat_create(r,col,fum);
     #else
     snprintf(fname,PATH_MAX,"%s.%d.%d",base,n,i);
-    #ifdef WCODE
       b[i] = csr_remat_create(r,cols,fname,false, W, Wsize);// false=> do not read .val file
-    #else
-      b[i] = csr_remat_create(r,cols,fname,false);// false=> do not read .val file
-    #endif
     #endif
     remaining -= r;
   }
@@ -541,6 +513,7 @@ static csr_rematrix **csr_remat_create_multipart(int rows,int cols,const char *b
   b[0]->Mval = csr_read_vals(f,&b[0]->Mnum);
   // copy Mval/Mnum to the other blocks
   if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+  //shared values
   for(int i=1;i<n;i++) {
     b[i]->Mval = b[0]->Mval; b[i]->Mnum = b[0]->Mnum;
   }  

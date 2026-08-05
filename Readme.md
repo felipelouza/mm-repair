@@ -136,23 +136,16 @@ The tool *mmtest-h.py* can be used to test compression and (parallel) matrix-vec
 
 The command
 ```bash 
-mmtest-h.py mg -d /data
-```
-converts the input matrices from the `/data` directory from the *csv* format to the dense uncompressed format and applies to the latter the compressors *gzip* and *xz* showing the absolute size and the percentage with respect to the dense uncompressed matrix. Used for generating Table 1 in the paper. 
-
-
-The command
-```bash 
 mmtest-h.py mz -b 8 -d /data
 ```
-computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks. Used for generating Table 1 in the paper.
+computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks.
 
 
 The command
 ```bash 
 mmtest-h.py mm -b 8 -d /data -n num
 ```
-executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. Used for generating Table 2 in the paper.
+executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. 
 
 ---
 
@@ -180,7 +173,7 @@ Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the 
 Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *materepair-h* to generate the `.ansf.1` files.
 
 ### ole/encode.x
-Tool to reorder elements within a row (separated by 0's) and delta-encode the values. Used by *materepair-h* to generate the `.A.vc.C.ansf.1` file.
+Tool to reorder elements within a row (separated by 0's) and delta-encode (gap) the values. Used by *materepair-h* to generate the `.A.vc.C.ansf.1` file.
 
 
 ### others/csvmat2bin.py
