@@ -15,7 +15,7 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy.csv','higgs.csv','airline78.csv','covtype.csv', 'census.csv', 'optical.csv', 'mnist2m.csv', 'imagenet.csv']
+Files = ['susy.csv','higgs.csv','airline78.csv','covtype.csv', 'census.csv', 'optical.csv', 'mnist2m.csv', 'imagenet.csv', 'glove.q64.csv', 'glove.q256.csv', 'glove.q1k.csv']
 
 Data_dir = 'data/'
 Logfile_name = "errors2.log"
@@ -23,7 +23,10 @@ Time_exe = "/usr/bin/time"
 
 Sizes = {'covtype.csv':(581012, 54), 'census.csv':(2458285, 68), 'optical.csv':(325834, 174),
          'susy.csv':(5000000, 18), 'higgs.csv': (11000000,  28), 'mnist2m.csv':(2000000,784),
-         'airline78.csv':(14462943, 29),'imagenet.csv':(1262102, 900) }
+         'airline78.csv':(14462943, 29),'imagenet.csv':(1262102, 900),
+         'glove.q64.csv':(400000,300), 'glove.q256.csv':(400000,300),'glove.q1k.csv':(400000,300)
+        }
+
 
 # matrix mutiplication algorithms to be tested
 #Algos = ['csrvmm', 're32mm','reivmm','remm','remm2']
