@@ -157,7 +157,7 @@ def test_compress(args, logfile, drv=False):
     exe_name = os.path.join(args.main_dir,"matrepair-h")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
-    command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --mapping --ole --split"
+    command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --hybrid"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
                            stderr=logfile,timeout=Timelimit,check=True)
@@ -242,45 +242,46 @@ def test_time(args,logfile):
       #decode B.vc.ansf.1
       #TODO: execute this loop in parallel
       #for ext_name in [".B.vc.ansf.1", ".B.wcode.ansf.1"]:
-      for ext_name in [".B.vc.ansf.1"]:
-        for b in range(args.b):
-          decode_name = os.path.join(args.main_dir,"ans/decode.x")
-          if args.b == 1:
-              nameB  = os.path.join(args.d, f+ext_name)
-          else:
-              nameB  = os.path.join(args.d, f+"."+str(args.b)+"."+str(b)+ext_name)
-          decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
-          decode = Time_exe +  ' -f%e:%M ' + decode
-          try:
-            ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
-                  stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-          except Exception as ex:
-            print("Command:", decode)
-            print(" Test failed:", str(ex))
-            sys.exit(2)
-            
-          #print(float(str(timespace[0])))
-          timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
-          time_decode += float(str(timespace[0]))
-          peak_decode = max(peak_decode,int(str(timespace[1])))
+      #for ext_name in [".B.vc.ansf.1"]:
+      #  for b in range(args.b):
+      #    decode_name = os.path.join(args.main_dir,"ans/decode.x")
+      #    if args.b == 1:
+      #        nameB  = os.path.join(args.d, f+ext_name)
+      #    else:
+      #        nameB  = os.path.join(args.d, f+"."+str(args.b)+"."+str(b)+ext_name)
+      #    decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
+      #    decode = Time_exe +  ' -f%e:%M ' + decode
+      #    try:
+      #      ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
+      #            stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+      #    except Exception as ex:
+      #      print("Command:", decode)
+      #      print(" Test failed:", str(ex))
+      #      sys.exit(2)
+      #      
+      #    #print(float(str(timespace[0])))
+      #    timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+      #    time_decode += float(str(timespace[0]))
+      #    peak_decode = max(peak_decode,int(str(timespace[1])))
 
       #print(time_decode, peak_decode)
       
-      for ext_name in [".wcode.ansf.1"]:
-        decode_name = os.path.join(args.main_dir,"ans/decode.x")
-        nameB  = os.path.join(args.d, f+ext_name)
-        decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
-        decode = Time_exe +  ' -f%e:%M ' + decode
-        try:
-          ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
-                stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        except Exception as ex:
-          print("Command:", decode)
-          print(" Test failed:", str(ex))
-          sys.exit(2)
-        timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
-        time_decode += float(str(timespace[0]))
-        peak_decode = max(peak_decode,int(str(timespace[1])))
+      #for ext_name in [".wcode.ansf.1"]:
+      #  decode_name = os.path.join(args.main_dir,"ans/decode.x")
+      #  nameB  = os.path.join(args.d, f+ext_name)
+      #  decode  = "{exe} {name}".format(exe = decode_name, name=nameB)
+      #  print(decode)
+      #  decode = Time_exe +  ' -f%e:%M ' + decode
+      #  try:
+      #    ris = subprocess.run(decode.split(),timeout=Timelimit,check=True,
+      #          stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+      #  except Exception as ex:
+      #    print("Command:", decode)
+      #    print(" Test failed:", str(ex))
+      #    sys.exit(2)
+      #  timespace= str(ris.stderr,'utf-8').split()[-1].split(":")
+      #  time_decode += float(str(timespace[0]))
+      #  peak_decode = max(peak_decode,int(str(timespace[1])))
 
       # only save the eigenvalue
       exe_name = os.path.join(args.main_dir,a)

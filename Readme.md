@@ -34,25 +34,13 @@ make
 
 ## Compression
 
-The `matrepair` program supports the original mm-RePair compression scheme as well as the hybrid scheme introduced in this repository.
-
-To use the hybrid scheme, add the `--hybrid` option:
+To use the hybrid scheme, add the `--hybrid` option to matrepair:
 
 ```bash
 ./matrepair --hybrid input.csv 8 6
 ```
 
-The `matrepair-h` executable provides a shorthand for the same command:
-
-```bash
-./matrepair-h input.csv 8 6
-```
-
-Both commands are equivalent to:
-
-```bash
-./matrepair --hybrid input.csv 8 6
-```
+The `matrepair-h` executable provides a shorthand for the same command.
 
 The hybrid scheme combines three techniques:
 
@@ -60,7 +48,7 @@ The hybrid scheme combines three techniques:
 2. **Hybrid partitioning:** the CSRV sequence is partitioned into two components. One component is grammar-compressed with RePair, while the other is encoded directly with ANS-fold.
 3. **Ordered-list encoding:** entries within each row are reordered and delta-encoded before entropy coding.
 
-## Sample computation
+## Running example 
 
 Consider the following [input.csv](https://github.com/felipelouza/mm-repair/blob/master/input.csv) matrix (8 rows × 6 columns):
 
@@ -80,16 +68,10 @@ Consider the following [input.csv](https://github.com/felipelouza/mm-repair/blob
 Compress the matrix using:
 
 ```bash
-./matrepair-h input.csv 8 6
-```
-
-or, equivalently:
-
-```bash
 ./matrepair --hybrid input.csv 8 6
 ```
 
-This produces files similar to:
+This produces files:
 
 ```text
 input.csv.val
@@ -142,7 +124,7 @@ producing:
 input.csv.A.vc.R.iv
 ```
 
-Finally, the RePair sequence and the second CSRV component are encoded using the ordered-list encoding and ANS-fold. The resulting files are:
+Finally, the RePair final sequence and the second CSRV component are encoded using the ordered-list encoding (OLE) and ANS-fold. The resulting files are:
 
 ```text
 input.csv.A.vc.C.ansf.1
@@ -169,27 +151,10 @@ od -An -v -t f8 x6.dbl
                         1                        1
 ```
 
-The matrix–vector products
-
-```text
-y = Ax
-```
-
-and
-
-```text
-z^T = y^T A
-```
-
-can then be computed directly over the compressed representation:
+Finally, we compute the matrix-vector products `y = Ax` and `z^T = y^T A` directly over the compressed representation with:
 
 ```bash
 ./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
-```
-
-The output is:
-
-```text
 Elapsed time: 0 secs
 ```
 
@@ -237,24 +202,24 @@ The default values of `Files` and `Sizes` can be overridden using the `--files` 
 The command
 
 ```bash
-./mmtest-h.py mz -b 8 -d /data
+./mmtest-h.py mz -b 2 -d /data
 ```
 
 computes the CSRV and compressed representations of the input matrices in `/data` and reports their sizes as percentages of the corresponding dense, uncompressed matrices.
 
-The `-b 8` option partitions each input matrix into 8 row blocks before computing its CSRV representation.
+The `-b 2` option partitions each input matrix into 2 row blocks before computing its CSRV representation.
 
 ### Matrix–vector multiplication
 
 The command
 
 ```bash
-./mmtest-h.py mm -b 8 -d /data -n num
+./mmtest-h.py mm -b 2 -d /data -n num
 ```
 
 executes `num` iterations of the matrix–vector multiplication algorithms `csrvmm`, `re32mm`, `reivmm`, and `reansmm`, reporting the average execution time per iteration and the peak memory usage.
 
-The command assumes that the input matrices have already been partitioned into 8 row blocks and compressed as described above.
+The command assumes that the input matrices have already been partitioned into 2 row blocks and compressed as described above.
 
 ---
 

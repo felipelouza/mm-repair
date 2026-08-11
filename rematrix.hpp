@@ -54,10 +54,10 @@
 
 #define VFILE_EXT ".val"
 
-#ifdef WCODE
-    #define WFILE_EXT ".wcode"
-    #define WFILE_EXT_ANS ".wcode.ansf.1"
-#endif 
+//#ifdef WCODE
+//    #define WFILE_EXT ".wcode"
+//    #define WFILE_EXT_ANS ".wcode.ansf.1"
+//#endif 
 
 // set to 1 to print a lot of debug information 
 #define DEBUG 0

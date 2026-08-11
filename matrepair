@@ -80,6 +80,9 @@ def main():
     args.p = args.b # more processes than blocks makes no sense
     print("Setting number of parallel processes to", args.p)
   # if no max RAM provided on command line uses 90% of total 
+  if args.b > args.rows:
+    print("The number of blocks cannot be greater than the number of rows")
+    sys.exit(1)
   if(args.m<0):
     mem = virtual_memory().total
     args.m = max(4000,int(0.90*mem/2**20)) # assume at least 4GB in case virtual_memory() misbehaves

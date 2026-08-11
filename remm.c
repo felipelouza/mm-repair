@@ -21,8 +21,8 @@
 #endif
 
 #ifdef WCODE
-    //#define WFILE_EXT ".wcode.ansf.1.dec"
-    #define WFILE_EXT ".wcode"
+    #define WFILE_EXT ".wcode.ansf.1.dec"
+    //#define WFILE_EXT ".wcode"
     #define WFILE_EXT_ANS ".wcode.ansf.1"
 #endif
 
@@ -136,6 +136,46 @@ int main (int argc, char **argv) {
   int32_t *W = NULL;
   size_t Wsize=0;
 
+  // ------------ decompress B.vc
+  #if SPLIT
+  {
+    for(int i=0; i<nblocks; i++) {
+      char b_vc_ansf[PATH_MAX];
+      strcpy(b_vc_ansf, argv[1]);
+  
+      if(nblocks > 1) {
+        char block[PATH_MAX];
+        sprintf(block, ".%d.%d", nblocks, i);
+        strcat(b_vc_ansf, block);
+      }
+      strcat(b_vc_ansf, ".B.vc.ansf.1");
+
+      char command[PATH_MAX];
+      strcpy(command, "./ans/decode.x ");
+      strcat(command, b_vc_ansf);
+  
+      int ret = system(command);
+      if(ret != 0) die("Error decoding B.vc file");
+    }
+  }
+  #endif
+
+  // ------------ decompress WCODE
+  #ifdef WCODE
+  {
+    char wcode_ansf[PATH_MAX];
+    strcpy(wcode_ansf, argv[1]);
+    strcat(wcode_ansf, WFILE_EXT_ANS);
+
+    char command[PATH_MAX];
+    strcpy(command, "./ans/decode.x ");
+    strcat(command, wcode_ansf);
+    
+    int ret = system(command);
+    if (ret != 0) die("Error decoding WCODE file");
+  }
+  #endif
+
   // ------------ read WCODE
   #ifdef WCODE
     char fname[PATH_MAX];
@@ -151,8 +191,7 @@ int main (int argc, char **argv) {
     Wsize = size / sizeof(int32_t);
     W = (int32_t *) malloc(Wsize * sizeof(int32_t));
     if(W == NULL)  die("Cannot allocate WCODE array");
-    if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize)
-      die("Cannot read WCODE file");
+    if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize) die("Cannot read WCODE file");
     fclose(fw);
     int i=0;
     for(i=1;i<Wsize; i++)W[i]+=W[i-1];
