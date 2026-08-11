@@ -71,6 +71,7 @@ def main():
   parser.add_argument('--mapping',  help='alphabet mapping (crsv)',action='store_true')
   parser.add_argument('--split',  help='split string S into A and B (crsv)',action='store_true')
   parser.add_argument('--ole',  help='enable offset listing encoding for string C',action='store_true')
+  parser.add_argument('--hybrid', help='Use the hybrid compression strategy.', action='store_true')
   args = parser.parse_args()
   if args.p < 1 or args.b <1:
     print("Options -p and -b must be positive")
@@ -129,6 +130,9 @@ def main():
     args.vc_B_ext = ".B.vc"   
     args.vc_B_ext_ans = ".B.vc.ansf.1"   
     args.name = "crsv"
+
+  if args.hybrid:
+    args.mapping = args.split = args.ole = True
 
   if(args.split):
     args.vc_ext = args.vc_A_ext

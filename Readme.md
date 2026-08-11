@@ -2,21 +2,63 @@
 
 `mm-RePair-H` is a lossless matrix compression framework supporting matrix–vector multiplication directly over compressed data. It extends the original [**mm-RePair**](https://gitlab.com/manzai/mm-repair/) by combining **grammar compression** with **entropy coding**, improving compression ratio and reducing peak memory consumption while preserving efficient matrix–vector multiplication.
 
-## Prerequisites 
+The main compression program is `matrepair`. The hybrid compression scheme can be enabled with the `--hybrid` option. The `matrepair-h` executable is a convenience wrapper that invokes `matrepair --hybrid`.
 
-* Python version 3.8 or later
-* [sdsl-lite](https://github.com/simongog/sdsl-lite) (`git clone https://github.com/simongog/sdsl-lite.git` + 
-`cd sdsl-lite` + `./install.sh`)
-* [psutil](https://pypi.org/project/psutil/) (`pip install psutil`)
+## Prerequisites
 
+- Python 3.8 or later
+- [sdsl-lite](https://github.com/simongog/sdsl-lite/)
+- [psutil](https://pypi.org/project/psutil/)
 
-## Installation 
+To install `sdsl-lite`:
 
-```sh
+```bash
+git clone https://github.com/simongog/sdsl-lite.git
+cd sdsl-lite
+./install.sh
+```
+
+To install `psutil`:
+
+```bash
+pip install psutil
+```
+
+## Installation
+
+```bash
 git clone https://github.com/felipelouza/mm-repair.git
 cd mm-repair
-make 
+make
 ```
+
+## Compression
+
+The `matrepair` program supports the original mm-RePair compression scheme as well as the hybrid scheme introduced in this repository.
+
+To use the hybrid scheme, add the `--hybrid` option:
+
+```bash
+./matrepair --hybrid input.csv 8 6
+```
+
+The `matrepair-h` executable provides a shorthand for the same command:
+
+```bash
+./matrepair-h input.csv 8 6
+```
+
+Both commands are equivalent to:
+
+```bash
+./matrepair --hybrid input.csv 8 6
+```
+
+The hybrid scheme combines three techniques:
+
+1. **Alphabet mapping:** the CSRV alphabet is remapped to a compact range of consecutive integers.
+2. **Hybrid partitioning:** the CSRV sequence is partitioned into two components. One component is grammar-compressed with RePair, while the other is encoded directly with ANS-fold.
+3. **Ordered-list encoding:** entries within each row are reordered and delta-encoded before entropy coding.
 
 ## Sample computation
 
@@ -33,19 +75,33 @@ Consider the following [input.csv](https://github.com/felipelouza/mm-repair/blob
 2.7, 0.0, 6.0, 2.7, 5.3, 0.0
 ```
 
-### :file_folder: Data Compression
+### 📁 Data compression
 
-We compress it with the command:
+Compress the matrix using:
 
 ```bash
-$ ./matrepair-h -r input.csv 8 6
+./matrepair-h input.csv 8 6
 ```
 
-This creates the files `input.csv.val`, `input.csv.vc.wcode`, `input.csv.A.vc.C.ansf.1`, `input.csv.A.vc.R.iv` and `input.csv.B.vc.ansf.1`. 
+or, equivalently:
 
-These files correspond to the compressed representations of the two components produced by the hybrid compression scheme: Part A, compressed with RePair, and Part B, compressed with ANS-fold.
+```bash
+./matrepair --hybrid input.csv 8 6
+```
 
-#### :hammer::hammer::hammer: Details
+This produces files similar to:
+
+```text
+input.csv.val
+input.csv.vc.wcode
+input.csv.A.vc.C.ansf.1
+input.csv.A.vc.R.iv
+input.csv.B.vc.ansf.1
+```
+
+These files store the compressed representation of the two components produced by the hybrid compression scheme: **Part A**, which is grammar-compressed with RePair, and **Part B**, which is compressed with ANS-fold.
+
+#### 🔨 Compression details
 
 The file `input.csv.val` stores the distinct nonzero values appearing in `input.csv`:
 
@@ -53,132 +109,225 @@ The file `input.csv.val` stores the distinct nonzero values appearing in `input.
 V = [5.3, 8.1, 6.0, 2.7]
 ```
 
-The CSV matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers, and the mapping is stored in `input.csv.vc.wcode`.
+The CSV matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers. The corresponding mapping is stored in:
+
+```text
+input.csv.vc.wcode
+```
 
 The remapped CSRV sequence is then partitioned into two components:
 
-* `input.csv.A.vc`, containing the symbols that are compressed with RePair;
-* `input.csv.B.vc`, containing the remaining symbols, which are compressed directly with ANS-fold.
+- `input.csv.A.vc`, containing the symbols selected for grammar compression with RePair;
+- `input.csv.B.vc`, containing the remaining symbols, which are encoded directly with ANS-fold.
 
 RePair is applied to `input.csv.A.vc`:
 
-```bash
+```text
 ==== RePair compression
 Command: /home/louza/mm-repair/brepair/irepair0 input.csv.A.vc 17733
 ```
 
-This step produces the grammar (`input.csv.A.vc.R`) and the final sequence (`input.csv.A.vc.C`).
+This produces the grammar (`input.csv.A.vc.R`) and the compressed sequence (`input.csv.A.vc.C`).
 
-The grammar is then encoded into as a packed integer vector using SDSL, producing `input.csv.A.vc.R.iv`. 
+The grammar is then encoded as a packed integer vector using SDSL:
 
-```bash
+```text
 ==== Integer vector compression
 Command: /home/louza/mm-repair/sdsl/encode.x input.csv.A.vc.R
 ```
 
-At the end, the RePair sequence (`input.csv.A.vc.C`) and the second CSRV component (`input.csv.B.vc`) are compressed using OLE and ANS-fold, producing the files:
+producing:
+
+```text
+input.csv.A.vc.R.iv
+```
+
+Finally, the RePair sequence and the second CSRV component are encoded using the ordered-list encoding and ANS-fold. The resulting files are:
 
 ```text
 input.csv.A.vc.C.ansf.1
 input.csv.B.vc.ansf.1
 ```
 
+### 🍫 Matrix–vector multiplication
 
-### :chocolate_bar: Matrix–Vector Multiplication 
-
-Next, we create a vector containing six entries equal to `1.0`:
+Next, create a vector containing six entries equal to `1.0`:
 
 ```bash
-$ ./makevec.py x6.dbl 6 1
+./makevec.py x6.dbl 6 1
 ```
 
 The output vector `x6.dbl` has length 6 and contains only ones:
 
 ```bash
-$ od -An -v -t f8 x6.dbl 
+od -An -v -t f8 x6.dbl
+```
+
+```text
                         1                        1
                         1                        1
                         1                        1
 ```
 
+The matrix–vector products
 
-Finally, we compute the matrix-vector products (y = Ax) and (z^T = y^T A) with
+```text
+y = Ax
+```
+
+and
+
+```text
+z^T = y^T A
+```
+
+can then be computed directly over the compressed representation:
 
 ```bash
-$ ./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
+./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
+```
+
+The output is:
+
+```text
 Elapsed time: 0 secs
 ```
 
-The output vector `y.dbl` has length 8 and contains the sum of the entries of each row:
+The vector `y.dbl` has length 8 and contains the sum of the entries in each row:
 
 ```bash
-$ od -An -t f8 y.dbl
+od -An -t f8 y.dbl
+```
+
+```text
                    19.4                    22.0
                    24.7                    14.7
                    11.3                    22.7
                    16.8                    16.7
 ```
 
-The output vector `z.dbl` has length 6 and contains the entries of the vector (A^T y):
+The vector `z.dbl` has length 6 and contains the entries of:
+
+```text
+A^T y
+```
 
 ```bash
-$ od -An -t f8 z.dbl
+od -An -t f8 z.dbl
+```
+
+```text
                    546.73                   61.29
                    826.41                   250.83
                    537.51                   667.88
-
 ```
----
-
-## Bulk testing 
-
-The tool *mmtest-h.py* can be used to test compression and (parallel) matrix-vector multiplication on a set of different matrices. The matrices, and their number of rows and columns, are specified inside *mmtest.py* in the global variables `Files` and `Sizes`. The first variable is a list of file names while the second is a dictionary providing the number of rows and columns for each file (extra entries in `Sizes` are ignored). The default content of the variables `Files` and `Sizes` can be overriden by the options `--files` and `-sizes`.
-
-The command
-```bash 
-mmtest-h.py mz -b 8 -d /data
-```
-computes the CSRV and grammar representations of the input matrices from the `/data` directory and show their size as percentage of the dense uncompressed matrices. Before computing the CSRV representation the input matrices are split into 8 row blocks.
-
-
-The command
-```bash 
-mmtest-h.py mm -b 8 -d /data -n num
-```
-executes *num* iterations of the matrix multiplication algorithms *csrvmm*, *re32mm*, *reivmm* and *reansmm* showing the average time per iteration and the peak memory usage. The command assumes that the input matrices have been already split into 8 row blocks and compressed as described above. 
 
 ---
 
-## Internal tools 
+## Bulk testing
 
+The `mmtest-h.py` script can be used to evaluate compression and matrix–vector multiplication on a collection of matrices.
 
-### csvmat2csrv
-Tool to compute the CSRV representation of a matrix. The input matrix is assumed to consists of `float64` (doubles) stored in `csv` format (one row per line). 
-Used by *materepair-h*. Outputs the `.vc` and `.val` files. 
+The input matrices and their dimensions are specified in `mmtest.py` using the global variables `Files` and `Sizes`. `Files` is a list of input file names, while `Sizes` is a dictionary containing the number of rows and columns for each file. Entries in `Sizes` that do not correspond to a file in `Files` are ignored.
 
+The default values of `Files` and `Sizes` can be overridden using the `--files` and `--sizes` options.
 
-### bin2csrv, bin2csrvf, bin2csrvi
-Tools to compute the CSRV representation of a matrix stored in binary form. 
-The three versions assume that the matrix entries are stored respectivley as float64 (double), float32, int32 and write such entries in the '[if]val' file in the same format. 
-Used by *materepair-h*. Outputs the `.vc` and `.[if]val` files. 
+### Compression
 
+The command
 
-### brepair/irepair0
-Tool using the RePair algorithm to grammar-compress a sequence of integers; the integer 0 is never compressed (ie, used in the rhs of a rule). Used by *materepair-h* to compress the `.vc` file producing the `.vc.R` (rules) and `.vc.C` (sequence) files.
+```bash
+./mmtest-h.py mz -b 8 -d /data
+```
 
-### sdsl/encode.x
-Tool to encode a sequence of 32-bit integers as a sdsl integer vector using the minimum number of bits per entry from (https://github.com/simongog/sdsl-lite)[sdsl-lite]. Used by *materepair-h* to generate the `.iv` files.
+computes the CSRV and compressed representations of the input matrices in `/data` and reports their sizes as percentages of the corresponding dense, uncompressed matrices.
 
-### ans/encode.x
-Tool to encode a sequence of 32-bit integers using the *ANSfold-1* encoder from (https://github.com/mpetri/ans-large-alphabet)[ans-large-alphabet]. Used by *materepair-h* to generate the `.ansf.1` files.
+The `-b 8` option partitions each input matrix into 8 row blocks before computing its CSRV representation.
 
-### ole/encode.x
-Tool to reorder elements within a row (separated by 0's) and delta-encode (gap) the values. Used by *materepair-h* to generate the `.A.vc.C.ansf.1` file.
+### Matrix–vector multiplication
 
+The command
 
-### others/csvmat2bin.py
-Tool to convert a matrix in csv format into binary int32/float32/float64 format (possibly removing some trailing or leading rows/columns). All matrix entries are represented so the outfile has size `rows*cols*sizeof(entry)`. Note that when using the int32 or float32 output formats some information will be lost if the input values are not of the right type.
+```bash
+./mmtest-h.py mm -b 8 -d /data -n num
+```
 
+executes `num` iterations of the matrix–vector multiplication algorithms `csrvmm`, `re32mm`, `reivmm`, and `reansmm`, reporting the average execution time per iteration and the peak memory usage.
 
-### others/mat2csrv.py
-Tool to compute the CSRV representation of a matrix. The input matrix is assumed to be in `csv` format unless its name ends with the `.dbl` extension in that case it is assumed to be in dense format with a 8 byte double per entry. Outputs the `.vc` and `.val` files. Superseeded by `csvmat2csrv` and  `bin2csrv[if]`.
+The command assumes that the input matrices have already been partitioned into 8 row blocks and compressed as described above.
+
+---
+
+## Internal tools
+
+### `csvmat2csrv`
+
+Computes the CSRV representation of a matrix stored in CSV format.
+
+The input matrix is assumed to contain `float64` values, with one row per line.
+
+Used by `matrepair`. Produces the `.vc` and `.val` files.
+
+### `bin2csrv`, `bin2csrvf`, `bin2csrvi`
+
+Compute the CSRV representation of a matrix stored in binary format.
+
+The three versions assume that the matrix entries are stored, respectively, as:
+
+- `float64` (`double`);
+- `float32`;
+- `int32`.
+
+The values are written to the corresponding `.val`, `.fval`, or `.ival` file using the same representation.
+
+Used by `matrepair`. Produces the `.vc` and corresponding value files.
+
+### `brepair/irepair0`
+
+Implements the RePair algorithm for grammar compression of an integer sequence.
+
+The integer `0` is never compressed, i.e., it does not occur in the right-hand side of a grammar rule.
+
+Used by `matrepair` to compress the `.vc` file, producing `.vc.R` (grammar rules) and `.vc.C` (compressed sequence) files.
+
+### `sdsl/encode.x`
+
+Encodes a sequence of 32-bit integers as an SDSL integer vector using the minimum number of bits per entry.
+
+See [sdsl-lite](https://github.com/simongog/sdsl-lite/).
+
+Used by `matrepair` to generate the `.iv` files containing the compressed grammar.
+
+### `ans/encode.x`
+
+Encodes a sequence of 32-bit integers using the **ANS-fold-1** encoder from [ans-large-alphabet](https://github.com/mpetri/ans-large-alphabet).
+
+Used by `matrepair` to generate the `.ansf.1` files.
+
+### `ole/encode.x`
+
+Reorders elements within each row (separated by `0` symbols) and delta-encodes the resulting column identifiers.
+
+Used by `matrepair` as part of the ordered-list encoding of the RePair sequence.
+
+### `others/csvmat2bin.py`
+
+Converts a matrix stored in CSV format into binary `int32`, `float32`, or `float64` format.
+
+The script can optionally remove leading or trailing rows and columns. All matrix entries are represented explicitly, so the resulting file has size:
+
+```text
+rows * cols * sizeof(entry)
+```
+
+When using the `int32` or `float32` output formats, information may be lost if the input values cannot be represented exactly in the selected format.
+
+### `others/mat2csrv.py`
+
+Computes the CSRV representation of a matrix.
+
+The input matrix is assumed to be in CSV format, unless its name ends with `.dbl`, in which case it is interpreted as a dense matrix containing 8-byte doubles.
+
+The script produces the `.vc` and `.val` files.
+
+This tool is superseded by `csvmat2csrv` and `bin2csrv[if]`.
