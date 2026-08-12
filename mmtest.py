@@ -15,15 +15,20 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy.csv','higgs.csv','airline78.csv','covtype.csv', 'census.csv', 'optical.csv', 'mnist2m.csv', 'imagenet.csv']
+Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet', 'glove.q64', 'glove.q256', 'glove.q1k', 'glove.q4k', 'glove.q64k', 'glove', 'pgsf']
 
 Data_dir = 'data/'
-Logfile_name = "errors2.log"
+Logfile_name = "errors.log"
 Time_exe = "/usr/bin/time"
 
-Sizes = {'covtype.csv':(581012, 54), 'census.csv':(2458285, 68), 'optical.csv':(325834, 174),
-         'susy.csv':(5000000, 18), 'higgs.csv': (11000000,  28), 'mnist2m.csv':(2000000,784),
-         'airline78.csv':(14462943, 29),'imagenet.csv':(1262102, 900) }
+Sizes = {'covtype':(581012, 54), 'census':(2458285, 68), 'optical':(325834, 174),
+         'susy':(5000000, 18), 'higgs': (11000000,  28), 'mnist2m':(2000000,784),
+         'airline78':(14462943, 29),'imagenet':(1262102, 900),
+         'glove.q64':(400000,300), 'glove.q256':(400000,300),'glove.q1k':(400000,300),
+         'glove.q4k':(400000,300), 'glove.q64k':(400000,300), 'glove':(400000,300),
+         'pgsf':(2000000,768)
+        }
+
 
 # matrix mutiplication algorithms to be tested
 Algos = ['csrvmm', 're32mm','reivmm','remm']
