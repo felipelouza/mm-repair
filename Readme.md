@@ -223,76 +223,10 @@ The command assumes that the input matrices have already been partitioned into 2
 
 ---
 
-## Internal tools
+## Authors
 
-### `csvmat2csrv`
+* [Felipe Louza](https://github.com/felipelouza)
+* [Giovanni Manzini](https://gitlab.com/manzai)
+* [Guilherme Telles](https://github.com/gptelles)
 
-Computes the CSRV representation of a matrix stored in CSV format.
 
-The input matrix is assumed to contain `float64` values, with one row per line.
-
-Used by `matrepair`. Produces the `.vc` and `.val` files.
-
-### `bin2csrv`, `bin2csrvf`, `bin2csrvi`
-
-Compute the CSRV representation of a matrix stored in binary format.
-
-The three versions assume that the matrix entries are stored, respectively, as:
-
-- `float64` (`double`);
-- `float32`;
-- `int32`.
-
-The values are written to the corresponding `.val`, `.fval`, or `.ival` file using the same representation.
-
-Used by `matrepair`. Produces the `.vc` and corresponding value files.
-
-### `brepair/irepair0`
-
-Implements the RePair algorithm for grammar compression of an integer sequence.
-
-The integer `0` is never compressed, i.e., it does not occur in the right-hand side of a grammar rule.
-
-Used by `matrepair` to compress the `.vc` file, producing `.vc.R` (grammar rules) and `.vc.C` (compressed sequence) files.
-
-### `sdsl/encode.x`
-
-Encodes a sequence of 32-bit integers as an SDSL integer vector using the minimum number of bits per entry.
-
-See [sdsl-lite](https://github.com/simongog/sdsl-lite/).
-
-Used by `matrepair` to generate the `.iv` files containing the compressed grammar.
-
-### `ans/encode.x`
-
-Encodes a sequence of 32-bit integers using the **ANS-fold-1** encoder from [ans-large-alphabet](https://github.com/mpetri/ans-large-alphabet).
-
-Used by `matrepair` to generate the `.ansf.1` files.
-
-### `ole/encode.x`
-
-Reorders elements within each row (separated by `0` symbols) and delta-encodes the resulting column identifiers.
-
-Used by `matrepair` as part of the ordered-list encoding of the RePair sequence.
-
-### `others/csvmat2bin.py`
-
-Converts a matrix stored in CSV format into binary `int32`, `float32`, or `float64` format.
-
-The script can optionally remove leading or trailing rows and columns. All matrix entries are represented explicitly, so the resulting file has size:
-
-```text
-rows * cols * sizeof(entry)
-```
-
-When using the `int32` or `float32` output formats, information may be lost if the input values cannot be represented exactly in the selected format.
-
-### `others/mat2csrv.py`
-
-Computes the CSRV representation of a matrix.
-
-The input matrix is assumed to be in CSV format, unless its name ends with `.dbl`, in which case it is interpreted as a dense matrix containing 8-byte doubles.
-
-The script produces the `.vc` and `.val` files.
-
-This tool is superseded by `csvmat2csrv` and `bin2csrv[if]`.
