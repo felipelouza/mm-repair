@@ -75,7 +75,7 @@ This produces files:
 
 ```text
 input.csv.val
-input.csv.vc.wcode
+input.csv.wcode
 input.csv.A.vc.C.ansf.1
 input.csv.A.vc.R.iv
 input.csv.B.vc.ansf.1
@@ -94,7 +94,7 @@ V = [5.3, 8.1, 6.0, 2.7]
 The CSV matrix is converted into its CSRV representation (`input.csv.vc`). During this step, the CSRV alphabet is remapped to a compact range of consecutive integers. The corresponding mapping is stored in:
 
 ```text
-input.csv.vc.wcode
+input.csv.wcode
 ```
 
 The remapped CSRV sequence is then partitioned into two components:
