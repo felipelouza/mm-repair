@@ -977,10 +977,10 @@ int main (int argc, char **argv) {
         row.push_back(value);
         if(value==0){
           vector<uint32_t> row_A, row_B;
-          //TODO: ordenar (e remover) pela mediana de wcode_freq 
           size_t n = row.size()-1;
           if(n>1 && pair_freq[{row[0],row[1]}] <= split ) row_B.push_back(row[0]);
-          else row_A.push_back(row[0]);
+          //else row_A.push_back(row[0]);
+          else row_B.push_back(row[0]);
 
           for(size_t i = 1; i < n-1; i++){
 
@@ -1002,13 +1002,22 @@ int main (int argc, char **argv) {
           n_A += row_A.size();
           n_B += row_B.size();
 
-          row_A.push_back(*row.rbegin());
-          if(row_B.size()>0){
-            wr_modified++;
-            //gap-encode below
-            //sort(row_B.begin(), row_B.end());
+          //row_A.push_back(*row.rbegin());
+          row_A.push_back(0);
+          
+          if(!row_B.empty()) wr_modified++;
+
+          if(row_B.size()>1){
+            //gap-encode below  
+            sort(row_B.begin(), row_B.end());
+            //for (int i = row_B.size() - 1; i > 0; i--)
+              //row_B[i] -= row_B[i - 1];
           }
-          row_B.push_back(*row.rbegin());
+          //row_B.push_back(*row.rbegin());
+          row_B.push_back(0);
+
+          for(auto r:row_B) cout<<r<<" ";
+          cout<<endl;
 
           if(fwrite(row_A.data(), sizeof(uint32_t), row_A.size(), fvc_A)!=row_A.size())
             quit("Error writing to .A.vc file");
