@@ -947,6 +947,8 @@ int main (int argc, char **argv) {
 
     if(split){
 
+      split = 2;
+
       map<pair<uint32_t,uint32_t>, int> pair_freq = get_all_pair_freq(fname);
       if(debug){
         for (const auto& [p, freq] : pair_freq) {
@@ -979,8 +981,8 @@ int main (int argc, char **argv) {
           vector<uint32_t> row_A, row_B;
           size_t n = row.size()-1;
           if(n>1 && pair_freq[{row[0],row[1]}] <= split ) row_B.push_back(row[0]);
-          //else row_A.push_back(row[0]);
-          else row_B.push_back(row[0]);
+          else row_A.push_back(row[0]);
+          //else row_B.push_back(row[0]);
 
           for(size_t i = 1; i < n-1; i++){
 
