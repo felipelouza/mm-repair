@@ -1018,9 +1018,6 @@ int main (int argc, char **argv) {
           //row_B.push_back(*row.rbegin());
           row_B.push_back(0);
 
-          for(auto r:row_B) cout<<r<<" ";
-          cout<<endl;
-
           if(fwrite(row_A.data(), sizeof(uint32_t), row_A.size(), fvc_A)!=row_A.size())
             quit("Error writing to .A.vc file");
           if(fwrite(row_B.data(), sizeof(uint32_t), row_B.size(), fvc_B)!=row_B.size())
