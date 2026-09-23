@@ -47,7 +47,15 @@ int xsem_destroy(sem_t *sem, int linea, const char *file);
 void xperror(int en, const char *msg) {
   char buf[Buflen];
   
+#ifdef __APPLE__
+  // macOS provides only the XSI-compliant strerror_r, which returns an int
+  // and writes the message into buf; glibc's GNU variant returns a char *
+  char *errmsg = buf;
+  if(strerror_r(en, buf, Buflen) != 0)
+    snprintf(buf, Buflen, "Unknown error %d", en);
+#else
   char *errmsg = strerror_r(en, buf, Buflen);
+#endif
   if(msg!=NULL)
     fprintf(stderr,"%s: %s\n",msg, errmsg);
   else
@@ -58,6 +66,13 @@ void xperror(int en, const char *msg) {
 // ----- threads
 
 inline int set_core(pthread_t *thread, int tid, const int ncores) {
+#ifdef __APPLE__
+    // macOS has no pthread_setaffinity_np()/cpu_set_t: thread affinity cannot
+    // be set from user space, so pinning is skipped and threads run wherever
+    // the scheduler places them
+    (void) thread; (void) tid; (void) ncores;
+    return 0;
+#else
     // Set thread affinity
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
@@ -68,6 +83,7 @@ inline int set_core(pthread_t *thread, int tid, const int ncores) {
         exit(1);
     }
     return rc;
+#endif
 }
 
 int xpthread_create(pthread_t *thread, const pthread_attr_t *attr,

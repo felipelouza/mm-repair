@@ -177,7 +177,11 @@ def main():
       else:
         m = f"-m" if(args.mapping) else ""
         s = f"-s" if(args.split) else ""
-        command = "{exe} {opts} {nocol} {c64} {mfile} {reorder} {mapping} {split} {rows} {cols}".format(
+        # keep every option ahead of the positional arguments: getopt() only
+        # permutes argv on glibc, so options placed after {mfile} are read as
+        # positionals by the BSD/macOS getopt() and by glibc under
+        # POSIXLY_CORRECT, making the conversion tool print its usage and fail
+        command = "{exe} {opts} {nocol} {c64} {reorder} {mapping} {split} {mfile} {rows} {cols}".format(
           exe = os.path.join(args.main_dir,args.csrv_exe), mfile=args.input,
           reorder = f"-r {args.reorder}",
           mapping = m,

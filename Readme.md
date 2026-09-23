@@ -20,8 +20,9 @@ The main compression program is `matrepair`. The hybrid scheme is enabled with `
 
 ## Prerequisites
 
-- A C++ compiler with C++11 support, plus `make`
+- A C++ compiler with C++17 support and a C compiler with C99 support, plus `make`
 - Python 3.8 or later
+- [CMake](https://cmake.org/), which `sdsl-lite`'s `install.sh` uses to build it
 - [sdsl-lite](https://github.com/simongog/sdsl-lite/)
 - [psutil](https://pypi.org/project/psutil/)
 
@@ -33,10 +34,41 @@ cd sdsl-lite
 ./install.sh
 ```
 
+`sdsl-lite` does not compile with current compilers. Both gcc 15 and clang 21 reject two
+identifiers in `include/sdsl/louds_tree.hpp` (gcc 12 still accepts them):
+
+```text
+include/sdsl/louds_tree.hpp:182:51: error: no member named 'm_select1' in 'louds_tree<...>'
+include/sdsl/louds_tree.hpp:183:51: error: no member named 'm_select0' in 'louds_tree<...>'
+```
+
+Inside `swap()`, `tree.m_select1` and `tree.m_select0` should read `tree.m_bv_select1`
+and `tree.m_bv_select0`. Correcting those two names lets `./install.sh` complete. This is
+a bug in `sdsl-lite`, not in this repository — it is tracked upstream as
+[simongog/sdsl-lite#462](https://github.com/simongog/sdsl-lite/issues/462), open since
+November 2024 against a repository whose last commit was in December 2019, so the edit
+has to be made locally.
+
+With CMake 4 or later, `install.sh` also stops at the configure step with "Compatibility
+with CMake < 3.5 has been removed from CMake", because `sdsl-lite` declares
+`cmake_minimum_required(VERSION 2.8.11)`. Raising the policy minimum gets past it:
+
+```bash
+CMAKE_POLICY_VERSION_MINIMUM=3.5 ./install.sh
+```
+
+With no argument `install.sh` installs into `$HOME/include` and `$HOME/lib`, which is
+where the makefiles look by default. To use a different prefix, pass the matching paths
+to `make`:
+
+```bash
+make INC_DIR=/your/prefix/include LIB_DIR=/your/prefix/lib
+```
+
 Install `psutil`:
 
 ```bash
-pip install psutil
+python3 -m pip install psutil
 ```
 
 ## Installation
@@ -46,6 +78,24 @@ git clone https://github.com/felipelouza/mm-repair.git
 cd mm-repair
 make
 ```
+
+A successful build leaves `matrepair`, `remm-h`, `csvmat2csrv`, `brepair/irepair0`,
+`sdsl/encode.x`, `ans/encode.x` and `ole/encode.x` in place; the running example below
+exercises all of them.
+
+### Building on macOS
+
+The compression and multiplication programs build and run on macOS. Three measurement
+facilities behave differently there:
+
+- `malloc_count` reports peak memory as 0, because it hooks glibc's allocator. The
+  `Peak memory allocation` lines printed by the `re*mm` programs are therefore not
+  measurements on that platform.
+- `mmtest-h.py mm` requires GNU `time` for its `-f` format string, which the BSD `time`
+  shipped with macOS does not support.
+- `set_core()` in `tools/xerrors.h` is a no-op, since macOS exposes no thread-affinity
+  API. This affects only `pagerank/`, the sole caller, which the default `make` target
+  does not build; the matrix–vector programs never pin threads on any platform.
 
 ## Usage
 
