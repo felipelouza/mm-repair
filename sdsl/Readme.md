@@ -1,3 +1,14 @@
+### Install prefix
+
+With no argument `install.sh` installs into `$HOME/include` and `$HOME/lib`, which is
+where the makefiles look by default. To use a different prefix, pass the matching paths
+to `make`:
+
+```bash
+make INC_DIR=/your/prefix/include LIB_DIR=/your/prefix/lib
+```
+### sdsl-lite build issues
+
 `sdsl-lite` does not compile with current compilers. Both gcc 15 and clang 21 reject two
 identifiers in `include/sdsl/louds_tree.hpp` (gcc 12 still accepts them):
 
