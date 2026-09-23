@@ -51,18 +51,24 @@ make
 
 ```bash
 # Compression
-./matrepair [--hybrid] <matrix.csv> <rows> <cols>
-./matrepair-h <matrix.csv> <rows> <cols>     # same as matrepair --hybrid
+./matrepair [--hybrid] [-r] [-b <blocks>] <matrix.csv> <rows> <cols>
 
 # Build a dense vector of a constant value
 ./makevec.py <output.dbl> <length> <value>
 
 # Matrix–vector multiplication over the compressed data
-./remm-h [-y <y.dbl>] [-z <z.dbl>] <matrix.csv> <rows> <cols> <x.dbl>
+./remm-h [-y <y.dbl>] [-z <z.dbl>] [-b <blocks>] [-n <iters>] [-v] <basename> <rows> <cols> <x.dbl>
 ```
 
 The input matrix is given as a CSV file of floating-point values; `rows` and `cols` are its
-dimensions.
+dimensions. The `-r` option prints a report of running times and compression ratios, and `-b`
+splits the matrix into row blocks that are compressed separately.
+
+For `remm-h`, the first positional argument is the base name of the compressed files, not the
+matrix: the multiplication reads only `basename.val`, `basename.wcode`, `basename.A.vc.*` and
+`basename.B.vc.*`. Since `matrepair` names its output after the input file, this is the same
+string you passed to it. Use the same `-b` value used at compression time; with `-n`, the
+tool repeats the products `n` times, renormalising `x = z/‖z‖` between iterations.
 
 ## Running example
 
@@ -149,7 +155,8 @@ od -An -v -t f8 x6.dbl
 ```
 
 Then compute `y = Ax` and `z = Aᵀy` (equivalently `zᵀ = yᵀA`) directly over the compressed
-representation:
+representation. Here `input.csv` is the base name of the compressed files written above, not
+the matrix:
 
 ```bash
 ./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
