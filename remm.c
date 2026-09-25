@@ -170,17 +170,25 @@ int main (int argc, char **argv) {
 
   // ------------ decompress WCODE
   #ifdef WCODE
+  int use_wcode = 0;
   {
     char wcode_ansf[PATH_MAX];
     strcpy(wcode_ansf, argv[1]);
     strcat(wcode_ansf, WFILE_EXT_ANS);
 
-    char command[PATH_MAX];
-    strcpy(command, "./ans/decode.x ");
-    strcat(command, wcode_ansf);
+    struct stat s;
+    if (stat(wcode_ansf, &s) != 0) die("Cannot stat WCODE file");
+
+    if(s.st_size>0){ //if map_alpha was true
+      char command[PATH_MAX];
+      strcpy(command, "./ans/decode.x ");
+      strcat(command, wcode_ansf);
     
-    int ret = system(command);
-    if (ret != 0) die("Error decoding WCODE file");
+      int ret = system(command);
+      if (ret != 0) die("Error decoding WCODE file");
+
+      use_wcode=1;
+    }
   }
   #endif
 
@@ -189,23 +197,25 @@ int main (int argc, char **argv) {
 
   // ------------ read WCODE
   #ifdef WCODE
-    char wfname[PATH_MAX];
-    FILE *fw; 
-    strcpy(wfname,argv[1]);
-    strcat(wfname,WFILE_EXT);
-    fw = fopen(wfname, "rb");
-    if(fw == NULL) die(wfname);
-    if(fseek(fw, 0, SEEK_END)) die("Error seeking WCODE file");
-    long size = ftell(fw);
-    if(size < 0) die("Error reading WCODE file size");
-    rewind(fw);
-    Wsize = size / sizeof(int32_t);
-    W = (int32_t *) malloc(Wsize * sizeof(int32_t));
-    if(W == NULL)  die("Cannot allocate WCODE array");
-    if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize) die("Cannot read WCODE file");
-    fclose(fw);
-    int i=0;
-    for(i=1;i<Wsize; i++)W[i]+=W[i-1];
+    if(use_wcode){
+      char wfname[PATH_MAX];
+      FILE *fw; 
+      strcpy(wfname,argv[1]);
+      strcat(wfname,WFILE_EXT);
+      fw = fopen(wfname, "rb");
+      if(fw == NULL) die(wfname);
+      if(fseek(fw, 0, SEEK_END)) die("Error seeking WCODE file");
+      long size = ftell(fw);
+      if(size < 0) die("Error reading WCODE file size");
+      rewind(fw);
+      Wsize = size / sizeof(int32_t);
+      W = (int32_t *) malloc(Wsize * sizeof(int32_t));
+      if(W == NULL)  die("Cannot allocate WCODE array");
+      if(fread(W, sizeof(int32_t), Wsize, fw) != Wsize) die("Cannot read WCODE file");
+      fclose(fw);
+      int i=0;
+      for(i=1;i<Wsize; i++)W[i]+=W[i-1];
+    }
   #endif
 
   // ------------ read matrix or row blocks
@@ -371,7 +381,7 @@ int main (int argc, char **argv) {
     //vector_destroy(y2);
   #endif
   #ifdef WCODE
-    free(W);
+    if(use_wcode) free(W);
   #endif
   vector_destroy(x);
   if(nblocks==1) 

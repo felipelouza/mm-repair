@@ -452,7 +452,7 @@ void csr_remat_destroy(csr_rematrix *m, bool free_vals)
 xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c)
 {
   #ifdef WCODE
-    p = m->W[p];
+    if(m->Wsize) p = m->W[p];
   #endif
   p = p-1;
   *c = p % m->cols;
@@ -468,7 +468,7 @@ xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c)
 xmatval csr_decode_mult_entry(int p, csr_rematrix *m, vector *x)
 {
   #ifdef WCODE
-    p = m->W[p];
+    if(m->Wsize) p = m->W[p];
   #endif
   p = p-1;
   size_t pcol = p % m->cols;

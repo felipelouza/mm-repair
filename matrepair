@@ -321,6 +321,8 @@ def main():
             print("Command:",command)
             if(execute_command(command,logfile)!=True):
              sys.exit(6)
+        else:
+            open("{mfile}.wcode.ansf.1".format(mfile=args.input), "wb").close()
       ##
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      

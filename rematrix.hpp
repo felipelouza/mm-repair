@@ -405,7 +405,7 @@ void remat_destroy(rematrix *m, bool free_vals)
 xmatval decode_entry(int p, rematrix *m, size_t *c)
 {
   #ifdef WCODE
-    p = m->W[p];
+    if(m->Wsize) p = m->W[p];
   #endif
   p = p-1;
   *c = p % m->cols;
@@ -421,7 +421,7 @@ xmatval decode_entry(int p, rematrix *m, size_t *c)
 xmatval decode_mult_entry(int p, rematrix *m, vector *x)
 {
   #ifdef WCODE
-    p = m->W[p];
+    if(m->Wsize) p = m->W[p];
   #endif
   p = p-1;
   size_t pcol = p % m->cols;
