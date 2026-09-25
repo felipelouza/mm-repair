@@ -88,7 +88,7 @@ typedef struct {
 
 
 // main prototypes
-rematrix *remat_create(int r, int c, char *basename, bool read_vals);
+rematrix *remat_create(int r, int c, char *basename, bool read_vals, matval *Mval, size_t Mnum);
 void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 void remat_left_mult(vector *y, rematrix *m, vector *x);
@@ -104,10 +104,11 @@ static void propagate_NTval(rematrix *m, vector *x);
 // load compressed matrix information from files
 // if read_vals==false then the actual matrix entries are not 
 // read from the .val file and Mval and Mnum are not initialized
-rematrix *remat_create(int r, int c, char *basename, bool read_values)
+rematrix *remat_create(int r, int c, char *basename, bool read_values, matval *Mval, size_t Mnum)
 {
   char fname[PATH_MAX];
-  FILE *f; struct stat s;
+  //FILE *f; 
+  struct stat s;
   rematrix *m=(rematrix *) malloc(sizeof(rematrix));
   if(m==NULL) die("Cannot alloc matrix");
   
@@ -166,12 +167,16 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
   
   // ------------ read matrix values 
   if(read_values) {
+    /*
     strcpy(fname,basename);
     strcat(fname,VFILE_EXT);
     f = fopen(fname,"rb");
     if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
     m->Mval = read_vals(f,&m->Mnum);
     if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+    */
+    m->Mval = Mval;
+    m->Mnum = Mnum;
   }
   else {
     m->Mval=NULL; m->Mnum=0;

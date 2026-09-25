@@ -14,6 +14,8 @@
 #include <limits.h>
 #include <errno.h>
 
+#define USE_ANSIV2
+
 //TODO: remove USE_ANSIV2 along the code
 #ifdef USE_ANSIV2
   #include <algorithm>
@@ -33,7 +35,7 @@
   #endif
 #endif
 
-#define CSR_BUF_LOG2 10                  // log of (size decompression buffer)  
+#define CSR_BUF_LOG2 19                  // log of (size decompression buffer)  
 
 #define VFILE_EXT ".val"
 
@@ -102,19 +104,20 @@ typedef struct {
 
 
 // main prototypes
-csr_rematrix *csr_remat_create(int r, int c, char *basename, bool csr_read_vals, int32_t *W, size_t Wsize);
+csr_rematrix *csr_remat_create(int r, int c, char *basename, bool csr_read_vals, int32_t *W, size_t Wsize, matval *Mval, size_t Mnum);
 void csr_remat_destroy(csr_rematrix *v, bool free_vals);
 void csr_remat_mult(csr_rematrix *m, vector *x, vector *y);
 matval *csr_read_vals(FILE *f, size_t* size);
 xmatval csr_decode_mult_entry(int p, csr_rematrix *m, vector *x);
 xmatval csr_decode_entry(int p, csr_rematrix *m, size_t *c);
 
-csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize)
+csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, int32_t *W, size_t Wsize, matval *Mval, size_t Mnum)
 {
   char fname[PATH_MAX];
   FILE *f; struct stat s;
   csr_rematrix *m= (csr_rematrix*) malloc(sizeof(csr_rematrix));
   if(m==NULL) die("Cannot allocate matrix");
+
   
   m->rows=r; m->cols=c;
 
@@ -200,12 +203,16 @@ csr_rematrix *csr_remat_create(int r, int c, char *basename,bool read_values, in
   
   // ------------ read matrix values 
   if(read_values) {
+    /*
     strcpy(fname,basename);
     strcat(fname,VFILE_EXT);
     f = fopen(fname,"rb");
     if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
     m->Mval = csr_read_vals(f,&m->Mnum);
     if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+    */
+    m->Mval = Mval;
+    m->Mnum = Mnum;
   }
   else {
     m->Mval=NULL; m->Mnum=0;
@@ -367,13 +374,13 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
   #ifdef OLE
     uint32_t acc=0;
   #endif
-  #if USE_ANSIV2
+  #ifdef USE_ANSIV2
   for(size_t j=0; j<m->Clen;j++) {  
   #else
   for(size_t j=0; j<m->CSRlen;j++) {  
   #endif
     if((j & CRS_BUF_MASK) ==0) {
-      #if USE_ANSIV2
+      #ifdef USE_ANSIV2
         size_t to_read = std::min((size_t)(1<<CSR_BUF_LOG2), m->Clen -j);
         size_t d = ans_dec.decode((uint32_t *)m->Cseq,to_read);
         if(d==0) die("Illegal decode call");
@@ -394,7 +401,7 @@ void csr_remat_left_mult(vector *y, csr_rematrix *m, vector *x)
       #endif
     }
 //    #endif
-    #if USE_ANSIV2
+    #ifdef USE_ANSIV2
       int i = m->Cseq[j&CRS_BUF_MASK];    // read a single int from buffer
     #else
       int i = m->Cseq[j&CRS_BUF_MASK]; // read a single int from buffer    

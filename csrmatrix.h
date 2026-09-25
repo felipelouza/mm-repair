@@ -59,7 +59,7 @@ typedef struct {
 
 
 // main prototypes
-rematrix *remat_create(int r, int c, char *basename, bool read_vals);
+rematrix *remat_create(int r, int c, char *basename, bool read_vals, matval *Mval, size_t Mnum);
 void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
 matval *read_vals(FILE *f, size_t* size);
@@ -67,10 +67,11 @@ xmatval decode_mult_entry(int p, rematrix *m, vector *x);
 xmatval decode_entry(int p, rematrix *m, size_t *c);
 
 
-rematrix *remat_create(int r, int c, char *basename,bool read_values)
+rematrix *remat_create(int r, int c, char *basename,bool read_values, matval *Mval, size_t Mnum)
 {
   char fname[PATH_MAX];
-  FILE *f; struct stat s;
+  //FILE *f; 
+  struct stat s;
   rematrix *m=malloc(sizeof(rematrix));
   if(m==NULL) die("Cannot allocate matrix");
   
@@ -90,12 +91,16 @@ rematrix *remat_create(int r, int c, char *basename,bool read_values)
   
   // ------------ read matrix values 
   if(read_values) {
+    /*
     strcpy(fname,basename);
     strcat(fname,".val");
     f = fopen(fname,"rb");
     if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
     m->Mval = read_vals(f,&m->Mnum);
     if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+    */
+    m->Mval = Mval;
+    m->Mnum = Mnum;
   }
   else {
     m->Mval=NULL; m->Mnum=0;

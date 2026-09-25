@@ -38,7 +38,7 @@
     #define RFILE_EXT ".vc.R.iv"
   #endif
   #include "ans/decode.hpp"
-  #define BUF_LOG2 20                  // log of (size decompression buffer)  
+  #define BUF_LOG2 19                  // log of (size decompression buffer)  
 #else
   #ifdef SPLIT
     #define CFILE_EXT ".A.vc.C.iv"
@@ -47,7 +47,7 @@
     #define CFILE_EXT ".vc.C.iv"
     #define RFILE_EXT ".vc.R.iv"
   #endif
-  #define BUF_LOG2 18                  // log of (size decompression buffer)  
+  #define BUF_LOG2 10                  // log of (size decompression buffer)  
 #endif
 
 #define BUF_MASK ((1<<BUF_LOG2)-1)     // mask to recognize beginning of buffer
@@ -115,9 +115,9 @@ typedef struct {
 
 // main prototypes
 #ifdef WCODE
-rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize);
+rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize, matval *Mval, size_t Mnum);
 #else
-rematrix *remat_create(int r, int c, char *basename, bool read_values);
+rematrix *remat_create(int r, int c, char *basename, bool read_values, matval *Mval, size_t Mnum);
 #endif
 void remat_destroy(rematrix *v, bool free_vals);
 void remat_mult(rematrix *m, vector *x, vector *y);
@@ -133,9 +133,9 @@ static void propagate_NTval(rematrix *m, vector *x);
 
 // load compressed matrix information from files
 #ifdef WCODE
-rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize)
+rematrix *remat_create(int r, int c, char *basename, bool read_values, int32_t *W, size_t Wsize, matval *Mval, size_t Mnum)
 #else
-rematrix *remat_create(int r, int c, char *basename, bool read_values)
+rematrix *remat_create(int r, int c, char *basename, bool read_values, matval *Mval, size_t Mnum)
 #endif
 {
   char fname[PATH_MAX];
@@ -240,12 +240,16 @@ rematrix *remat_create(int r, int c, char *basename, bool read_values)
 
   // ------------ read matrix values 
   if(read_values) {
+    /*
     strcpy(fname,basename);
     strcat(fname,VFILE_EXT);
     f = fopen(fname,"rb");
     if(f==NULL) die("Cannot open matrix values (" VFILE_EXT ") file");
     m->Mval = read_vals(f,&m->Mnum);
     if(fclose(f)!=0) die("Error closing values (" VFILE_EXT ") file");
+    */
+    m->Mval = Mval;
+    m->Mnum = Mnum;
   }
   else {
     m->Mval=NULL; m->Mnum=0;
