@@ -1,4 +1,4 @@
-# Better Matrix–Vector Multiplication via Hybrid Matrix Compression
+# Hybrid Compression for Memory-Efficient Matrix–Vector Multiplication
 
 `mm-RePair-H` is a lossless matrix compression framework that supports matrix–vector
 multiplication directly over the compressed data, with no need to decompress first.
