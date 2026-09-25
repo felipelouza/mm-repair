@@ -1048,10 +1048,6 @@ int main (int argc, char **argv) {
       cout<<"wr = "<<wr<<endl;
       cout<<"wr_modified = "<<wr_modified<<endl;
 
-      //RLE the zeros when modified lines are at least half
-      bool rle_zeros = true;
-      if(wr_modified > wr/2) rle_zeros = false;
-
       if(debug){
         //A
         fvc = fopen(fname_A,"rb");
@@ -1070,71 +1066,88 @@ int main (int argc, char **argv) {
       }
 
       if(debug){
-      
-        if(not rle_zeros){
-          fvc = fopen(fname_B,"rb");
-          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-          uint32_t v;
-          cout<<"B (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
-          fclose(fvc);
-        }
-        else{
-          fvc = fopen(fname_B,"rb");
-          if(fvc==NULL) quit("Cannot open a .vc/.dv file");
-          uint32_t v;
-          cout<<"B (rle) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
-          fclose(fvc);
-        }
+        fvc = fopen(fname_B,"rb");
+        if(fvc==NULL) quit("Cannot open a .vc/.dv file");
+        uint32_t v;
+        cout<<"B (delta) = "; while(fread(&v, sizeof(uint32_t), 1, fvc)==1) cout<<"<"<<v<<"> "; cout<<endl;
+        fclose(fvc);
       }
     }
   }
 
   fclose(fval);
-  if(map_alpha){
 
-    SIGMA.insert(0);
-  
-    std::cout << "Alphabet size = " << *SIGMA.rbegin() << std::endl;
-    std::cout << "(real) Alphabet size = " << SIGMA.size() << std::endl;                   
-  
-    //alphabet mapping
-    uint32_t r=0;
-    map<uint32_t, uint32_t> rank;
-    for(auto &c:SIGMA) rank[c]=r++; 
-  
-    if(debug==2) for(auto &c:SIGMA) cout<<c<<": "<<rank[c]<<endl; 
-  
-    maxcode=0;
-    char fname[PATH_MAX];
-    for(int bn=0;bn<nblocks;bn++) {
-      if(not split){
-        if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
-        else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
-        map_alphabet(fname, rank, debug);
-      }
-      else{
-        if(nblocks==1){
-          snprintf(fname,PATH_MAX,"%s.%s%s",argv[1],"A", mext);
-          map_alphabet(fname, rank, debug);
-          snprintf(fname,PATH_MAX,"%s.%s%s",argv[1],"B", mext);
+  if(map_alpha){ 
+
+    size_t total = nonz+wr;
+    int b = bits(SIGMA.size() - 1);
+    size_t saved_bits = total*(sizeof(uint32_t)*8-b);
+    size_t mapping_bits = sizeof(uint32_t)*8*SIGMA.size();
+
+    if(debug){
+      cout<<"##\n";
+      cout<<"total = "<<total<<endl;
+      cout<<"b = "<<b<<endl;
+      cout<<saved_bits<<" vs. "<<mapping_bits<<endl;
+      cout<<"##\n";
+    }
+
+    bool do_map = saved_bits>mapping_bits;
+
+    if(do_map){
+
+      SIGMA.insert(0);
+    
+      std::cout << "Alphabet size = " << *SIGMA.rbegin() << std::endl;
+      std::cout << "(real) Alphabet size = " << SIGMA.size() << std::endl;                   
+    
+      //alphabet mapping
+      uint32_t r=0;
+      map<uint32_t, uint32_t> rank;
+      for(auto &c:SIGMA) rank[c]=r++; 
+    
+      if(debug==2) for(auto &c:SIGMA) cout<<c<<": "<<rank[c]<<endl; 
+    
+      maxcode=0;
+      char fname[PATH_MAX];
+      for(int bn=0;bn<nblocks;bn++) {
+        if(not split){
+          if(nblocks==1) snprintf(fname,PATH_MAX,"%s%s",argv[1],mext);
+          else snprintf(fname,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext);
           map_alphabet(fname, rank, debug);
         }
         else{
-          snprintf(fname,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "A",mext);
-          map_alphabet(fname, rank, debug);
-          snprintf(fname,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "B",mext);
-          map_alphabet(fname, rank, debug);
+          if(nblocks==1){
+            snprintf(fname,PATH_MAX,"%s.%s%s",argv[1],"A", mext);
+            map_alphabet(fname, rank, debug);
+            snprintf(fname,PATH_MAX,"%s.%s%s",argv[1],"B", mext);
+            map_alphabet(fname, rank, debug);
+          }
+          else{
+            snprintf(fname,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "A",mext);
+            map_alphabet(fname, rank, debug);
+            snprintf(fname,PATH_MAX,"%s.%d.%d.%s%s",argv[1],nblocks,bn, "B",mext);
+            map_alphabet(fname, rank, debug);
+          }
         }
       }
-    }
-  
+    } 
+
     //store the new alphabet
     char fname_alpha[PATH_MAX];
     //if(nblocks==1) 
     snprintf(fname_alpha,PATH_MAX,"%s%s",argv[1],mext_wcode);
     //else snprintf(fname_alpha,PATH_MAX,"%s.%d.%d%s",argv[1],nblocks,bn,mext_wcode);
-    maxcode = store_alphabet(fname_alpha, SIGMA); 
-  } 
+    if(do_map){
+      maxcode = store_alphabet(fname_alpha, SIGMA); 
+    }
+    else{
+      FILE *falpha = fopen(fname_alpha, "wb");
+      if(falpha == NULL)  quit("Cannot create .wcode file");
+      fclose(falpha); // Keep an empty .wcode file 
+      maxcode = *SIGMA.rbegin();
+    }
+  }
   
   if(debug) cout<<"##"<<endl;
   

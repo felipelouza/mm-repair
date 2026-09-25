@@ -314,11 +314,13 @@ def main():
       # end for on row blocks
       ##
       if args.mapping: # and not args.split: 
-        command = "{exe} {mfile}.wcode ".format(ext=args.vc_ext,
-                  exe = os.path.join(args.main_dir,ansf_exe), mfile=args.input)
-        print("Command:",command)
-        if(execute_command(command,logfile)!=True):
-         sys.exit(6)
+        wcode_file = "{mfile}.wcode".format(mfile=args.input)
+        if os.path.getsize(wcode_file) > 0:
+            command = "{exe} {mfile}.wcode ".format(ext=args.vc_ext,
+                      exe = os.path.join(args.main_dir,ansf_exe), mfile=args.input)
+            print("Command:",command)
+            if(execute_command(command,logfile)!=True):
+             sys.exit(6)
       ##
       total_time = time.time()-start0
       print("Elapsed time: {0:.4f}".format(total_time))      
