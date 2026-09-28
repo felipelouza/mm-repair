@@ -35,7 +35,7 @@
   #endif
 #endif
 
-#define CSR_BUF_LOG2 19                  // log of (size decompression buffer)  
+#define CSR_BUF_LOG2 16                  // log of (size decompression buffer)  
 
 #define VFILE_EXT ".val"
 
