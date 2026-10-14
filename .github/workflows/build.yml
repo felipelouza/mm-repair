@@ -1,0 +1,124 @@
+name: build
+
+# Builds sdsl-lite and mm-repair with several compilers, then runs the Readme's
+# running example and checks the result against the values printed there.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: debian-12-gcc-12
+            os: ubuntu-latest
+            image: debian:bookworm
+            cc: gcc
+            cxx: g++
+          - name: fedora-43-gcc-15
+            os: ubuntu-latest
+            image: fedora:43
+            cc: gcc
+            cxx: g++
+          - name: fedora-43-clang-21
+            os: ubuntu-latest
+            image: fedora:43
+            cc: clang
+            cxx: clang++
+          - name: macos-apple-clang
+            os: macos-latest
+            image: ''
+            cc: clang
+            cxx: clang++
+
+    steps:
+      - name: Install dependencies (Debian)
+        if: startsWith(matrix.image, 'debian')
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq build-essential cmake git python3 python3-psutil
+
+      - name: Install dependencies (Fedora)
+        if: startsWith(matrix.image, 'fedora')
+        run: dnf -y -q install gcc gcc-c++ clang cmake make git python3 python3-psutil
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install -q psutil
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+
+      - uses: actions/checkout@v7
+
+      - name: Toolchain versions
+        run: |
+          ${{ matrix.cc }} --version | head -1
+          ${{ matrix.cxx }} --version | head -1
+          cmake --version | head -1
+          python3 -c 'import psutil, sys; print("python", sys.version.split()[0], "psutil", psutil.__version__)'
+
+      # simongog/sdsl-lite has had no commits since 2019. Current gcc and clang
+      # reject two names in louds_tree.hpp (simongog/sdsl-lite#462), so apply
+      # the fix the Readme describes before installing. Its CMakeLists.txt also
+      # asks for cmake_minimum_required(VERSION 2.8.11), which CMake 4 refuses
+      # unless the policy minimum is raised.
+      - name: Build sdsl-lite
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+        run: |
+          git clone --depth 1 -q https://github.com/simongog/sdsl-lite.git "$RUNNER_TEMP/sdsl-lite"
+          cd "$RUNNER_TEMP/sdsl-lite"
+          git log --oneline -1
+          python3 - <<'EOF'
+          p = "include/sdsl/louds_tree.hpp"
+          s = open(p).read()
+          s = s.replace("tree.m_select1", "tree.m_bv_select1").replace("tree.m_select0", "tree.m_bv_select0")
+          open(p, "w").write(s)
+          EOF
+          ./install.sh "$RUNNER_TEMP/sdsl" > "$RUNNER_TEMP/sdsl-install.log" 2>&1 || { tail -40 "$RUNNER_TEMP/sdsl-install.log"; exit 1; }
+          ls "$RUNNER_TEMP/sdsl/lib/libsdsl.a"
+
+      - name: Build mm-repair
+        run: >
+          make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }}
+          INC_DIR="$RUNNER_TEMP/sdsl/include" LIB_DIR="$RUNNER_TEMP/sdsl/lib"
+
+      - name: Run the Readme example
+        run: |
+          ./matrepair --hybrid input.csv 8 6
+          ./makevec.py x6.dbl 6 1
+          ./remm-h -y y.dbl -z z.dbl input.csv 8 6 x6.dbl
+
+      - name: Check the result against the Readme
+        run: |
+          python3 - <<'EOF'
+          import struct, sys
+
+          def read(name):
+              data = open(name, "rb").read()
+              return list(struct.unpack("<%dd" % (len(data) // 8), data))
+
+          expected = {
+              "input.csv.val": [5.3, 8.1, 6.0, 2.7],
+              "y.dbl": [32.8, 14.0, 24.7, 14.7, 11.3, 16.7, 22.2, 16.7],
+              "z.dbl": [557.33, 0.0, 799.35, 613.17, 589.82, 716.66],
+          }
+          ok = True
+          for name, want in expected.items():
+              got = read(name)
+              match = len(got) == len(want) and all(
+                  abs(g - w) <= 1e-9 * max(1.0, abs(w)) for g, w in zip(got, want))
+              print(("OK  " if match else "BAD ") + name, got)
+              ok = ok and match
+          sys.exit(0 if ok else 1)
+          EOF
