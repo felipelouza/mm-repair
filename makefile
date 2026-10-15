@@ -4,9 +4,9 @@ LIB_DIR = ${HOME}/lib
 INC_DIR = ${HOME}/include
 
 # Compilation flags
-CFLAGS=-Wall -std=c99 -g -O3
+CFLAGS=-Wall -std=c99 -g -O3 -DNDEBUG
 CC=gcc 
-CXX_FLAGS=-std=c++17 -g -O3 -msse4.2 -Wno-deprecated-declarations
+CXX_FLAGS=-std=c++17 -g -O3 -msse4.2 -Wno-deprecated-declarations -DNDEBUG
 
 # main executables in this directory
 CONV_EXECS=bin2csrv bin2csrvf bin2csrvi bin2csv bin2csvf csvmat2csrv 
