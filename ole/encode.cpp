@@ -15,6 +15,11 @@ using namespace std;
 
 void run(std::vector<uint32_t> input, std::string input_name){
 
+  /*
+  for(auto &v: input) cout<<v<<" ";
+     cout<<endl;
+  */
+
   size_t start = 0;
   for (size_t i = 0; i <= input.size(); ++i) {
     if (i == input.size() || input[i] == 0) { // end of sequence

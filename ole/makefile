@@ -12,12 +12,15 @@ MALLOC_FILES=../tools/malloc_count.c ../tools/malloc_count.h
 endif
 
 # main executables 
-EXECS=encode.x 
+EXECS=encode.x merge.x
 #decode.x
 
-all: encode.x 
+all: encode.x merge.x
 
 encode.x: encode.cpp $(MALLOC_FILES)
+	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS)
+
+merge.x: merge.cpp $(MALLOC_FILES)
 	$(CXX) $(CXX_FLAGS) -o $@ $< $(MALLOC_FLAGS)
 
 #decode.x: decode.cpp decode.hpp $(MALLOC_FILES)
