@@ -1,0 +1,470 @@
+Tue Sep  8 05:23:37 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 1 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 1 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   481170028 &   345858522 &   279800335 \\
+census    & 68   &   297547512 &    39068812 &    24418170 &    17446841 \\
+covtype   & 54   &    29984604 &    15669608 &     9813578 &     8181942 \\
+glove     & 300  &   487336952 &   487336956 &   427136986 &   407571529 \\
+higgs     & 28   &  1243414024 &  1156174956 &  1019737050 &   937249329 \\
+optical   & 174  &   229584600 &   176992604 &   155765730 &   149163094 \\
+susy      & 18   &   538569644 &   537807360 &   502652050 &   479316279 \\
+
+### csrv and repair size (percentage); 1 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 14.3402 & 10.3075 &  8.3388 \\
+census    & 68   & 22.2498 &  2.9215 &  1.8259 &  1.3046 \\
+covtype   & 54   & 11.9462 &  6.2429 &  3.9098 &  3.2598 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4934 & 42.4554 \\
+higgs     & 28   & 50.4632 & 46.9227 & 41.3854 & 38.0377 \\
+optical   & 174  & 50.6182 & 39.0229 & 34.3428 & 32.8871 \\
+susy      & 18   & 74.8013 & 74.6955 & 69.8128 & 66.5717 \\
+=== Command line: ../mmtest-all.py mz -b 1 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 621.682
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 1 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   481170028 &   345858522 &   279800335 &  8.34\\
+census    & 2458285&   297547512 &    39068812 &    24418170 &    17446841 &  1.30\\
+covtype   & 581012&    29984604 &    15669608 &     9813578 &     8181942 &  3.26\\
+glove     & 400000&   487336952 &   487336956 &   427136986 &   407571529 & 42.46\\
+higgs     & 11000000&  1243414024 &  1156174956 &  1019737050 &   937249329 & 38.04\\
+optical   & 325834&   229584600 &   176992604 &   155765730 &   149163094 & 32.89\\
+susy      & 5000000&   538569644 &   537807360 &   502652050 &   479316279 & 66.57\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 1 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Wed Sep  9 01:33:22 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 16 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 16 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   510504508 &   322140272 &   281695735 \\
+census    & 68   &   297547512 &    50359364 &    26753960 &    20728178 \\
+covtype   & 54   &    29984604 &    20163488 &    11994184 &    10458862 \\
+glove     & 300  &   487336952 &   487337016 &   427137424 &   407512279 \\
+higgs     & 28   &  1243414024 &  1168057440 &  1025824480 &   922618815 \\
+optical   & 174  &   229584600 &   190181852 &   164761944 &   159649569 \\
+susy      & 18   &   538569644 &   538554264 &   496724576 &   475145885 \\
+
+### csrv and repair size (percentage); 16 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 15.2144 &  9.6006 &  8.3953 \\
+census    & 68   & 22.2498 &  3.7657 &  2.0006 &  1.5500 \\
+covtype   & 54   & 11.9462 &  8.0334 &  4.7786 &  4.1669 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4935 & 42.4492 \\
+higgs     & 28   & 50.4632 & 47.4049 & 41.6325 & 37.4439 \\
+optical   & 174  & 50.6182 & 41.9308 & 36.3263 & 35.1991 \\
+susy      & 18   & 74.8013 & 74.7992 & 68.9895 & 65.9925 \\
+=== Command line: ../mmtest-all.py mz -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 806.867
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 16 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   510504508 &   322140272 &   281695735 &  8.40\\
+census    & 2458285&   297547512 &    50359364 &    26753960 &    20728178 &  1.55\\
+covtype   & 581012&    29984604 &    20163488 &    11994184 &    10458862 &  4.17\\
+glove     & 400000&   487336952 &   487337016 &   427137424 &   407512279 & 42.45\\
+higgs     & 11000000&  1243414024 &  1168057440 &  1025824480 &   922618815 & 37.44\\
+optical   & 325834&   229584600 &   190181852 &   164761944 &   159649569 & 35.20\\
+susy      & 5000000&   538569644 &   538554264 &   496724576 &   475145885 & 65.99\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Sending logging messages to file: errors.log
+Command: /usr/bin/time -f%e:%M /home/louza/mm-repair/remm -n 500 -b 1 -e ein.dbl -z glovez.dbl /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 x1.dbl
+ Test failed: non-zero exit code  1
+Elapsed time: 2029.639
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 16 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.10 &1361408&4.1205e+14 &  0.13 &701440&4.1205e+14 &  0.18 &535040&4.1205e+14 &  0.20 &548352&4.1205e+14 \\
+census    & 68   &  0.02 &311296&1.3655e+10 &  0.01 &78336&1.3655e+10 &  0.01 &73216&1.3655e+10 &  0.01 &92160&1.3655e+10 \\
+covtype   & 54   &  0.00 &35328&1.1716e+13 &  0.00 &25600&1.1716e+13 &  0.01 &36352&1.1716e+13 &  0.01 &34816&1.1716e+13 \\
+glove     & 300  &  0.05 &480768&2.0505e+06 &  0.06 &480768&2.0505e+06 &  0.10 &440320&2.0505e+06 &  0.15 &478720&2.0505e+06 \\
+higgs     & 28   &  0.37 &1302016&1.9507e+08 &  0.34 &1236480&1.9507e+08 &  0.49 &1116672&1.9507e+08 &  0.55 &1072640&1.9507e+08 \\
+optical   & 174  &  0.03 &228352&1.0777e+17 &  0.03 &198144&1.0777e+17 &  0.05 &192000&1.0777e+17 &  0.06 &244224&1.0777e+17 \\
+susy      & 18   &  0.22 &566784&6.546e+07 &  0.24 &566272&6.546e+07 &  0.30 &544256&6.546e+07 &  0.32 &581156&6.546e+07 \\
+Thu Sep 10 12:34:16 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 1 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 1 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   481170028 &   345858522 &   279800335 \\
+census    & 68   &   297547512 &    39068812 &    24418170 &    17446841 \\
+covtype   & 54   &    29984604 &    15669608 &     9813578 &     8181942 \\
+glove     & 300  &   487336952 &   487336956 &   427136986 &   407571529 \\
+higgs     & 28   &  1243414024 &  1156174956 &  1019737050 &   937249329 \\
+optical   & 174  &   229584600 &   176992604 &   155765730 &   149163094 \\
+susy      & 18   &   538569644 &   537807360 &   502652050 &   479316279 \\
+
+### csrv and repair size (percentage); 1 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 14.3402 & 10.3075 &  8.3388 \\
+census    & 68   & 22.2498 &  2.9215 &  1.8259 &  1.3046 \\
+covtype   & 54   & 11.9462 &  6.2429 &  3.9098 &  3.2598 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4934 & 42.4554 \\
+higgs     & 28   & 50.4632 & 46.9227 & 41.3854 & 38.0377 \\
+optical   & 174  & 50.6182 & 39.0229 & 34.3428 & 32.8871 \\
+susy      & 18   & 74.8013 & 74.6955 & 69.8128 & 66.5717 \\
+=== Command line: ../mmtest-all.py mz -b 1 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 627.579
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 1 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   481170028 &   345858522 &   279800335 &  8.34\\
+census    & 2458285&   297547512 &    39068812 &    24418170 &    17446841 &  1.30\\
+covtype   & 581012&    29984604 &    15669608 &     9813578 &     8181942 &  3.26\\
+glove     & 400000&   487336952 &   487336956 &   427136986 &   407571529 & 42.46\\
+higgs     & 11000000&  1243414024 &  1156174956 &  1019737050 &   937249329 & 38.04\\
+optical   & 325834&   229584600 &   176992604 &   155765730 &   149163094 & 32.89\\
+susy      & 5000000&   538569644 &   537807360 &   502652050 &   479316279 & 66.57\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 1 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 23729.151
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 1 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  1.25 &1360896&4.1205e+14 &  1.05 &634880&4.1205e+14 &  1.94 &506368&4.1205e+14 &  2.54 &445440&4.1205e+14 \\
+census    & 68   &  0.32 &310784&1.3655e+10 &  0.06 &63488&1.3655e+10 &  0.12 &52224&1.3655e+10 &  0.15 &49152&1.3655e+10 \\
+covtype   & 54   &  0.03 &34816&1.1716e+13 &  0.02 &22528&1.1716e+13 &  0.04 &19968&1.1716e+13 &  0.05 &22016&1.1716e+13 \\
+glove     & 300  &  0.76 &479744&2.0505e+06 &  0.84 &479744&2.0505e+06 &  1.50 &424448&2.0505e+06 &  2.22 &409088&2.0505e+06 \\
+higgs     & 28   &  4.37 &1300992&1.9507e+08 &  4.81 &1337856&1.9507e+08 &  6.78 &1207808&1.9507e+08 &  7.43 &1131008&1.9507e+08 \\
+optical   & 174  &  0.32 &227840&1.0777e+17 &  0.34 &186880&1.0777e+17 &  0.56 &168960&1.0777e+17 &  0.88 &166912&1.0777e+17 \\
+susy      & 18   &  1.69 &565760&6.546e+07 &  1.80 &567296&6.546e+07 &  2.65 &536064&6.546e+07 &  2.93 &517120&6.546e+07 \\
+Wed Sep 16 08:51:14 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 4 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 4 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   538977988 &   370566952 &   311142588 \\
+census    & 68   &   297547512 &    43773088 &    24622632 &    18695822 \\
+covtype   & 54   &    29984604 &    17442748 &    10378456 &     9018433 \\
+glove     & 300  &   487336952 &   487336968 &   427137064 &   407531655 \\
+higgs     & 28   &  1243414024 &  1164817360 &  1027299232 &   927535082 \\
+optical   & 174  &   229584600 &   183099808 &   159704176 &   154096128 \\
+susy      & 18   &   538569644 &   538414612 &   500268088 &   477667177 \\
+
+### csrv and repair size (percentage); 4 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 16.0630 & 11.0439 &  9.2729 \\
+census    & 68   & 22.2498 &  3.2732 &  1.8412 &  1.3980 \\
+covtype   & 54   & 11.9462 &  6.9494 &  4.1349 &  3.5930 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4934 & 42.4512 \\
+higgs     & 28   & 50.4632 & 47.2734 & 41.6923 & 37.6435 \\
+optical   & 174  & 50.6182 & 40.3694 & 35.2112 & 33.9747 \\
+susy      & 18   & 74.8013 & 74.7798 & 69.4817 & 66.3427 \\
+=== Command line: ../mmtest-all.py mz -b 4 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 755.711
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 4 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   538977988 &   370566952 &   311142588 &  9.27\\
+census    & 2458285&   297547512 &    43773088 &    24622632 &    18695822 &  1.40\\
+covtype   & 581012&    29984604 &    17442748 &    10378456 &     9018433 &  3.59\\
+glove     & 400000&   487336952 &   487336968 &   427137064 &   407531655 & 42.45\\
+higgs     & 11000000&  1243414024 &  1164817360 &  1027299232 &   927535082 & 37.64\\
+optical   & 325834&   229584600 &   183099808 &   159704176 &   154096128 & 33.97\\
+susy      & 5000000&   538569644 &   538414612 &   500268088 &   477667177 & 66.34\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 4 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 7205.262
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 4 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.33 &1361408&4.1205e+14 &  0.40 &717312&4.1205e+14 &  0.80 &559104&4.1205e+14 &  0.77 &513536&4.1205e+14 \\
+census    & 68   &  0.08 &311296&1.3655e+10 &  0.02 &69632&1.3655e+10 &  0.03 &56832&1.3655e+10 &  0.04 &63488&1.3655e+10 \\
+covtype   & 54   &  0.01 &35328&1.1716e+13 &  0.01 &25088&1.1716e+13 &  0.01 &24576&1.1716e+13 &  0.02 &33280&1.1716e+13 \\
+glove     & 300  &  0.20 &480256&2.0505e+06 &  0.20 &480256&2.0505e+06 &  0.37 &428032&2.0505e+06 &  0.54 &422912&2.0505e+06 \\
+higgs     & 28   &  1.25 &1301504&1.9507e+08 &  1.34 &1267712&1.9507e+08 &  2.02 &1139712&1.9507e+08 &  2.18 &1054720&1.9507e+08 \\
+optical   & 174  &  0.10 &228352&1.0777e+17 &  0.11 &195072&1.0777e+17 &  0.19 &178688&1.0777e+17 &  0.25 &187392&1.0777e+17 \\
+susy      & 18   &  0.60 &566272&6.546e+07 &  0.67 &566272&6.546e+07 &  0.90 &535552&6.546e+07 &  0.99 &527360&6.546e+07 \\
+
+Fri Sep 18 09:56:27 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 8 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 8 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   551784548 &   362130248 &   312984046 \\
+census    & 68   &   297547512 &    46671704 &    24794720 &    19409237 \\
+covtype   & 54   &    29984604 &    18752040 &    11155936 &     9735543 \\
+higgs     & 28   &  1243414024 &  1166219152 &  1024223000 &   924014732 \\
+optical   & 174  &   229584600 &   186142956 &   161639120 &   156440719 \\
+susy      & 18   &   538569644 &   538517664 &   497425648 &   476389493 \\
+
+### csrv and repair size (percentage); 8 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 16.4447 & 10.7925 &  9.3278 \\
+census    & 68   & 22.2498 &  3.4900 &  1.8541 &  1.4514 \\
+covtype   & 54   & 11.9462 &  7.4710 &  4.4446 &  3.8787 \\
+higgs     & 28   & 50.4632 & 47.3303 & 41.5675 & 37.5006 \\
+optical   & 174  & 50.6182 & 41.0403 & 35.6378 & 34.4917 \\
+susy      & 18   & 74.8013 & 74.7941 & 69.0869 & 66.1652 \\
+=== Command line: ../mmtest-all.py mz -b 8 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 1159.634
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 8 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   551784548 &   362130248 &   312984046 &  9.33\\
+census    & 2458285&   297547512 &    46671704 &    24794720 &    19409237 &  1.45\\
+covtype   & 581012&    29984604 &    18752040 &    11155936 &     9735543 &  3.88\\
+higgs     & 11000000&  1243414024 &  1166219152 &  1024223000 &   924014732 & 37.50\\
+optical   & 325834&   229584600 &   186142956 &   161639120 &   156440719 & 34.49\\
+susy      & 5000000&   538569644 &   538517664 &   497425648 &   476389493 & 66.17\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 8 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 5865.559
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 8 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.35 &1361408&4.1205e+14 &  0.42 &740352&4.1205e+14 &  0.79 &565760&4.1205e+14 &  0.85 &542720&4.1205e+14 \\
+census    & 68   &  0.08 &311296&1.3655e+10 &  0.01 &70144&1.3655e+10 &  0.03 &59392&1.3655e+10 &  0.03 &82944&1.3655e+10 \\
+covtype   & 54   &  0.01 &35328&1.1716e+13 &  0.01 &25088&1.1716e+13 &  0.01 &28160&1.1716e+13 &  0.02 &34304&1.1716e+13 \\
+higgs     & 28   &  1.11 &1301504&1.9507e+08 &  1.21 &1248256&1.9507e+08 &  1.75 &1120256&1.9507e+08 &  1.68 &1049088&1.9507e+08 \\
+optical   & 174  &  0.09 &228352&1.0777e+17 &  0.10 &198144&1.0777e+17 &  0.18 &184320&1.0777e+17 &  0.22 &208384&1.0777e+17 \\
+susy      & 18   &  0.55 &566272&6.546e+07 &  0.58 &566272&6.546e+07 &  0.80 &536576&6.546e+07 &  0.85 &545280&6.546e+07 \\
+Sat Sep 19 07:45:16 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 12 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 12 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   525703200 &   343583112 &   296376715 \\
+census    & 68   &   297547512 &    49016712 &    26040600 &    20309244 \\
+covtype   & 54   &    29984604 &    19626128 &    11675048 &    10196180 \\
+glove     & 300  &   487336952 &   487337000 &   427137312 &   407516727 \\
+higgs     & 28   &  1243414024 &  1167175456 &  1023620544 &   922787238 \\
+optical   & 174  &   229584600 &   188927220 &   163792576 &   158707431 \\
+susy      & 18   &   538569644 &   538544192 &   497449328 &   475619073 \\
+
+### csrv and repair size (percentage); 12 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 15.6674 & 10.2397 &  8.8328 \\
+census    & 68   & 22.2498 &  3.6653 &  1.9472 &  1.5187 \\
+covtype   & 54   & 11.9462 &  7.8193 &  4.6515 &  4.0623 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4935 & 42.4497 \\
+higgs     & 28   & 50.4632 & 47.3691 & 41.5430 & 37.4508 \\
+optical   & 174  & 50.6182 & 41.6542 & 36.1126 & 34.9914 \\
+susy      & 18   & 74.8013 & 74.7978 & 69.0902 & 66.0582 \\
+=== Command line: ../mmtest-all.py mz -b 12 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 638.467
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 12 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   525703200 &   343583112 &   296376715 &  8.83\\
+census    & 2458285&   297547512 &    49016712 &    26040600 &    20309244 &  1.52\\
+covtype   & 581012&    29984604 &    19626128 &    11675048 &    10196180 &  4.06\\
+glove     & 400000&   487336952 &   487337000 &   427137312 &   407516727 & 42.45\\
+higgs     & 11000000&  1243414024 &  1167175456 &  1023620544 &   922787238 & 37.45\\
+optical   & 325834&   229584600 &   188927220 &   163792576 &   158707431 & 34.99\\
+susy      & 5000000&   538569644 &   538544192 &   497449328 &   475619073 & 66.06\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 12 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 2704.476
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 12 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.12 &1361408&4.1205e+14 &  0.22 &722432&4.1205e+14 &  0.31 &559104&4.1205e+14 &  0.27 &551424&4.1205e+14 \\
+census    & 68   &  0.03 &311296&1.3655e+10 &  0.01 &74752&1.3655e+10 &  0.01 &66560&1.3655e+10 &  0.02 &89600&1.3655e+10 \\
+covtype   & 54   &  0.00 &35328&1.1716e+13 &  0.00 &25088&1.1716e+13 &  0.01 &31744&1.1716e+13 &  0.01 &35840&1.1716e+13 \\
+glove     & 300  &  0.08 &480768&2.0505e+06 &  0.08 &480256&2.0505e+06 &  0.13 &436224&2.0505e+06 &  0.19 &460288&2.0505e+06 \\
+higgs     & 28   &  0.43 &1301504&1.9507e+08 &  0.44 &1239552&1.9507e+08 &  0.63 &1113600&1.9507e+08 &  0.74 &1058304&1.9507e+08 \\
+optical   & 174  &  0.04 &228352&1.0777e+17 &  0.04 &200704&1.0777e+17 &  0.07 &190976&1.0777e+17 &  0.09 &228864&1.0777e+17 \\
+susy      & 18   &  0.30 &566272&6.546e+07 &  0.30 &566272&6.546e+07 &  0.40 &540672&6.546e+07 &  0.43 &563252&6.546e+07 \\
+Sun Sep 20 12:04:58 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 32 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 32 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   529831772 &   331169080 &   287559469 \\
+census    & 68   &   297547512 &    53862824 &    26932392 &    21390494 \\
+covtype   & 54   &    29984604 &    21529612 &    12805744 &    11187290 \\
+glove     & 300  &   487336952 &   487337080 &   426667560 &   407505429 \\
+higgs     & 28   &  1243414024 &  1171407180 &  1026581248 &   923918931 \\
+optical   & 174  &   229584600 &   193810264 &   167517848 &   162521070 \\
+susy      & 18   &   538569644 &   538565624 &   496368120 &   473989658 \\
+
+### csrv and repair size (percentage); 32 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 15.7904 &  9.8697 &  8.5700 \\
+census    & 68   & 22.2498 &  4.0277 &  2.0139 &  1.5995 \\
+covtype   & 54   & 11.9462 &  8.5776 &  5.1019 &  4.4571 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4445 & 42.4485 \\
+higgs     & 28   & 50.4632 & 47.5409 & 41.6632 & 37.4967 \\
+optical   & 174  & 50.6182 & 42.7308 & 36.9339 & 35.8322 \\
+susy      & 18   & 74.8013 & 74.8008 & 68.9400 & 65.8319 \\
+=== Command line: ../mmtest-all.py mz -b 32 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 645.097
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 32 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   529831772 &   331169080 &   287559469 &  8.57\\
+census    & 2458285&   297547512 &    53862824 &    26932392 &    21390494 &  1.60\\
+covtype   & 581012&    29984604 &    21529612 &    12805744 &    11187290 &  4.46\\
+glove     & 400000&   487336952 &   487337080 &   426667560 &   407505429 & 42.45\\
+higgs     & 11000000&  1243414024 &  1171407180 &  1026581248 &   923918931 & 37.50\\
+optical   & 325834&   229584600 &   193810264 &   167517848 &   162521070 & 35.83\\
+susy      & 5000000&   538569644 &   538565624 &   496368120 &   473989658 & 65.83\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 32 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 2118.093
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 32 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.10 &1361920&4.1205e+14 &  0.14 &721920&4.1205e+14 &  0.22 &563712&4.1205e+14 &  0.22 &624640&4.1205e+14 \\
+census    & 68   &  0.02 &311296&1.3655e+10 &  0.00 &73216&1.3655e+10 &  0.01 &83456&1.3655e+10 &  0.01 &93184&1.3655e+10 \\
+covtype   & 54   &  0.00 &35328&1.1716e+13 &  0.00 &27136&1.1716e+13 &  0.01 &37376&1.1716e+13 &  0.01 &35840&1.1716e+13 \\
+glove     & 300  &  0.06 &480256&2.0505e+06 &  0.06 &480768&2.0505e+06 &  0.11 &456192&2.0505e+06 &  0.17 &552448&2.0505e+06 \\
+higgs     & 28   &  0.30 &1302016&1.9507e+08 &  0.34 &1231872&1.9507e+08 &  0.57 &1125376&1.9507e+08 &  0.62 &1138688&1.9507e+08 \\
+optical   & 174  &  0.03 &228352&1.0777e+17 &  0.03 &196608&1.0777e+17 &  0.05 &206848&1.0777e+17 &  0.07 &317868&1.0777e+17 \\
+susy      & 18   &  0.24 &566784&6.546e+07 &  0.22 &566784&6.546e+07 &  0.31 &560640&6.546e+07 &  0.31 &654336&6.546e+07 \\
+Mon Sep 21 10:24:31 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 9 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: glove
+### csrv and repair size; 9 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+glove     & 300  &   487336952 &   487336988 &   427137210 &   407520199 \\
+
+### csrv and repair size (percentage); 9 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4935 & 42.4500 \\
+=== Command line: ../mmtest-all.py mz -b 9 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 182.622
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 9 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+glove     & 400000&   487336952 &   487336988 &   427137210 &   407520199 & 42.45\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 9 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 630.611
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 9 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+glove     & 300  &  0.20 &480768&2.0505e+06 &  0.21 &480256&2.0505e+06 &  0.38 &433152&2.0505e+06 &  0.48 &445952&2.0505e+06 \\
+Mon Sep 21 06:50:43 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 2 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: airline78
+Processing file: census
+Processing file: covtype
+Processing file: glove
+Processing file: higgs
+Processing file: optical
+Processing file: susy
+### csrv and repair size; 2 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+airline78 & 29   &  1276965912 &   514746928 &   369991940 &   303182732 \\
+census    & 68   &   297547512 &    41234452 &    24483156 &    18022488 \\
+covtype   & 54   &    29984604 &    16510184 &     9824684 &     8557754 \\
+glove     & 300  &   487336952 &   487336960 &   427137012 &   407546823 \\
+higgs     & 28   &  1243414024 &  1162448812 &  1025226708 &   931716181 \\
+optical   & 174  &   229584600 &   180270720 &   158634100 &   151885864 \\
+susy      & 18   &   538569644 &   538190948 &   502999708 &   478719487 \\
+
+### csrv and repair size (percentage); 2 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+airline78 & 29   & 38.0570 & 15.3408 & 11.0268 &  9.0357 \\
+census    & 68   & 22.2498 &  3.0834 &  1.8308 &  1.3477 \\
+covtype   & 54   & 11.9462 &  6.5778 &  3.9143 &  3.4095 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4934 & 42.4528 \\
+higgs     & 28   & 50.4632 & 47.1773 & 41.6082 & 37.8132 \\
+optical   & 174  & 50.6182 & 39.7456 & 34.9753 & 33.4874 \\
+susy      & 18   & 74.8013 & 74.7487 & 69.8611 & 66.4888 \\
+=== Command line: ../mmtest-all.py mz -b 2 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 717.255
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 2 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+airline78 & 14462943&  1276965912 &   514746928 &   369991940 &   303182732 &  9.04\\
+census    & 2458285&   297547512 &    41234452 &    24483156 &    18022488 &  1.35\\
+covtype   & 581012&    29984604 &    16510184 &     9824684 &     8557754 &  3.41\\
+glove     & 400000&   487336952 &   487336960 &   427137012 &   407546823 & 42.45\\
+higgs     & 11000000&  1243414024 &  1162448812 &  1025226708 &   931716181 & 37.81\\
+optical   & 325834&   229584600 &   180270720 &   158634100 &   151885864 & 33.49\\
+susy      & 5000000&   538569644 &   538190948 &   502999708 &   478719487 & 66.49\\
+=== Command line: ../mmtest-all.py mm -n 500 -b 2 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 13257.197
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 2 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+airline78 & 29   &  0.63 &1361408&4.1205e+14 &  0.62 &685568&4.1205e+14 &  1.11 &548352&4.1205e+14 &  1.50 &489984&4.1205e+14 \\
+census    & 68   &  0.15 &311296&1.3655e+10 &  0.03 &66048&1.3655e+10 &  0.05 &53760&1.3655e+10 &  0.08 &53760&1.3655e+10 \\
+covtype   & 54   &  0.01 &35328&1.1716e+13 &  0.01 &24064&1.1716e+13 &  0.02 &22016&1.1716e+13 &  0.03 &26624&1.1716e+13 \\
+glove     & 300  &  0.44 &480256&2.0505e+06 &  0.43 &480256&2.0505e+06 &  0.74 &425472&2.0505e+06 &  1.02 &413696&2.0505e+06 \\
+higgs     & 28   &  2.38 &1301504&1.9507e+08 &  2.44 &1297408&1.9507e+08 &  3.37 &1167360&1.9507e+08 &  4.40 &1081856&1.9507e+08 \\
+optical   & 174  &  0.26 &228352&1.0777e+17 &  0.26 &192000&1.0777e+17 &  0.40 &175104&1.0777e+17 &  0.57 &175616&1.0777e+17 \\
+susy      & 18   &  1.24 &566272&6.546e+07 &  1.07 &567296&6.546e+07 &  1.51 &537088&6.546e+07 &  1.75 &520192&6.546e+07 \\

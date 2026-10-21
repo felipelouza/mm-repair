@@ -1,0 +1,38 @@
+Wed Oct 21 05:50:11 AM -03 2026
+=== Command line: retest-h.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 1 
+Setting the working directory to: /home/louza/mm-repair/reordering-all
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: census
+../matrepair --split --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68
+./vc2csv.py /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68
+/usr/bin/time -f%e:%M ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/census.A 2458285 68
+./mkwcode.py /mnt/data/datasets/machine-learning-matrices-reorder/census
+../matrepair --split --map --ole --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68
+Processing file: covtype
+../matrepair --split --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54
+./vc2csv.py /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54
+/usr/bin/time -f%e:%M ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.A 581012 54
+./mkwcode.py /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+../matrepair --split --map --ole --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54
+### csrv and repair size; 1 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+census    & 68   &   297547336 &    38754872 &    24221962 &    16962068 \\
+covtype   & 54   &    27887412 &    13878312 &     7829962 &     7221914 \\
+
+### csrv and repair size (percentage); 1 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+census    & 68   & 22.2497 &  2.8980 &  1.8112 &  1.2684 \\
+covtype   & 54   & 11.1106 &  5.5293 &  3.1195 &  2.8773 \\
+
+Wed Oct 21 07:36:43 AM -03 2026
+=== Command line: mmtest-h.py mm -n 500 -b 1 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 143.125
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 1 row-blocks
+ file     & cols & remm-h      &\\
+census    & 68   &  0.20 &47104&1.3655e+10 \\
+covtype   & 54   &  0.08 &19456&1.1716e+13 \\
+Wed Oct 21 08:25:45 AM -03 2026
+=== Command line: retest-h.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 1 

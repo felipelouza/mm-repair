@@ -1,0 +1,116 @@
+Wed Aug  5 11:33:51 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 16 
+Wed Aug  5 11:35:03 AM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 16 
+Setting the working directory to: /home/louza/mm-repair/reordering
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: susy
+Processing file: higgs
+Processing file: airline78
+Processing file: covtype
+Processing file: census
+Processing file: optical
+Processing file: mnist2m
+Processing file: imagenet
+Processing file: glove.q64
+Processing file: glove.q256
+Processing file: glove.q1k
+### csrv and repair size; 16 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+susy      & 18   &   538569644 &   538554264 &   496724576 &   475145885 \\
+higgs     & 28   &  1243414024 &  1168057440 &  1025824480 &   922618815 \\
+airline78 & 29   &  1276965912 &   510504508 &   322140272 &   281695735 \\
+covtype   & 54   &    29984604 &    20163488 &    11994184 &    10458862 \\
+census    & 68   &   297547512 &    50359364 &    26753960 &    20728178 \\
+optical   & 174  &   229584600 &   190181852 &   164761944 &   159649569 \\
+mnist2m   & 784  &  1591481740 &  1196470832 &   785185080 &   741019046 \\
+imagenet  & 900  &  1413165920 &   656458872 &   430803824 &   392102989 \\
+glove.q64 & 300  &   481600504 &   232373860 &   137972608 &   129215989 \\
+glove.q25 & 300  &   481601912 &   344020420 &   215013888 &   201663750 \\
+glove.q1k & 300  &   481607136 &   462337492 &   288964008 &   268749821 \\
+
+### csrv and repair size (percentage); 16 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+susy      & 18   & 74.8013 & 74.7992 & 68.9895 & 65.9925 \\
+higgs     & 28   & 50.4632 & 47.4049 & 41.6325 & 37.4439 \\
+airline78 & 29   & 38.0570 & 15.2144 &  9.6006 &  8.3953 \\
+covtype   & 54   & 11.9462 &  8.0334 &  4.7786 &  4.1669 \\
+census    & 68   & 22.2498 &  3.7657 &  2.0006 &  1.5500 \\
+optical   & 174  & 50.6182 & 41.9308 & 36.3263 & 35.1991 \\
+mnist2m   & 784  & 12.6872 &  9.5382 &  6.2594 &  5.9074 \\
+imagenet  & 900  & 15.5513 &  7.2240 &  4.7408 &  4.3149 \\
+glove.q64 & 300  & 50.1667 & 24.2056 & 14.3721 & 13.4600 \\
+glove.q25 & 300  & 50.1669 & 35.8355 & 22.3973 & 21.0066 \\
+glove.q1k & 300  & 50.1674 & 48.1602 & 30.1004 & 27.9948 \\
+=== Command line: ../mmtest.py mz -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 1590.832
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 16 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+susy      & 5000000&   538569644 &   538554264 &   496724576 &   475145885 & 65.99\\
+higgs     & 11000000&  1243414024 &  1168057440 &  1025824480 &   922618815 & 37.44\\
+airline78 & 14462943&  1276965912 &   510504508 &   322140272 &   281695735 &  8.40\\
+covtype   & 581012&    29984604 &    20163488 &    11994184 &    10458862 &  4.17\\
+census    & 2458285&   297547512 &    50359364 &    26753960 &    20728178 &  1.55\\
+optical   & 325834&   229584600 &   190181852 &   164761944 &   159649569 & 35.20\\
+mnist2m   & 2000000&  1591481740 &  1196470832 &   785185080 &   741019046 &  5.91\\
+imagenet  & 1262102&  1413165920 &   656458872 &   430803824 &   392102989 &  4.31\\
+glove.q64 & 400000&   481600504 &   232373860 &   137972608 &   129215989 & 13.46\\
+glove.q25 & 400000&   481601912 &   344020420 &   215013888 &   201663750 & 21.01\\
+glove.q1k & 400000&   481607136 &   462337492 &   288964008 &   268749821 & 27.99\\
+=== Command line: ../mmtest.py mm -n 500 -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 3583.860
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 16 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+susy      & 18   &  0.22 &566784&6.546e+07 &  0.22 &566272&6.546e+07 &  0.29 &544256&6.546e+07 &  0.30 &581120&6.546e+07 \\
+higgs     & 28   &  0.32 &1302016&1.9507e+08 &  0.34 &1236480&1.9507e+08 &  0.50 &1116160&1.9507e+08 &  0.58 &1072640&1.9507e+08 \\
+airline78 & 29   &  0.09 &1361408&4.1205e+14 &  0.15 &701440&4.1205e+14 &  0.17 &535552&4.1205e+14 &  0.19 &548352&4.1205e+14 \\
+covtype   & 54   &  0.00 &35328&1.1716e+13 &  0.00 &25600&1.1716e+13 &  0.01 &36352&1.1716e+13 &  0.01 &34816&1.1716e+13 \\
+census    & 68   &  0.02 &311296&1.3655e+10 &  0.01 &78336&1.3655e+10 &  0.01 &73728&1.3655e+10 &  0.01 &92160&1.3655e+10 \\
+optical   & 174  &  0.03 &228352&1.0777e+17 &  0.03 &198144&1.0777e+17 &  0.05 &192000&1.0777e+17 &  0.06 &244224&1.0777e+17 \\
+mnist2m   & 784  &  0.11 &1571328&4.7973e+12 &  0.37 &1389568&4.7973e+12 &  0.53 &1006080&4.7973e+12 &  0.65 &1020416&4.7973e+12 \\
+imagenet  & 900  &  0.09 &1391616&4.066e+09 &  0.17 &766976&4.066e+09 &  0.25 &565248&4.066e+09 &  0.30 &584704&4.066e+09 \\
+glove.q64 & 300  &  0.03 &475136&2.0508e+06 &  0.03 &272896&2.0508e+06 &  0.06 &199680&2.0508e+06 &  0.08 &248832&2.0508e+06 \\
+glove.q25 & 300  &  0.03 &475136&2.0505e+06 &  0.07 &406528&2.0505e+06 &  0.12 &299520&2.0505e+06 &  0.15 &340480&2.0505e+06 \\
+glove.q1k & 300  &  0.03 &475136&2.0505e+06 &  0.11 &540672&2.0505e+06 &  0.16 &390144&2.0505e+06 &  0.20 &420864&2.0505e+06 \\
+Sat Aug  8 09:34:42 PM -03 2026
+=== Command line: retest.py pc -d /mnt/data/datasets/machine-learning-matrices-reorder -b 16 
+Setting the working directory to: /home/louza/mm-repair/reordering
+Data directory: /mnt/data/datasets/machine-learning-matrices-reorder
+Sending logging messages to file: retest.log
+Processing file: glove.q4k
+Processing file: glove.q64k
+Processing file: glove
+### csrv and repair size; 16 row-blocks
+ file     & rows &        crsv &        re32 &        reiv &       reans \\
+glove.q4k & 300  &   481626352 &   481418372 &   314999984 &   281924378 \\
+glove.q64 & 300  &   481932200 &   481932232 &   361532640 &   338132122 \\
+glove     & 300  &   487336952 &   487337016 &   427137424 &   407512279 \\
+
+### csrv and repair size (percentage); 16 row-blocks
+ file     & rows &    crsv &    re32 &    reiv &   reans \\
+glove.q4k & 300  & 50.1694 & 50.1477 & 32.8125 & 29.3671 \\
+glove.q64 & 300  & 50.2013 & 50.2013 & 37.6596 & 35.2221 \\
+glove     & 300  & 50.7643 & 50.7643 & 44.4935 & 42.4492 \\
+=== Command line: ../mmtest.py mz -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ --extra=--noconv 
+Elapsed time: 226.524
+
+Sending logging messages to file: errors.log
+### csrv + repair +iv/ans size; 16 row-blocks
+ file     & rows &        csrv &        re32 &        reiv &       reans & reans%\\
+glove.q4k & 400000&   481626352 &   481418372 &   314999984 &   281924378 & 29.37\\
+glove.q64 & 400000&   481932200 &   481932232 &   361532640 &   338132122 & 35.22\\
+glove     & 400000&   487336952 &   487337016 &   427137424 &   407512279 & 42.45\\
+=== Command line: ../mmtest.py mm -n 500 -b 16 -d /mnt/data/datasets/machine-learning-matrices-reorder/ 
+Elapsed time: 448.904
+
+Sending logging messages to file: errors.log
+### time x iteration and peak memory usage in kb for matrix multiplication; 16 row-blocks
+ file     & cols & csrvmm      && re32mm      && reivmm      && remm        &\\
+glove.q4k & 300  &  0.03 &475136&2.0505e+06 &  0.04 &487424&2.0505e+06 &  0.08 &343552&2.0505e+06 &  0.13 &369664&2.0505e+06 \\
+glove.q64 & 300  &  0.03 &475136&2.0505e+06 &  0.04 &475136&2.0505e+06 &  0.07 &376320&2.0505e+06 &  0.10 &410624&2.0505e+06 \\
+glove     & 300  &  0.05 &480768&2.0505e+06 &  0.07 &480768&2.0505e+06 &  0.09 &440320&2.0505e+06 &  0.14 &478720&2.0505e+06 \\

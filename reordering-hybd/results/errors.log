@@ -1,0 +1,2932 @@
+
+#### 2026-06-22 17:11:01
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/covtype.csv 581012 54 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.csv.log
+Traceback (most recent call last):
+  File "/home/louza/mm-repair/matrepair", line 492, in <module>
+    main()
+  File "/home/louza/mm-repair/matrepair", line 167, in main
+    files_changed = need_rebuild_multipart(args.input, args.b, args.vc_ext) or need_rebuild(args.input,args.val_ext)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/louza/mm-repair/matrepair", line 474, in need_rebuild_multipart
+    assert os.path.exists(source), "Missing source: " + source
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Missing source: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.csv
+## Error executing: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv  /mnt/data/datasets/machine-learning-matrices-reorder/covtype.csv 581012 54
+
+#### 2026-06-22 17:28:39
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc 464054
+Repair time: 2.7623
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.R 
+Integer vector compression time: 0.1492
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+Ans-fold time: 0.1745
+Elapsed time: 3.0862
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+ >> conversion time: 0.00
+ >> repair time: 2.76
+ >> integer vectors time: 0.15
+ >> ansf time: 0.17
+ >> total time: 3.09
+ >> matrix log(alpha)xNumEntries size: 50983803 bytes
+ >> matrix dense size: 250997184 bytes
+ >> total number of nonzero: 6901775 (22.00%)
+ >> number of distinct nonzero: 6682
+ >> CRSV  size: 29984604 bytes  (11.95%)
+ >> RE32  size: 15669608 bytes  (6.24%)
+ >> REIV  size: 9813578 bytes  (3.91%)
+ >> REANS size: 8181942 bytes  (3.26%)
+==== Done
+
+#### 2026-06-22 22:12:34
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc 464054
+Repair time: 30.8804
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.R 
+Integer vector compression time: 7.9389
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.C 
+Ans-fold time: 22.9826
+Elapsed time: 61.8020
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/susy
+ >> conversion time: 0.00
+ >> repair time: 30.88
+ >> integer vectors time: 7.94
+ >> ansf time: 22.98
+ >> total time: 61.80
+ >> matrix log(alpha)xNumEntries size: 281250000 bytes
+ >> matrix dense size: 720000000 bytes
+ >> total number of nonzero: 88938127 (98.82%)
+ >> number of distinct nonzero: 20352142
+ >> CRSV  size: 538569644 bytes  (74.80%)
+ >> RE32  size: 537807360 bytes  (74.70%)
+ >> REIV  size: 502652050 bytes  (69.81%)
+ >> REANS size: 479316279 bytes  (66.57%)
+==== Done
+
+#### 2026-06-22 22:13:36
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc 464054
+Repair time: 164.1216
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.R 
+Integer vector compression time: 15.7358
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.C 
+Ans-fold time: 36.7613
+Elapsed time: 216.6188
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/higgs
+ >> conversion time: 0.00
+ >> repair time: 164.12
+ >> integer vectors time: 15.74
+ >> ansf time: 36.76
+ >> total time: 216.62
+ >> matrix log(alpha)xNumEntries size: 885500000 bytes
+ >> matrix dense size: 2464000000 bytes
+ >> total number of nonzero: 283685620 (92.11%)
+ >> number of distinct nonzero: 8083943
+ >> CRSV  size: 1243414024 bytes  (50.46%)
+ >> RE32  size: 1156174956 bytes  (46.92%)
+ >> REIV  size: 1019737050 bytes  (41.39%)
+ >> REANS size: 937249329 bytes  (38.04%)
+==== Done
+
+#### 2026-06-22 22:17:13
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc 464054
+Repair time: 211.4550
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.R 
+Integer vector compression time: 8.4799
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.C 
+Ans-fold time: 11.3626
+Elapsed time: 231.2976
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/airline78
+ >> conversion time: 0.00
+ >> repair time: 211.45
+ >> integer vectors time: 8.48
+ >> ansf time: 11.36
+ >> total time: 231.30
+ >> matrix log(alpha)xNumEntries size: 681566188 bytes
+ >> matrix dense size: 3355402776 bytes
+ >> total number of nonzero: 304762947 (72.66%)
+ >> number of distinct nonzero: 7794
+ >> CRSV  size: 1276965912 bytes  (38.06%)
+ >> RE32  size: 481170028 bytes  (14.34%)
+ >> REIV  size: 345858522 bytes  (10.31%)
+ >> REANS size: 279800335 bytes  (8.34%)
+==== Done
+
+#### 2026-06-22 22:21:04
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc 464054
+Repair time: 2.6458
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.R 
+Integer vector compression time: 0.2701
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+Ans-fold time: 0.2883
+Elapsed time: 3.2042
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+ >> conversion time: 0.00
+ >> repair time: 2.65
+ >> integer vectors time: 0.27
+ >> ansf time: 0.29
+ >> total time: 3.20
+ >> matrix log(alpha)xNumEntries size: 50983803 bytes
+ >> matrix dense size: 250997184 bytes
+ >> total number of nonzero: 6901775 (22.00%)
+ >> number of distinct nonzero: 6682
+ >> CRSV  size: 29984604 bytes  (11.95%)
+ >> RE32  size: 15669608 bytes  (6.24%)
+ >> REIV  size: 9813578 bytes  (3.91%)
+ >> REANS size: 8181942 bytes  (3.26%)
+==== Done
+
+#### 2026-06-22 22:21:08
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.vc 464054
+Repair time: 29.7215
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.R 
+Integer vector compression time: 0.5546
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.C 
+Ans-fold time: 0.6489
+Elapsed time: 30.9252
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/census
+ >> conversion time: 0.00
+ >> repair time: 29.72
+ >> integer vectors time: 0.55
+ >> ansf time: 0.65
+ >> total time: 30.93
+ >> matrix log(alpha)xNumEntries size: 125372535 bytes
+ >> matrix dense size: 1337307040 bytes
+ >> total number of nonzero: 71928503 (43.03%)
+ >> number of distinct nonzero: 45
+ >> CRSV  size: 297547512 bytes  (22.25%)
+ >> RE32  size: 39068812 bytes  (2.92%)
+ >> REIV  size: 24418170 bytes  (1.83%)
+ >> REANS size: 17446841 bytes  (1.30%)
+==== Done
+
+#### 2026-06-22 22:21:39
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464054 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc 464054
+Repair time: 26.9645
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.R 
+Integer vector compression time: 4.5716
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.C 
+Ans-fold time: 8.8317
+Elapsed time: 40.3680
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/optical
+ >> conversion time: 0.00
+ >> repair time: 26.96
+ >> integer vectors time: 4.57
+ >> ansf time: 8.83
+ >> total time: 40.37
+ >> matrix log(alpha)xNumEntries size: 141737790 bytes
+ >> matrix dense size: 453560928 bytes
+ >> total number of nonzero: 55275964 (97.50%)
+ >> number of distinct nonzero: 897176
+ >> CRSV  size: 229584600 bytes  (50.62%)
+ >> RE32  size: 176992604 bytes  (39.02%)
+ >> REIV  size: 155765730 bytes  (34.34%)
+ >> REANS size: 149163094 bytes  (32.89%)
+==== Done
+
+#### 2026-08-05 22:58:28
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc 464053
+Repair time: 257.6678
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.R 
+Integer vector compression time: 0.2861
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.C 
+Ans-fold time: 3.0934
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.R 
+Integer vector compression time: 0.2944
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.C 
+Ans-fold time: 6.7758
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.R 
+Integer vector compression time: 0.3205
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.C 
+Ans-fold time: 10.5206
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.R 
+Integer vector compression time: 0.2955
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.C 
+Ans-fold time: 14.2470
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.R 
+Integer vector compression time: 0.3028
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.C 
+Ans-fold time: 17.9708
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.R 
+Integer vector compression time: 0.3673
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.C 
+Ans-fold time: 22.0981
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.R 
+Integer vector compression time: 0.3661
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.C 
+Ans-fold time: 25.7218
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.R 
+Integer vector compression time: 0.3859
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.C 
+Ans-fold time: 29.3124
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.R 
+Integer vector compression time: 0.3233
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.C 
+Ans-fold time: 32.8500
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.R 
+Integer vector compression time: 0.2939
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.C 
+Ans-fold time: 36.4229
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.R 
+Integer vector compression time: 0.3838
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.C 
+Ans-fold time: 39.9957
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.R 
+Integer vector compression time: 0.3153
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.C 
+Ans-fold time: 43.5512
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.R 
+Integer vector compression time: 0.3161
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.C 
+Ans-fold time: 47.1607
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.R 
+Integer vector compression time: 0.3150
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.C 
+Ans-fold time: 50.7220
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.R 
+Integer vector compression time: 0.3260
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.C 
+Ans-fold time: 54.2748
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.R 
+Integer vector compression time: 0.3053
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.C 
+Ans-fold time: 57.7362
+Elapsed time: 95.3702
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/susy
+ >> conversion time: 0.00
+ >> repair time: 257.67
+ >> integer vectors time: 0.31
+ >> ansf time: 57.74
+ >> total time: 95.37
+ >> matrix log(alpha)xNumEntries size: 281250000 bytes
+ >> matrix dense size: 720000000 bytes
+ >> total number of nonzero: 88938127 (98.82%)
+ >> number of distinct nonzero: 20352142
+ >> CRSV  size: 538569644 bytes  (74.80%)
+ >> RE32  size: 538554264 bytes  (74.80%)
+ >> REIV  size: 496724576 bytes  (68.99%)
+ >> REANS size: 475145885 bytes  (65.99%)
+==== Done
+
+#### 2026-08-05 23:00:04
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc 464053
+Repair time: 1045.3207
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.R 
+Integer vector compression time: 1.0818
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.C 
+Ans-fold time: 3.8351
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.R 
+Integer vector compression time: 1.0155
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.C 
+Ans-fold time: 7.7110
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.R 
+Integer vector compression time: 1.0234
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.C 
+Ans-fold time: 11.6750
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.R 
+Integer vector compression time: 0.9743
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.C 
+Ans-fold time: 15.5133
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.R 
+Integer vector compression time: 0.9689
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.C 
+Ans-fold time: 19.3217
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.R 
+Integer vector compression time: 1.2352
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.C 
+Ans-fold time: 23.2877
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.R 
+Integer vector compression time: 0.9996
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.C 
+Ans-fold time: 26.9594
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.R 
+Integer vector compression time: 1.0084
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.C 
+Ans-fold time: 30.7615
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.R 
+Integer vector compression time: 1.0131
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.C 
+Ans-fold time: 34.5353
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.R 
+Integer vector compression time: 1.0124
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.C 
+Ans-fold time: 38.7226
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.R 
+Integer vector compression time: 1.1232
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.C 
+Ans-fold time: 42.6479
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.R 
+Integer vector compression time: 1.0316
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.C 
+Ans-fold time: 47.0319
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.R 
+Integer vector compression time: 1.0373
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.C 
+Ans-fold time: 50.8911
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.R 
+Integer vector compression time: 1.1585
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.C 
+Ans-fold time: 54.6718
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.R 
+Integer vector compression time: 1.0182
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.C 
+Ans-fold time: 58.5691
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.R 
+Integer vector compression time: 1.0063
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.C 
+Ans-fold time: 62.1905
+Elapsed time: 201.9861
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/higgs
+ >> conversion time: 0.00
+ >> repair time: 1045.32
+ >> integer vectors time: 1.01
+ >> ansf time: 62.19
+ >> total time: 201.99
+ >> matrix log(alpha)xNumEntries size: 885500000 bytes
+ >> matrix dense size: 2464000000 bytes
+ >> total number of nonzero: 283685620 (92.11%)
+ >> number of distinct nonzero: 8083943
+ >> CRSV  size: 1243414024 bytes  (50.46%)
+ >> RE32  size: 1168057440 bytes  (47.40%)
+ >> REIV  size: 1025824480 bytes  (41.63%)
+ >> REANS size: 922618815 bytes  (37.44%)
+==== Done
+
+#### 2026-08-05 23:03:26
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc 464053
+Repair time: 3017.7093
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.R 
+Integer vector compression time: 0.3824
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.C 
+Ans-fold time: 0.7772
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.R 
+Integer vector compression time: 0.3762
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.C 
+Ans-fold time: 1.4810
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.R 
+Integer vector compression time: 0.3593
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.C 
+Ans-fold time: 2.0936
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.R 
+Integer vector compression time: 0.3015
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.C 
+Ans-fold time: 2.6908
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.R 
+Integer vector compression time: 0.3057
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.C 
+Ans-fold time: 3.2791
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.R 
+Integer vector compression time: 0.3568
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.C 
+Ans-fold time: 3.9030
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.R 
+Integer vector compression time: 0.3064
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.C 
+Ans-fold time: 4.4273
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.R 
+Integer vector compression time: 0.3302
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.C 
+Ans-fold time: 5.1561
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.R 
+Integer vector compression time: 0.3105
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.C 
+Ans-fold time: 5.7063
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.R 
+Integer vector compression time: 0.3416
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.C 
+Ans-fold time: 6.3559
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.R 
+Integer vector compression time: 0.3604
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.C 
+Ans-fold time: 7.1158
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.R 
+Integer vector compression time: 0.2967
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.C 
+Ans-fold time: 7.6462
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.R 
+Integer vector compression time: 0.4180
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.C 
+Ans-fold time: 8.3213
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.R 
+Integer vector compression time: 0.3107
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.C 
+Ans-fold time: 8.9963
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.R 
+Integer vector compression time: 0.3345
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.C 
+Ans-fold time: 9.7830
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.R 
+Integer vector compression time: 0.3314
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.C 
+Ans-fold time: 10.5854
+Elapsed time: 417.3171
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/airline78
+ >> conversion time: 0.00
+ >> repair time: 3017.71
+ >> integer vectors time: 0.33
+ >> ansf time: 10.59
+ >> total time: 417.32
+ >> matrix log(alpha)xNumEntries size: 681566188 bytes
+ >> matrix dense size: 3355402776 bytes
+ >> total number of nonzero: 304762947 (72.66%)
+ >> number of distinct nonzero: 7794
+ >> CRSV  size: 1276965912 bytes  (38.06%)
+ >> RE32  size: 510504508 bytes  (15.21%)
+ >> REIV  size: 322140272 bytes  (9.60%)
+ >> REANS size: 281695735 bytes  (8.40%)
+==== Done
+
+#### 2026-08-05 23:10:23
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc 464053
+Repair time: 22.8143
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.R 
+Integer vector compression time: 0.0378
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.C 
+Ans-fold time: 0.0241
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.R 
+Integer vector compression time: 0.0409
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.C 
+Ans-fold time: 0.0475
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.R 
+Integer vector compression time: 0.0375
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.C 
+Ans-fold time: 0.0692
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.R 
+Integer vector compression time: 0.0386
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.C 
+Ans-fold time: 0.0911
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.R 
+Integer vector compression time: 0.0379
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.C 
+Ans-fold time: 0.1119
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.R 
+Integer vector compression time: 0.0380
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.C 
+Ans-fold time: 0.1333
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.R 
+Integer vector compression time: 0.0417
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.C 
+Ans-fold time: 0.1598
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.R 
+Integer vector compression time: 0.0397
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.C 
+Ans-fold time: 0.1821
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.R 
+Integer vector compression time: 0.0333
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.C 
+Ans-fold time: 0.2047
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.R 
+Integer vector compression time: 0.0316
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.C 
+Ans-fold time: 0.2235
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.R 
+Integer vector compression time: 0.0321
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.C 
+Ans-fold time: 0.2425
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.R 
+Integer vector compression time: 0.0499
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.C 
+Ans-fold time: 0.2646
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.R 
+Integer vector compression time: 0.0371
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.C 
+Ans-fold time: 0.2871
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.R 
+Integer vector compression time: 0.0366
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.C 
+Ans-fold time: 0.3094
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.R 
+Integer vector compression time: 0.0374
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.C 
+Ans-fold time: 0.3316
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.R 
+Integer vector compression time: 0.0373
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.C 
+Ans-fold time: 0.3553
+Elapsed time: 3.6506
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+ >> conversion time: 0.00
+ >> repair time: 22.81
+ >> integer vectors time: 0.04
+ >> ansf time: 0.36
+ >> total time: 3.65
+ >> matrix log(alpha)xNumEntries size: 50983803 bytes
+ >> matrix dense size: 250997184 bytes
+ >> total number of nonzero: 6901775 (22.00%)
+ >> number of distinct nonzero: 6682
+ >> CRSV  size: 29984604 bytes  (11.95%)
+ >> RE32  size: 20163488 bytes  (8.03%)
+ >> REIV  size: 11994184 bytes  (4.78%)
+ >> REANS size: 10458862 bytes  (4.17%)
+==== Done
+
+#### 2026-08-05 23:10:27
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc 464053
+Repair time: 221.7487
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.R 
+Integer vector compression time: 0.0516
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.C 
+Ans-fold time: 0.0338
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.R 
+Integer vector compression time: 0.0430
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.C 
+Ans-fold time: 0.0677
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.R 
+Integer vector compression time: 0.0432
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.C 
+Ans-fold time: 0.1024
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.R 
+Integer vector compression time: 0.0428
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.C 
+Ans-fold time: 0.1368
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.R 
+Integer vector compression time: 0.0430
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.C 
+Ans-fold time: 0.1801
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.R 
+Integer vector compression time: 0.0562
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.C 
+Ans-fold time: 0.2229
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.R 
+Integer vector compression time: 0.0437
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.C 
+Ans-fold time: 0.2650
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.R 
+Integer vector compression time: 0.0477
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.C 
+Ans-fold time: 0.3022
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.R 
+Integer vector compression time: 0.0486
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.C 
+Ans-fold time: 0.3390
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.R 
+Integer vector compression time: 0.0453
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.C 
+Ans-fold time: 0.3731
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.R 
+Integer vector compression time: 0.0441
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.C 
+Ans-fold time: 0.4068
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.R 
+Integer vector compression time: 0.0439
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.C 
+Ans-fold time: 0.4422
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.R 
+Integer vector compression time: 0.0431
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.C 
+Ans-fold time: 0.4759
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.R 
+Integer vector compression time: 0.0421
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.C 
+Ans-fold time: 0.5094
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.R 
+Integer vector compression time: 0.0430
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.C 
+Ans-fold time: 0.5428
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.R 
+Integer vector compression time: 0.0417
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.C 
+Ans-fold time: 0.5761
+Elapsed time: 27.0782
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/census
+ >> conversion time: 0.00
+ >> repair time: 221.75
+ >> integer vectors time: 0.04
+ >> ansf time: 0.58
+ >> total time: 27.08
+ >> matrix log(alpha)xNumEntries size: 125372535 bytes
+ >> matrix dense size: 1337307040 bytes
+ >> total number of nonzero: 71928503 (43.03%)
+ >> number of distinct nonzero: 45
+ >> CRSV  size: 297547512 bytes  (22.25%)
+ >> RE32  size: 50359364 bytes  (3.77%)
+ >> REIV  size: 26753960 bytes  (2.00%)
+ >> REANS size: 20728178 bytes  (1.55%)
+==== Done
+
+#### 2026-08-05 23:10:54
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc 464053
+Repair time: 177.9818
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.R 
+Integer vector compression time: 0.1189
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.C 
+Ans-fold time: 1.1393
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.R 
+Integer vector compression time: 0.1246
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.C 
+Ans-fold time: 2.2835
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.R 
+Integer vector compression time: 0.1249
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.C 
+Ans-fold time: 3.4324
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.R 
+Integer vector compression time: 0.1283
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.C 
+Ans-fold time: 4.3562
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.R 
+Integer vector compression time: 0.1587
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.C 
+Ans-fold time: 5.5458
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.R 
+Integer vector compression time: 0.1713
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.C 
+Ans-fold time: 6.8050
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.R 
+Integer vector compression time: 0.1164
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.C 
+Ans-fold time: 7.7724
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.R 
+Integer vector compression time: 0.1310
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.C 
+Ans-fold time: 8.9515
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.R 
+Integer vector compression time: 0.1588
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.C 
+Ans-fold time: 10.1142
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.R 
+Integer vector compression time: 0.1592
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.C 
+Ans-fold time: 11.3191
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.R 
+Integer vector compression time: 0.1500
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.C 
+Ans-fold time: 12.3121
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.R 
+Integer vector compression time: 0.1243
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.C 
+Ans-fold time: 13.6004
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.R 
+Integer vector compression time: 0.1155
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.C 
+Ans-fold time: 14.5470
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.R 
+Integer vector compression time: 0.1540
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.C 
+Ans-fold time: 15.4894
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.R 
+Integer vector compression time: 0.1589
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.C 
+Ans-fold time: 16.7725
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.R 
+Integer vector compression time: 0.1248
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.C 
+Ans-fold time: 18.0300
+Elapsed time: 41.2577
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/optical
+ >> conversion time: 0.00
+ >> repair time: 177.98
+ >> integer vectors time: 0.12
+ >> ansf time: 18.03
+ >> total time: 41.26
+ >> matrix log(alpha)xNumEntries size: 141737790 bytes
+ >> matrix dense size: 453560928 bytes
+ >> total number of nonzero: 55275964 (97.50%)
+ >> number of distinct nonzero: 897176
+ >> CRSV  size: 229584600 bytes  (50.62%)
+ >> RE32  size: 190181852 bytes  (41.93%)
+ >> REIV  size: 164761944 bytes  (36.33%)
+ >> REANS size: 159649569 bytes  (35.20%)
+==== Done
+
+#### 2026-08-05 23:11:36
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m 2000000 784 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.15.vc 464053
+Repair time: 2757.0526
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.0.vc.R 
+Integer vector compression time: 0.9102
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.0.vc.C 
+Ans-fold time: 1.6747
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.1.vc.R 
+Integer vector compression time: 0.9098
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.1.vc.C 
+Ans-fold time: 3.6865
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.2.vc.R 
+Integer vector compression time: 1.0737
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.2.vc.C 
+Ans-fold time: 5.8166
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.3.vc.R 
+Integer vector compression time: 0.8729
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.3.vc.C 
+Ans-fold time: 7.7385
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.4.vc.R 
+Integer vector compression time: 0.8684
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.4.vc.C 
+Ans-fold time: 9.6556
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.5.vc.R 
+Integer vector compression time: 0.8615
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.5.vc.C 
+Ans-fold time: 11.9569
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.6.vc.R 
+Integer vector compression time: 0.8958
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.6.vc.C 
+Ans-fold time: 14.7439
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.7.vc.R 
+Integer vector compression time: 0.9522
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.7.vc.C 
+Ans-fold time: 17.5575
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.8.vc.R 
+Integer vector compression time: 0.9250
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.8.vc.C 
+Ans-fold time: 20.2379
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.9.vc.R 
+Integer vector compression time: 0.9074
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.9.vc.C 
+Ans-fold time: 23.0567
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.10.vc.R 
+Integer vector compression time: 0.9038
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.10.vc.C 
+Ans-fold time: 25.8079
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.11.vc.R 
+Integer vector compression time: 1.0635
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.11.vc.C 
+Ans-fold time: 28.7002
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.12.vc.R 
+Integer vector compression time: 0.9382
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.12.vc.C 
+Ans-fold time: 31.5766
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.13.vc.R 
+Integer vector compression time: 1.0047
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.13.vc.C 
+Ans-fold time: 34.3675
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.14.vc.R 
+Integer vector compression time: 0.9400
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.14.vc.C 
+Ans-fold time: 37.2111
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.15.vc.R 
+Integer vector compression time: 0.9377
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m.16.15.vc.C 
+Ans-fold time: 40.1195
+Elapsed time: 381.9893
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/mnist2m
+ >> conversion time: 0.00
+ >> repair time: 2757.05
+ >> integer vectors time: 0.94
+ >> ansf time: 40.12
+ >> total time: 381.99
+ >> matrix log(alpha)xNumEntries size: 1568000000 bytes
+ >> matrix dense size: 12544000000 bytes
+ >> total number of nonzero: 395869925 (25.25%)
+ >> number of distinct nonzero: 255
+ >> CRSV  size: 1591481740 bytes  (12.69%)
+ >> RE32  size: 1196470832 bytes  (9.54%)
+ >> REIV  size: 785185080 bytes  (6.26%)
+ >> REANS size: 741019046 bytes  (5.91%)
+==== Done
+
+#### 2026-08-05 23:17:58
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/imagenet 1262102 900 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.15.vc 464053
+Repair time: 1864.9265
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.0.vc.R 
+Integer vector compression time: 0.4537
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.0.vc.C 
+Ans-fold time: 0.7338
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.1.vc.R 
+Integer vector compression time: 0.4061
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.1.vc.C 
+Ans-fold time: 1.4746
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.2.vc.R 
+Integer vector compression time: 0.4326
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.2.vc.C 
+Ans-fold time: 2.2092
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.3.vc.R 
+Integer vector compression time: 0.4340
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.3.vc.C 
+Ans-fold time: 2.9446
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.4.vc.R 
+Integer vector compression time: 0.4203
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.4.vc.C 
+Ans-fold time: 3.6812
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.5.vc.R 
+Integer vector compression time: 0.4081
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.5.vc.C 
+Ans-fold time: 4.4190
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.6.vc.R 
+Integer vector compression time: 0.4332
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.6.vc.C 
+Ans-fold time: 5.1591
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.7.vc.R 
+Integer vector compression time: 0.5142
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.7.vc.C 
+Ans-fold time: 5.9031
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.8.vc.R 
+Integer vector compression time: 0.4075
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.8.vc.C 
+Ans-fold time: 6.6306
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.9.vc.R 
+Integer vector compression time: 0.4078
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.9.vc.C 
+Ans-fold time: 7.3757
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.10.vc.R 
+Integer vector compression time: 0.4445
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.10.vc.C 
+Ans-fold time: 8.1242
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.11.vc.R 
+Integer vector compression time: 0.4109
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.11.vc.C 
+Ans-fold time: 8.8744
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.12.vc.R 
+Integer vector compression time: 0.4053
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.12.vc.C 
+Ans-fold time: 9.6217
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.13.vc.R 
+Integer vector compression time: 0.4044
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.13.vc.C 
+Ans-fold time: 10.3653
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.14.vc.R 
+Integer vector compression time: 0.4409
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.14.vc.C 
+Ans-fold time: 11.1477
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.15.vc.R 
+Integer vector compression time: 0.4377
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/imagenet.16.15.vc.C 
+Ans-fold time: 11.9994
+Elapsed time: 233.5340
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/imagenet
+ >> conversion time: 0.00
+ >> repair time: 1864.93
+ >> integer vectors time: 0.44
+ >> ansf time: 12.00
+ >> total time: 233.53
+ >> matrix log(alpha)xNumEntries size: 1419864750 bytes
+ >> matrix dense size: 9087134400 bytes
+ >> total number of nonzero: 352027730 (30.99%)
+ >> number of distinct nonzero: 824
+ >> CRSV  size: 1413165920 bytes  (15.55%)
+ >> RE32  size: 656458872 bytes  (7.22%)
+ >> REIV  size: 430803824 bytes  (4.74%)
+ >> REANS size: 392102989 bytes  (4.31%)
+==== Done
+
+#### 2026-08-05 23:21:51
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.15.vc 464053
+Repair time: 412.4638
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.0.vc.R 
+Integer vector compression time: 0.1421
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.0.vc.C 
+Ans-fold time: 0.1940
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.1.vc.R 
+Integer vector compression time: 0.1430
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.1.vc.C 
+Ans-fold time: 0.3941
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.2.vc.R 
+Integer vector compression time: 0.1402
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.2.vc.C 
+Ans-fold time: 0.5914
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.3.vc.R 
+Integer vector compression time: 0.1457
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.3.vc.C 
+Ans-fold time: 0.7940
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.4.vc.R 
+Integer vector compression time: 0.1465
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.4.vc.C 
+Ans-fold time: 0.9926
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.5.vc.R 
+Integer vector compression time: 0.1282
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.5.vc.C 
+Ans-fold time: 1.1924
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.6.vc.R 
+Integer vector compression time: 0.1430
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.6.vc.C 
+Ans-fold time: 1.3917
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.7.vc.R 
+Integer vector compression time: 0.1415
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.7.vc.C 
+Ans-fold time: 1.5809
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.8.vc.R 
+Integer vector compression time: 0.1399
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.8.vc.C 
+Ans-fold time: 1.7757
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.9.vc.R 
+Integer vector compression time: 0.1393
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.9.vc.C 
+Ans-fold time: 1.9684
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.10.vc.R 
+Integer vector compression time: 0.1259
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.10.vc.C 
+Ans-fold time: 2.1499
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.11.vc.R 
+Integer vector compression time: 0.1348
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.11.vc.C 
+Ans-fold time: 2.3348
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.12.vc.R 
+Integer vector compression time: 0.1372
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.12.vc.C 
+Ans-fold time: 2.5177
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.13.vc.R 
+Integer vector compression time: 0.1333
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.13.vc.C 
+Ans-fold time: 2.6912
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.14.vc.R 
+Integer vector compression time: 0.1350
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.14.vc.C 
+Ans-fold time: 2.8715
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.15.vc.R 
+Integer vector compression time: 0.1321
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64.16.15.vc.C 
+Ans-fold time: 3.0480
+Elapsed time: 53.5266
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64
+ >> conversion time: 0.00
+ >> repair time: 412.46
+ >> integer vectors time: 0.13
+ >> ansf time: 3.05
+ >> total time: 53.53
+ >> matrix log(alpha)xNumEntries size: 90000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 63
+ >> CRSV  size: 481600504 bytes  (50.17%)
+ >> RE32  size: 232373860 bytes  (24.21%)
+ >> REIV  size: 137972608 bytes  (14.37%)
+ >> REANS size: 129215989 bytes  (13.46%)
+==== Done
+
+#### 2026-08-05 23:22:45
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.15.vc 464053
+Repair time: 508.9274
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.0.vc.R 
+Integer vector compression time: 0.1974
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.0.vc.C 
+Ans-fold time: 0.2950
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.1.vc.R 
+Integer vector compression time: 0.2025
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.1.vc.C 
+Ans-fold time: 0.5911
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.2.vc.R 
+Integer vector compression time: 0.1951
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.2.vc.C 
+Ans-fold time: 0.9031
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.3.vc.R 
+Integer vector compression time: 0.1990
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.3.vc.C 
+Ans-fold time: 1.2060
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.4.vc.R 
+Integer vector compression time: 0.2034
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.4.vc.C 
+Ans-fold time: 1.5117
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.5.vc.R 
+Integer vector compression time: 0.2241
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.5.vc.C 
+Ans-fold time: 1.8164
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.6.vc.R 
+Integer vector compression time: 0.2626
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.6.vc.C 
+Ans-fold time: 2.2789
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.7.vc.R 
+Integer vector compression time: 0.2636
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.7.vc.C 
+Ans-fold time: 2.7050
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.8.vc.R 
+Integer vector compression time: 0.1884
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.8.vc.C 
+Ans-fold time: 3.1007
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.9.vc.R 
+Integer vector compression time: 0.2074
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.9.vc.C 
+Ans-fold time: 3.3828
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.10.vc.R 
+Integer vector compression time: 0.1884
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.10.vc.C 
+Ans-fold time: 3.6654
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.11.vc.R 
+Integer vector compression time: 0.1703
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.11.vc.C 
+Ans-fold time: 4.0232
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.12.vc.R 
+Integer vector compression time: 0.1811
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.12.vc.C 
+Ans-fold time: 4.2806
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.13.vc.R 
+Integer vector compression time: 0.2303
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.13.vc.C 
+Ans-fold time: 4.5348
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.14.vc.R 
+Integer vector compression time: 0.1834
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.14.vc.C 
+Ans-fold time: 4.7961
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.15.vc.R 
+Integer vector compression time: 0.2249
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256.16.15.vc.C 
+Ans-fold time: 5.0561
+Elapsed time: 69.0042
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q256
+ >> conversion time: 0.00
+ >> repair time: 508.93
+ >> integer vectors time: 0.22
+ >> ansf time: 5.06
+ >> total time: 69.00
+ >> matrix log(alpha)xNumEntries size: 120000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 239
+ >> CRSV  size: 481601912 bytes  (50.17%)
+ >> RE32  size: 344020420 bytes  (35.84%)
+ >> REIV  size: 215013888 bytes  (22.40%)
+ >> REANS size: 201663750 bytes  (21.01%)
+==== Done
+
+#### 2026-08-05 23:23:54
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.15.vc 464053
+Repair time: 445.6450
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.0.vc.R 
+Integer vector compression time: 0.2497
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.0.vc.C 
+Ans-fold time: 0.4819
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.1.vc.R 
+Integer vector compression time: 0.2544
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.1.vc.C 
+Ans-fold time: 0.9956
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.2.vc.R 
+Integer vector compression time: 0.2450
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.2.vc.C 
+Ans-fold time: 1.4750
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.3.vc.R 
+Integer vector compression time: 0.2564
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.3.vc.C 
+Ans-fold time: 1.9977
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.4.vc.R 
+Integer vector compression time: 0.2687
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.4.vc.C 
+Ans-fold time: 2.7436
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.5.vc.R 
+Integer vector compression time: 0.3357
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.5.vc.C 
+Ans-fold time: 3.5289
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.6.vc.R 
+Integer vector compression time: 0.2707
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.6.vc.C 
+Ans-fold time: 4.1318
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.7.vc.R 
+Integer vector compression time: 0.2499
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.7.vc.C 
+Ans-fold time: 4.6591
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.8.vc.R 
+Integer vector compression time: 0.2583
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.8.vc.C 
+Ans-fold time: 5.1359
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.9.vc.R 
+Integer vector compression time: 0.2568
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.9.vc.C 
+Ans-fold time: 5.6575
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.10.vc.R 
+Integer vector compression time: 0.2538
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.10.vc.C 
+Ans-fold time: 6.1229
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.11.vc.R 
+Integer vector compression time: 0.2512
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.11.vc.C 
+Ans-fold time: 6.6341
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.12.vc.R 
+Integer vector compression time: 0.2543
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.12.vc.C 
+Ans-fold time: 7.1108
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.13.vc.R 
+Integer vector compression time: 0.2435
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.13.vc.C 
+Ans-fold time: 7.6280
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.14.vc.R 
+Integer vector compression time: 0.3244
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.14.vc.C 
+Ans-fold time: 8.1021
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.15.vc.R 
+Integer vector compression time: 0.2485
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k.16.15.vc.C 
+Ans-fold time: 8.6097
+Elapsed time: 64.9202
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q1k
+ >> conversion time: 0.00
+ >> repair time: 445.65
+ >> integer vectors time: 0.25
+ >> ansf time: 8.61
+ >> total time: 64.92
+ >> matrix log(alpha)xNumEntries size: 150000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 892
+ >> CRSV  size: 481607136 bytes  (50.17%)
+ >> RE32  size: 462337492 bytes  (48.16%)
+ >> REIV  size: 288964008 bytes  (30.10%)
+ >> REANS size: 268749821 bytes  (27.99%)
+==== Done
+
+#### 2026-08-08 22:07:57
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.15.vc 464053
+Repair time: 296.6493
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.0.vc.R 
+Integer vector compression time: 0.2936
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.0.vc.C 
+Ans-fold time: 0.4678
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.1.vc.R 
+Integer vector compression time: 0.3147
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.1.vc.C 
+Ans-fold time: 0.9632
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.2.vc.R 
+Integer vector compression time: 0.2953
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.2.vc.C 
+Ans-fold time: 1.4572
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.3.vc.R 
+Integer vector compression time: 0.3350
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.3.vc.C 
+Ans-fold time: 1.9469
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.4.vc.R 
+Integer vector compression time: 0.4268
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.4.vc.C 
+Ans-fold time: 2.4303
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.5.vc.R 
+Integer vector compression time: 0.3500
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.5.vc.C 
+Ans-fold time: 2.9307
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.6.vc.R 
+Integer vector compression time: 0.3823
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.6.vc.C 
+Ans-fold time: 3.4743
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.7.vc.R 
+Integer vector compression time: 0.3399
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.7.vc.C 
+Ans-fold time: 3.9366
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.8.vc.R 
+Integer vector compression time: 0.3106
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.8.vc.C 
+Ans-fold time: 4.3974
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.9.vc.R 
+Integer vector compression time: 0.3209
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.9.vc.C 
+Ans-fold time: 4.9059
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.10.vc.R 
+Integer vector compression time: 0.3005
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.10.vc.C 
+Ans-fold time: 5.3575
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.11.vc.R 
+Integer vector compression time: 0.3123
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.11.vc.C 
+Ans-fold time: 5.9189
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.12.vc.R 
+Integer vector compression time: 0.3470
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.12.vc.C 
+Ans-fold time: 6.4689
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.13.vc.R 
+Integer vector compression time: 0.2950
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.13.vc.C 
+Ans-fold time: 6.9307
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.14.vc.R 
+Integer vector compression time: 0.2832
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.14.vc.C 
+Ans-fold time: 7.3807
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.15.vc.R 
+Integer vector compression time: 0.3278
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.16.15.vc.C 
+Ans-fold time: 7.8630
+Elapsed time: 48.3099
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k
+ >> conversion time: 0.00
+ >> repair time: 296.65
+ >> integer vectors time: 0.33
+ >> ansf time: 7.86
+ >> total time: 48.31
+ >> matrix log(alpha)xNumEntries size: 180000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 3294
+ >> CRSV  size: 481626352 bytes  (50.17%)
+ >> RE32  size: 481418372 bytes  (50.15%)
+ >> REIV  size: 314999984 bytes  (32.81%)
+ >> REANS size: 281924378 bytes  (29.37%)
+==== Done
+
+#### 2026-08-08 22:08:45
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.15.vc 464053
+Repair time: 273.1434
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.0.vc.R 
+Integer vector compression time: 0.3270
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.0.vc.C 
+Ans-fold time: 1.9928
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.1.vc.R 
+Integer vector compression time: 0.3987
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.1.vc.C 
+Ans-fold time: 4.0406
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.2.vc.R 
+Integer vector compression time: 0.3319
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.2.vc.C 
+Ans-fold time: 5.9989
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.3.vc.R 
+Integer vector compression time: 0.3216
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.3.vc.C 
+Ans-fold time: 7.9673
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.4.vc.R 
+Integer vector compression time: 0.3244
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.4.vc.C 
+Ans-fold time: 9.9675
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.5.vc.R 
+Integer vector compression time: 0.4061
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.5.vc.C 
+Ans-fold time: 12.0339
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.6.vc.R 
+Integer vector compression time: 0.4176
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.6.vc.C 
+Ans-fold time: 14.0510
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.7.vc.R 
+Integer vector compression time: 0.3351
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.7.vc.C 
+Ans-fold time: 16.0228
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.8.vc.R 
+Integer vector compression time: 0.3431
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.8.vc.C 
+Ans-fold time: 18.0175
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.9.vc.R 
+Integer vector compression time: 0.3790
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.9.vc.C 
+Ans-fold time: 19.9775
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.10.vc.R 
+Integer vector compression time: 0.3236
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.10.vc.C 
+Ans-fold time: 21.8430
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.11.vc.R 
+Integer vector compression time: 0.3184
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.11.vc.C 
+Ans-fold time: 23.7218
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.12.vc.R 
+Integer vector compression time: 0.3163
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.12.vc.C 
+Ans-fold time: 25.5458
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.13.vc.R 
+Integer vector compression time: 0.4684
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.13.vc.C 
+Ans-fold time: 27.3917
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.14.vc.R 
+Integer vector compression time: 0.3539
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.14.vc.C 
+Ans-fold time: 29.1868
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.15.vc.R 
+Integer vector compression time: 0.3252
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.16.15.vc.C 
+Ans-fold time: 30.9524
+Elapsed time: 68.5843
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k
+ >> conversion time: 0.00
+ >> repair time: 273.14
+ >> integer vectors time: 0.33
+ >> ansf time: 30.95
+ >> total time: 68.58
+ >> matrix log(alpha)xNumEntries size: 240000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 41525
+ >> CRSV  size: 481932200 bytes  (50.20%)
+ >> RE32  size: 481932232 bytes  (50.20%)
+ >> REIV  size: 361532640 bytes  (37.66%)
+ >> REANS size: 338132122 bytes  (35.22%)
+==== Done
+
+#### 2026-08-08 22:09:54
+ Command line: /home/louza/mm-repair/matrepair -r -b 16 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc 464053
+Repair time: 275.2398
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.R 
+Integer vector compression time: 0.4704
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.C 
+Ans-fold time: 4.4103
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.R 
+Integer vector compression time: 0.3848
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.C 
+Ans-fold time: 8.7815
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.R 
+Integer vector compression time: 0.4216
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.C 
+Ans-fold time: 13.1365
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.R 
+Integer vector compression time: 0.3461
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.C 
+Ans-fold time: 17.5268
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.R 
+Integer vector compression time: 0.5383
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.C 
+Ans-fold time: 21.9523
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.R 
+Integer vector compression time: 0.4226
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.C 
+Ans-fold time: 26.3873
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.R 
+Integer vector compression time: 0.4556
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.C 
+Ans-fold time: 30.8180
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.R 
+Integer vector compression time: 0.4728
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.C 
+Ans-fold time: 35.1574
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.R 
+Integer vector compression time: 0.4465
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.C 
+Ans-fold time: 39.4762
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.R 
+Integer vector compression time: 0.3377
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.C 
+Ans-fold time: 43.9144
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.R 
+Integer vector compression time: 0.5095
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.C 
+Ans-fold time: 48.2625
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.R 
+Integer vector compression time: 0.3497
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.C 
+Ans-fold time: 52.6656
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.R 
+Integer vector compression time: 0.5315
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.C 
+Ans-fold time: 57.2366
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.R 
+Integer vector compression time: 0.4066
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.C 
+Ans-fold time: 61.5540
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.R 
+Integer vector compression time: 0.3398
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.C 
+Ans-fold time: 65.9500
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.R 
+Integer vector compression time: 0.3484
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.C 
+Ans-fold time: 70.3317
+Elapsed time: 109.3700
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove
+ >> conversion time: 0.00
+ >> repair time: 275.24
+ >> integer vectors time: 0.35
+ >> ansf time: 70.33
+ >> total time: 109.37
+ >> matrix log(alpha)xNumEntries size: 300000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 717119
+ >> CRSV  size: 487336952 bytes  (50.76%)
+ >> RE32  size: 487337016 bytes  (50.76%)
+ >> REIV  size: 427137424 bytes  (44.49%)
+ >> REANS size: 407512279 bytes  (42.45%)
+==== Done
+
+#### 2026-08-09 08:41:10
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.vc 464053
+Repair time: 73.8368
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.vc.R 
+Integer vector compression time: 5.2394
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k.vc.C 
+Ans-fold time: 10.5880
+Elapsed time: 89.6644
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q4k
+ >> conversion time: 0.00
+ >> repair time: 73.84
+ >> integer vectors time: 5.24
+ >> ansf time: 10.59
+ >> total time: 89.66
+ >> matrix log(alpha)xNumEntries size: 180000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 3294
+ >> CRSV  size: 481626352 bytes  (50.17%)
+ >> RE32  size: 463334548 bytes  (48.26%)
+ >> REIV  size: 347507522 bytes  (36.20%)
+ >> REANS size: 309940734 bytes  (32.29%)
+==== Done
+
+#### 2026-08-09 08:42:40
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.vc 464053
+Repair time: 43.3088
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.vc.R 
+Integer vector compression time: 5.3750
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k.vc.C 
+Ans-fold time: 12.3558
+Elapsed time: 61.0398
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove.q64k
+ >> conversion time: 0.00
+ >> repair time: 43.31
+ >> integer vectors time: 5.37
+ >> ansf time: 12.36
+ >> total time: 61.04
+ >> matrix log(alpha)xNumEntries size: 240000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 41525
+ >> CRSV  size: 481932200 bytes  (50.20%)
+ >> RE32  size: 481931464 bytes  (50.20%)
+ >> REIV  size: 361531674 bytes  (37.66%)
+ >> REANS size: 338412921 bytes  (35.25%)
+==== Done
+
+#### 2026-08-09 08:43:41
+ Command line: /home/louza/mm-repair/matrepair -r -b 1 -p 1 --noconv /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc 464053
+Repair time: 46.7122
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.R 
+Integer vector compression time: 5.5460
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.C 
+Ans-fold time: 51.2464
+Elapsed time: 103.5048
+==== Compression Report:
+ >> matrix name: /mnt/data/datasets/machine-learning-matrices-reorder/glove
+ >> conversion time: 0.00
+ >> repair time: 46.71
+ >> integer vectors time: 5.55
+ >> ansf time: 51.25
+ >> total time: 103.50
+ >> matrix log(alpha)xNumEntries size: 300000000 bytes
+ >> matrix dense size: 960000000 bytes
+ >> total number of nonzero: 120000000 (100.00%)
+ >> number of distinct nonzero: 717119
+ >> CRSV  size: 487336952 bytes  (50.76%)
+ >> RE32  size: 487336956 bytes  (50.76%)
+ >> REIV  size: 427136986 bytes  (44.49%)
+ >> REANS size: 407571529 bytes  (42.46%)
+==== Done

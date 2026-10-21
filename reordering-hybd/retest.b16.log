@@ -1,0 +1,2051 @@
+
+#### 2026-09-09 01:33:22
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/airline78 -r 0   14462943 29
+Conversion time: 33.1004
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 2 done.
+ --- block 3 done.
+ --- block 8 done.
+ --- block 4 done.
+ --- block 6 done.
+ --- block 0 done.
+ --- block 14 done.
+ --- block 9 done.
+ --- block 7 done.
+ --- block 1 done.
+ --- block 15 done.
+ --- block 11 done.
+ --- block 13 done.
+ --- block 10 done.
+ --- block 5 done.
+ --- block 12 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/airline78
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/airline78 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/airline78 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.pruned_local_16.cover.solution 
+All done.
+265.72:223072
+
+#### 2026-09-09 01:38:21
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc 464053
+Repair time: 2494.9221
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.R 
+Integer vector compression time: 0.2814
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.0.vc.C 
+Ans-fold time: 0.4518
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.R 
+Integer vector compression time: 0.2801
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.1.vc.C 
+Ans-fold time: 0.9877
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.R 
+Integer vector compression time: 0.3384
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.2.vc.C 
+Ans-fold time: 1.4808
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.R 
+Integer vector compression time: 0.3591
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.3.vc.C 
+Ans-fold time: 1.9800
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.R 
+Integer vector compression time: 0.3374
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.4.vc.C 
+Ans-fold time: 2.4681
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.R 
+Integer vector compression time: 0.3420
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.5.vc.C 
+Ans-fold time: 2.9465
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.R 
+Integer vector compression time: 0.3457
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.6.vc.C 
+Ans-fold time: 3.4235
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.R 
+Integer vector compression time: 0.3677
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.7.vc.C 
+Ans-fold time: 4.0083
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.R 
+Integer vector compression time: 0.3354
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.8.vc.C 
+Ans-fold time: 4.4920
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.R 
+Integer vector compression time: 0.3673
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.9.vc.C 
+Ans-fold time: 5.0341
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.R 
+Integer vector compression time: 0.3617
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.10.vc.C 
+Ans-fold time: 5.5336
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.R 
+Integer vector compression time: 0.2431
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.11.vc.C 
+Ans-fold time: 5.9264
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.R 
+Integer vector compression time: 0.2419
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.12.vc.C 
+Ans-fold time: 6.2938
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.R 
+Integer vector compression time: 0.2470
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.13.vc.C 
+Ans-fold time: 6.7009
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.R 
+Integer vector compression time: 0.2531
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.14.vc.C 
+Ans-fold time: 7.1593
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.R 
+Integer vector compression time: 0.2595
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.16.15.vc.C 
+Ans-fold time: 7.6366
+Elapsed time: 332.6387
+==== Done
+
+#### 2026-09-09 01:43:53
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/census -r 0   2458285 68
+Conversion time: 7.6994
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 9 done.
+ --- block 8 done.
+ --- block 1 done.
+ --- block 13 done.
+ --- block 7 done.
+ --- block 6 done.
+ --- block 11 done.
+ --- block 12 done.
+ --- block 14 done.
+ --- block 4 done.
+ --- block 5 done.
+ --- block 10 done.
+ --- block 3 done.
+ --- block 2 done.
+ --- block 15 done.
+ --- block 0 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/census
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/census 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/census 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.pruned_local_16.cover.solution 
+All done.
+200.96:101728
+
+#### 2026-09-09 01:47:22
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc 464053
+Repair time: 185.9618
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.R 
+Integer vector compression time: 0.0386
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.0.vc.C 
+Ans-fold time: 0.0301
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.R 
+Integer vector compression time: 0.0446
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.1.vc.C 
+Ans-fold time: 0.0665
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.R 
+Integer vector compression time: 0.0553
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.2.vc.C 
+Ans-fold time: 0.1059
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.R 
+Integer vector compression time: 0.0586
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.3.vc.C 
+Ans-fold time: 0.1470
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.R 
+Integer vector compression time: 0.0526
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.4.vc.C 
+Ans-fold time: 0.1898
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.R 
+Integer vector compression time: 0.0654
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.5.vc.C 
+Ans-fold time: 0.2317
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.R 
+Integer vector compression time: 0.0543
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.6.vc.C 
+Ans-fold time: 0.2738
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.R 
+Integer vector compression time: 0.0548
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.7.vc.C 
+Ans-fold time: 0.3133
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.R 
+Integer vector compression time: 0.0528
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.8.vc.C 
+Ans-fold time: 0.3537
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.R 
+Integer vector compression time: 0.0521
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.9.vc.C 
+Ans-fold time: 0.3935
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.R 
+Integer vector compression time: 0.0521
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.10.vc.C 
+Ans-fold time: 0.4336
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.R 
+Integer vector compression time: 0.0529
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.11.vc.C 
+Ans-fold time: 0.4743
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.R 
+Integer vector compression time: 0.0529
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.12.vc.C 
+Ans-fold time: 0.5149
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.R 
+Integer vector compression time: 0.0520
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.13.vc.C 
+Ans-fold time: 0.5546
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.R 
+Integer vector compression time: 0.0521
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.14.vc.C 
+Ans-fold time: 0.5942
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.R 
+Integer vector compression time: 0.0524
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.16.15.vc.C 
+Ans-fold time: 0.6334
+Elapsed time: 23.3547
+==== Done
+
+#### 2026-09-09 01:47:46
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/covtype -r 0   581012 54
+Conversion time: 1.3963
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 5 done.
+ --- block 3 done.
+ --- block 7 done.
+ --- block 9 done.
+ --- block 14 done.
+ --- block 8 done.
+ --- block 11 done.
+ --- block 0 done.
+ --- block 2 done.
+ --- block 15 done.
+ --- block 1 done.
+ --- block 12 done.
+ --- block 10 done.
+ --- block 13 done.
+ --- block 4 done.
+ --- block 6 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/covtype 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/covtype 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.pruned_local_16.cover.solution 
+All done.
+28.87:19456
+
+#### 2026-09-09 01:48:16
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc 464053
+Repair time: 16.2637
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.R 
+Integer vector compression time: 0.0325
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.0.vc.C 
+Ans-fold time: 0.0181
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.R 
+Integer vector compression time: 0.0324
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.1.vc.C 
+Ans-fold time: 0.0374
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.R 
+Integer vector compression time: 0.0327
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.2.vc.C 
+Ans-fold time: 0.0547
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.R 
+Integer vector compression time: 0.0325
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.3.vc.C 
+Ans-fold time: 0.0718
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.R 
+Integer vector compression time: 0.0350
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.4.vc.C 
+Ans-fold time: 0.0899
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.R 
+Integer vector compression time: 0.0328
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.5.vc.C 
+Ans-fold time: 0.1070
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.R 
+Integer vector compression time: 0.0373
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.6.vc.C 
+Ans-fold time: 0.1293
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.R 
+Integer vector compression time: 0.0338
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.7.vc.C 
+Ans-fold time: 0.1491
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.R 
+Integer vector compression time: 0.0329
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.8.vc.C 
+Ans-fold time: 0.1673
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.R 
+Integer vector compression time: 0.0322
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.9.vc.C 
+Ans-fold time: 0.1857
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.R 
+Integer vector compression time: 0.0284
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.10.vc.C 
+Ans-fold time: 0.2022
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.R 
+Integer vector compression time: 0.0330
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.11.vc.C 
+Ans-fold time: 0.2218
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.R 
+Integer vector compression time: 0.0323
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.12.vc.C 
+Ans-fold time: 0.2398
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.R 
+Integer vector compression time: 0.0299
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.13.vc.C 
+Ans-fold time: 0.2582
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.R 
+Integer vector compression time: 0.0297
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.14.vc.C 
+Ans-fold time: 0.2773
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.R 
+Integer vector compression time: 0.0368
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.16.15.vc.C 
+Ans-fold time: 0.2973
+Elapsed time: 2.7617
+==== Done
+
+#### 2026-09-09 01:48:19
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/glove -r 0   400000 300
+Conversion time: 41.5130
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 13 done.
+ --- block 3 done.
+ --- block 14 done.
+ --- block 2 done.
+ --- block 0 done.
+ --- block 1 done.
+ --- block 4 done.
+ --- block 5 done.
+ --- block 11 done.
+ --- block 10 done.
+ --- block 15 done.
+ --- block 6 done.
+ --- block 9 done.
+ --- block 7 done.
+ --- block 8 done.
+ --- block 12 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/glove
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/glove 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/glove 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.pruned_local_16.cover.solution 
+All done.
+565.52:62304
+
+#### 2026-09-09 01:58:26
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc 464053
+Repair time: 255.6529
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.R 
+Integer vector compression time: 0.2605
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.0.vc.C 
+Ans-fold time: 4.3162
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.R 
+Integer vector compression time: 0.2659
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.1.vc.C 
+Ans-fold time: 8.6436
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.R 
+Integer vector compression time: 0.3551
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.2.vc.C 
+Ans-fold time: 13.3046
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.R 
+Integer vector compression time: 0.2617
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.3.vc.C 
+Ans-fold time: 17.6754
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.R 
+Integer vector compression time: 0.3545
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.4.vc.C 
+Ans-fold time: 22.2975
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.R 
+Integer vector compression time: 0.2590
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.5.vc.C 
+Ans-fold time: 26.8072
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.R 
+Integer vector compression time: 0.2597
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.6.vc.C 
+Ans-fold time: 31.5671
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.R 
+Integer vector compression time: 0.3549
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.7.vc.C 
+Ans-fold time: 36.3307
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.R 
+Integer vector compression time: 0.2671
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.8.vc.C 
+Ans-fold time: 40.8920
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.R 
+Integer vector compression time: 0.2637
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.9.vc.C 
+Ans-fold time: 45.5708
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.R 
+Integer vector compression time: 0.2665
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.10.vc.C 
+Ans-fold time: 50.3159
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.R 
+Integer vector compression time: 0.2984
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.11.vc.C 
+Ans-fold time: 55.3183
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.R 
+Integer vector compression time: 0.3518
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.12.vc.C 
+Ans-fold time: 59.9205
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.R 
+Integer vector compression time: 0.2969
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.13.vc.C 
+Ans-fold time: 64.4589
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.R 
+Integer vector compression time: 0.2801
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.14.vc.C 
+Ans-fold time: 69.0726
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.R 
+Integer vector compression time: 0.2895
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.16.15.vc.C 
+Ans-fold time: 73.7056
+Elapsed time: 108.4929
+==== Done
+
+#### 2026-09-09 02:00:15
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/higgs -r 0   11000000 28
+Conversion time: 144.6562
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 6 done.
+ --- block 11 done.
+ --- block 13 done.
+ --- block 3 done.
+ --- block 4 done.
+ --- block 9 done.
+ --- block 10 done.
+ --- block 0 done.
+ --- block 2 done.
+ --- block 7 done.
+ --- block 15 done.
+ --- block 1 done.
+ --- block 5 done.
+ --- block 12 done.
+ --- block 14 done.
+ --- block 8 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/higgs
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/higgs 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/higgs 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.pruned_local_16.cover.solution 
+All done.
+231.26:200032
+
+#### 2026-09-09 02:06:31
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc 464053
+Repair time: 763.6069
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.R 
+Integer vector compression time: 0.5621
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.0.vc.C 
+Ans-fold time: 2.8862
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.R 
+Integer vector compression time: 0.5718
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.1.vc.C 
+Ans-fold time: 5.7715
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.R 
+Integer vector compression time: 0.5682
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.2.vc.C 
+Ans-fold time: 8.6501
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.R 
+Integer vector compression time: 0.5582
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.3.vc.C 
+Ans-fold time: 11.5498
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.R 
+Integer vector compression time: 0.7258
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.4.vc.C 
+Ans-fold time: 14.4283
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.R 
+Integer vector compression time: 0.5663
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.5.vc.C 
+Ans-fold time: 17.3056
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.R 
+Integer vector compression time: 0.5697
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.6.vc.C 
+Ans-fold time: 20.2675
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.R 
+Integer vector compression time: 0.5688
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.7.vc.C 
+Ans-fold time: 23.1460
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.R 
+Integer vector compression time: 0.5701
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.8.vc.C 
+Ans-fold time: 26.0417
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.R 
+Integer vector compression time: 0.5795
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.9.vc.C 
+Ans-fold time: 28.9271
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.R 
+Integer vector compression time: 0.6748
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.10.vc.C 
+Ans-fold time: 31.8293
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.R 
+Integer vector compression time: 0.5584
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.11.vc.C 
+Ans-fold time: 34.7100
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.R 
+Integer vector compression time: 0.5682
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.12.vc.C 
+Ans-fold time: 37.5694
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.R 
+Integer vector compression time: 0.5711
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.13.vc.C 
+Ans-fold time: 40.4091
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.R 
+Integer vector compression time: 0.5716
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.14.vc.C 
+Ans-fold time: 43.4219
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.R 
+Integer vector compression time: 0.7171
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.16.15.vc.C 
+Ans-fold time: 46.3006
+Elapsed time: 144.5605
+==== Done
+
+#### 2026-09-09 02:08:55
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/optical -r 0   325834 174
+Conversion time: 16.3719
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 1 done.
+ --- block 14 done.
+ --- block 11 done.
+ --- block 8 done.
+ --- block 4 done.
+ --- block 0 done.
+ --- block 3 done.
+ --- block 2 done.
+ --- block 15 done.
+ --- block 5 done.
+ --- block 9 done.
+ --- block 6 done.
+ --- block 13 done.
+ --- block 7 done.
+ --- block 10 done.
+ --- block 12 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/optical
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/optical 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/optical 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.pruned_local_16.cover.solution 
+All done.
+164.80:31072
+
+#### 2026-09-09 02:11:56
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc 464053
+Repair time: 139.8217
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.R 
+Integer vector compression time: 0.1134
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.0.vc.C 
+Ans-fold time: 0.9104
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.R 
+Integer vector compression time: 0.1128
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.1.vc.C 
+Ans-fold time: 1.8241
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.R 
+Integer vector compression time: 0.1208
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.2.vc.C 
+Ans-fold time: 2.7098
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.R 
+Integer vector compression time: 0.1128
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.3.vc.C 
+Ans-fold time: 3.5131
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.R 
+Integer vector compression time: 0.1197
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.4.vc.C 
+Ans-fold time: 4.2552
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.R 
+Integer vector compression time: 0.1186
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.5.vc.C 
+Ans-fold time: 5.1459
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.R 
+Integer vector compression time: 0.1126
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.6.vc.C 
+Ans-fold time: 5.8741
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.R 
+Integer vector compression time: 0.1492
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.7.vc.C 
+Ans-fold time: 6.7885
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.R 
+Integer vector compression time: 0.1215
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.8.vc.C 
+Ans-fold time: 7.6845
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.R 
+Integer vector compression time: 0.1215
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.9.vc.C 
+Ans-fold time: 8.6163
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.R 
+Integer vector compression time: 0.1157
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.10.vc.C 
+Ans-fold time: 9.2898
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.R 
+Integer vector compression time: 0.1155
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.11.vc.C 
+Ans-fold time: 10.1690
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.R 
+Integer vector compression time: 0.1171
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.12.vc.C 
+Ans-fold time: 10.9620
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.R 
+Integer vector compression time: 0.1153
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.13.vc.C 
+Ans-fold time: 11.6775
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.R 
+Integer vector compression time: 0.1189
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.14.vc.C 
+Ans-fold time: 12.5582
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.R 
+Integer vector compression time: 0.1183
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.16.15.vc.C 
+Ans-fold time: 13.4551
+Elapsed time: 31.7512
+==== Done
+
+#### 2026-09-09 02:12:28
+ Command line: ../matrepair --norepair -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 16   /mnt/data/datasets/machine-learning-matrices-reorder/susy -r 0   5000000 18
+Conversion time: 53.4424
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 16 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+ --- block 11 done.
+ --- block 2 done.
+ --- block 10 done.
+ --- block 1 done.
+ --- block 5 done.
+ --- block 9 done.
+ --- block 13 done.
+ --- block 6 done.
+ --- block 15 done.
+ --- block 12 done.
+ --- block 4 done.
+ --- block 0 done.
+ --- block 7 done.
+ --- block 3 done.
+ --- block 14 done.
+ --- block 8 done.
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/susy
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vco
+OK     cp -p /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vco
+Dividing into row chunks...
+OK     python3 csv_splitter.py /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 16 
+All done.
+Transposing each row block...
+OK     bash 07_transpose.sh /mnt/data/datasets/machine-learning-matrices-reorder/susy 16 
+All done.
+Generating the CSM for each row block...
+OK     bash 08_generate_csm.sh /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 16 16
+All done.
+Running pc upon each row block...
+OK     bash 10_run_cover.sh /mnt/data/datasets/machine-learning-matrices-reorder/susy 16 16 LKH-3.0.7 
+All done.
+Reordering each .vc file...
+OK     bash 11_reorder.sh /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 16 16 cover
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.pruned_local_16.cover.solution 
+All done.
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.pruned_local_16.cover.solution 
+All done.
+57.26:53088
+
+#### 2026-09-09 02:14:19
+ Command line: ../matrepair --noconv -b 16 /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc 464053
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc 464053
+Repair time: 175.7356
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.R 
+Integer vector compression time: 0.2039
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.0.vc.C 
+Ans-fold time: 2.1398
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.R 
+Integer vector compression time: 0.2814
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.1.vc.C 
+Ans-fold time: 4.9573
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.R 
+Integer vector compression time: 0.2836
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.2.vc.C 
+Ans-fold time: 7.8612
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.R 
+Integer vector compression time: 0.2184
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.3.vc.C 
+Ans-fold time: 10.7556
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.R 
+Integer vector compression time: 0.2195
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.4.vc.C 
+Ans-fold time: 13.5939
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.R 
+Integer vector compression time: 0.2068
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.5.vc.C 
+Ans-fold time: 16.4661
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.R 
+Integer vector compression time: 0.2141
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.6.vc.C 
+Ans-fold time: 19.4012
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.R 
+Integer vector compression time: 0.2868
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.7.vc.C 
+Ans-fold time: 22.2881
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.R 
+Integer vector compression time: 0.2835
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.8.vc.C 
+Ans-fold time: 25.2417
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.R 
+Integer vector compression time: 0.2207
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.9.vc.C 
+Ans-fold time: 31.5426
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.R 
+Integer vector compression time: 0.2800
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.10.vc.C 
+Ans-fold time: 34.4334
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.R 
+Integer vector compression time: 0.2805
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.11.vc.C 
+Ans-fold time: 37.3008
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.R 
+Integer vector compression time: 0.2111
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.12.vc.C 
+Ans-fold time: 40.1211
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.R 
+Integer vector compression time: 0.2803
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.13.vc.C 
+Ans-fold time: 42.9470
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.R 
+Integer vector compression time: 0.2097
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.14.vc.C 
+Ans-fold time: 45.9201
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.R 
+Integer vector compression time: 0.2165
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.16.15.vc.C 
+Ans-fold time: 48.8813
+Elapsed time: 73.2700
+==== Done

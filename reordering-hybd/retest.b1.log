@@ -1,0 +1,350 @@
+
+#### 2026-09-10 00:34:16
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/airline78 -r 0   14462943 29
+Conversion time: 52.9453
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/airline78
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/airline78
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/airline78_cols /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/airline78.pruned_local_16.cover.solution 
+All done.
+4130.71:3411208
+
+#### 2026-09-10 01:44:00
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/airline78 14462943 29 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/airline78.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc 464053
+Repair time: 192.8728
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.R 
+Integer vector compression time: 6.4806
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/airline78.vc.C 
+Ans-fold time: 10.0465
+Elapsed time: 209.4002
+==== Done
+
+#### 2026-09-10 01:47:30
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/census -r 0   2458285 68
+Conversion time: 11.8568
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/census
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/census.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/census
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/census_cols /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/census.pruned_local_16.cover.solution 
+All done.
+3379.04:1576124
+
+#### 2026-09-10 02:44:01
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/census 2458285 68 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/census.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/census.vc 464053
+Repair time: 23.0459
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.R 
+Integer vector compression time: 0.4909
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/census.vc.C 
+Ans-fold time: 0.5035
+Elapsed time: 24.0405
+==== Done
+
+#### 2026-09-10 02:44:25
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/covtype -r 0   581012 54
+Conversion time: 1.5188
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/covtype
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/covtype_cols /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/covtype.pruned_local_16.cover.solution 
+All done.
+452.26:260956
+
+#### 2026-09-10 02:51:59
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/covtype 581012 54 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/covtype.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc 464053
+Repair time: 2.6144
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.R 
+Integer vector compression time: 0.1870
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/covtype.vc.C 
+Ans-fold time: 0.1727
+Elapsed time: 2.9743
+==== Done
+
+#### 2026-09-10 02:52:02
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/glove -r 0   400000 300
+Conversion time: 38.3351
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/glove
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/glove.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/glove
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/glove_cols /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/glove.pruned_local_16.cover.solution 
+All done.
+10297.23:948060
+
+#### 2026-09-10 05:44:17
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/glove 400000 300 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/glove.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc 464053
+Repair time: 40.9314
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.R 
+Integer vector compression time: 6.5565
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/glove.vc.C 
+Ans-fold time: 46.8707
+Elapsed time: 94.3588
+==== Done
+
+#### 2026-09-10 05:45:52
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/higgs -r 0   11000000 28
+Conversion time: 149.1194
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/higgs
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/higgs
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/higgs_cols /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/higgs.pruned_local_16.cover.solution 
+All done.
+3501.22:3148772
+
+#### 2026-09-10 06:46:42
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/higgs 11000000 28 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/higgs.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc 464053
+Repair time: 159.6380
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.R 
+Integer vector compression time: 16.0042
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/higgs.vc.C 
+Ans-fold time: 36.4764
+Elapsed time: 212.1187
+==== Done
+
+#### 2026-09-10 06:50:15
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/optical -r 0   325834 174
+Conversion time: 20.8646
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/optical
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/optical.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/optical
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/optical_cols /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/optical.pruned_local_16.cover.solution 
+All done.
+2892.97:452444
+
+#### 2026-09-10 07:38:49
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/optical 325834 174 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/optical.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc 464053
+Repair time: 23.4859
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.R 
+Integer vector compression time: 2.5023
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/optical.vc.C 
+Ans-fold time: 7.9221
+Elapsed time: 33.9106
+==== Done
+
+#### 2026-09-10 07:39:23
+ Command line: ../matrepair --norepair -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+==== Conversion bin/csv->csrv
+Command: /home/louza/mm-repair/csvmat2csrv -b 1   /mnt/data/datasets/machine-learning-matrices-reorder/susy -r 0   5000000 18
+Conversion time: 69.2418
+==== Stopping after the conversion phase as requested
+=== Command line: ./reorder.py -b 1 -k 16 pc /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+/home/louza/mm-repair/reordering-all/./column_major.py:17: SyntaxWarning: invalid escape sequence '\.'
+  def hash(s, separator='\.') :
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/susy
+OK     File /mnt/data/datasets/machine-learning-matrices-reorder/susy.vco
+Transposing the matrix...
+OK     python3 ./column_major.py /mnt/data/datasets/machine-learning-matrices-reorder/susy
+All done.
+Generating the CSM...
+OK     ./build/tsp_generator_pruned_local /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 16 
+All done.
+Running pc ...
+OK     python3 ./cover.py /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.tsp 
+All done.
+Reordering the .vc file...
+./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.cover.solution 
+OK     ./vc_reorder.x /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.cover.solution 
+All done.
+Cleaning...
+OK     rm -r /mnt/data/datasets/machine-learning-matrices-reorder/susy_cols /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.par /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.tsp /mnt/data/datasets/machine-learning-matrices-reorder/susy.pruned_local_16.cover.solution 
+All done.
+816.96:789696
+
+#### 2026-09-10 07:54:09
+ Command line: ../matrepair --noconv -b 1 /mnt/data/datasets/machine-learning-matrices-reorder/susy 5000000 18 
+Setting memory for each repair instance to 464053 MBs
+Sending logging messages to file: /mnt/data/datasets/machine-learning-matrices-reorder/susy.log
+---- Skipping conversion bin/csv->csrv
+==== Repair compression
+Command: /home/louza/mm-repair/brepair/irepair0 /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc 464053
+Repair time: 34.9279
+==== Integer vector .C compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.C 
+==== Integer vector .R compression
+Command: /home/louza/mm-repair/sdsl/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.R 
+Integer vector compression time: 5.2535
+==== Ans-fold compression
+Command: /home/louza/mm-repair/ans/encode.x /mnt/data/datasets/machine-learning-matrices-reorder/susy.vc.C 
+Ans-fold time: 27.7650
+Elapsed time: 67.9466
+==== Done
