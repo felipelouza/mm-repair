@@ -27,6 +27,16 @@ The .wcode file is built as in csvmat2csrv (store_alphabet):
   - the file contains W in delta form: file[0] = W[0],
     file[i] = W[i] - W[i-1], as uint32; so W = cumsum(file)
 
+Deciding whether the mapping is worth it (same rule as csvmat2csrv):
+    total         = nonz + rows          (symbols in the .vc files, one
+                                          row terminator per row)
+    b             = bits(len(SIGMA) - 1)
+    saved_bits    = total * (32 - b)
+    mapping_bits  = 32 * len(SIGMA)
+    do_map        = saved_bits > mapping_bits
+  If not worth it, an EMPTY basename.wcode is written and the .vc files
+  are left untouched. Use --force to map always.
+
 Warning: the script cannot tell whether a .vc file has already been
 mapped; running it twice on the same files maps them twice.
 """
@@ -43,6 +53,15 @@ def vc_names(base, nb):
                 yield f"{base}.{part}.vc"
             else:
                 yield f"{base}.{nb}.{i}.{part}.vc"
+
+
+def bits(n):
+    """number of bits needed to represent n (same as bits() in csvmat2csrv)"""
+    b = 1
+    while n > 1:
+        n >>= 1
+        b += 1
+    return b
 
 
 def read_symbols(fname):
@@ -75,6 +94,8 @@ def main():
                     help="number of row blocks (def. 1)")
     ap.add_argument("--wcode-only", action="store_true",
                     help="write .wcode but do not rewrite the .vc files")
+    ap.add_argument("--force", action="store_true",
+                    help="apply the mapping even if it is not worth it")
     ap.add_argument("-o", "--output", default=None,
                     help="output .wcode file (default basename.wcode)")
     args = ap.parse_args()
@@ -86,24 +107,43 @@ def main():
 
     # ---------- collect the alphabet (one set for all files)
     alphabet = np.array([0], dtype=np.uint32)     # 0 is always in SIGMA
-    total = 0
+    nonz = 0            # nonzero symbols in all files
+    rows = 0            # row terminators, counted in the A files only
     for fname in files:
         sym = read_symbols(fname)
-        total += len(sym)
+        nz = int(np.count_nonzero(sym))
+        nonz += nz
+        if fname.endswith(".A.vc"):
+            rows += len(sym) - nz
         alphabet = np.union1d(alphabet, np.unique(sym))
     alphabet = alphabet.astype(np.uint32)         # sorted, distinct
 
     if alphabet[-1] >= 1 << 30:
         print("Warning: largest code is >= 2**30", file=sys.stderr)
 
+    # ---------- is the mapping worth it? (same rule as csvmat2csrv)
+    sigma = len(alphabet)
+    total = nonz + rows
+    b = bits(sigma - 1)
+    saved_bits = total * (32 - b)
+    mapping_bits = 32 * sigma
+    do_map = saved_bits > mapping_bits
+    out = args.output or base + ".wcode"
+    print(f"Alphabet: {sigma} symbols (0 included), largest code "
+          f"{int(alphabet[-1])}; total = {total} (nonz {nonz} + rows {rows}), "
+          f"b = {b}, saved {saved_bits} vs. mapping {mapping_bits} bits",
+          file=sys.stderr)
+    if not do_map and not args.force:
+        open(out, "wb").close()          # empty .wcode = no mapping
+        print(f"Mapping not worth it: written empty {out}, "
+              f".vc files untouched", file=sys.stderr)
+        return
+
     # ---------- write .wcode: file[0]=W[0], file[i]=W[i]-W[i-1]
     a64 = alphabet.astype(np.int64)
     delta = np.diff(a64, prepend=0).astype(np.uint32)
-    out = args.output or base + ".wcode"
     delta.tofile(out)
-    print(f"Written {out}: {len(alphabet)} symbols (alphabet size, 0 "
-          f"included), largest code {int(alphabet[-1])}; "
-          f"read {total} symbols from {len(files)} file(s)", file=sys.stderr)
+    print(f"Written {out}", file=sys.stderr)
 
     # ---------- rewrite the .vc files with the mapped alphabet
     if args.wcode_only:
