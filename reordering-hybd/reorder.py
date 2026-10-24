@@ -49,31 +49,31 @@ def execute_command_verbose(cmd, exit_code, msg='Something went wrong: please co
     print(msg)
     sys.exit(exit_code)
 
-# check that the input file and the corresponding .vco exist
-# note .vco files are obtained from .vc if necessary and possible 
+# name of the .vc file of block i as written by csvmat2csrv:
+# plain:  base.n.i.vc       split: stem.n.i.A.vc  (fullname = stem.A)
+def source_vc(fullname, n, i):
+  stem, part = fullname, ""
+  if fullname.endswith((".A", ".B")):
+    stem, part = fullname[:-2], fullname[-2:]
+  return stem + filext_multipart(n,i) + part + ".vc"
+
 def check_input_files(fullname,n):
   if not os.path.isfile(fullname):
     print("ERROR File", fullname, "missing")
     return  False
-  else: 
-    print("OK     File",fullname)
-  # test/convert vco files   
+  print("OK     File",fullname)
   for i in range(n):
-    fex = fullname + filext_multipart(n,i)
-    # if vc is there nothing to do
-    if os.path.isfile(fex + ".vc"):
-      print("OK     File",fex+".vc")
-    # if vc and not vco copy it 
-    #elif os.path.isfile(fex + ".vc"):
-      command = "cp -p {name}.vc {name}.vco".format(name=fex)
+    fex = fullname + filext_multipart(n,i)     # name used by the pipeline
+    src = source_vc(fullname, n, i)            # name written by csvmat2csrv
+    if os.path.isfile(src):
+      print("OK     File",src)
+      command = "cp -p {src} {name}.vco".format(src=src, name=fex)
       if not execute_command(command):
         return False
-    # if both are missing error
     else:
-      print("ERROR: Files", fullname, ".vc/.vco missing")
+      print("ERROR: File", src, "missing")
       return  False
-  return True
-  
+  return True 
 
 def show_command_line(f):
   f.write("=== Command line: ") 
