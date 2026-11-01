@@ -15,7 +15,10 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy','higgs','airline78','covtype', 'census', 'optical', 'mnist2m', 'imagenet', 'glove.q64', 'glove.q256', 'glove.q1k', 'glove.q4k', 'glove.q64k', 'glove', 'pgsf']
+Files = ['covtype']
+#Files = ['glove', 'glove.q1k', 'glove.q256', 'glove.q4k', 'glove.q64', 'glove.q64k']
+#Files = ['airline78', 'census', 'covtype', 'glove', 'glove.q1k', 'glove.q256', 'glove.q4k', 'glove.q64', 'glove.q64k', 'higgs', 'imagenet', 'mnist2m', 'optical', 'pgsf', 'susy']
+#Files = [ 'glove', 'pgsf','glove.q4k', 'glove.q64k']
 
 Data_dir = 'data/'
 Logfile_name = "errors.log"
@@ -99,11 +102,17 @@ def test_gzip(args,logfile):
         sys.exit(1)
       # run gzip and xz
       command = f"{zip1} -kf {args.extra} {TmpFilename}"            
+      start = time.perf_counter()
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+      gzip_time = time.perf_counter() - start
       command = f"{zip2} -kf {args.extra} {TmpFilename}"            
+      start = time.perf_counter()
       ris = subprocess.run(command.split(),stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,timeout=Timelimit,check=True)
+      xz_time = time.perf_counter() - start
+      print(f"{f}: {zip1} compression time = {gzip_time:.2f} seconds")
+      print(f"{f}: {zip2} compression time = {xz_time:.2f} seconds")
     except subprocess.TimeoutExpired:
       # handle time out
       print("Command:", command)      
@@ -152,6 +161,7 @@ def test_compress(args, logfile, drv=False):
     exe_name = os.path.join(args.main_dir,"matrepair")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
+    start = time.perf_counter()
     command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols}"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
@@ -173,6 +183,9 @@ def test_compress(args, logfile, drv=False):
       print("Command:", command)
       print(" Test failed:", str(ex))
       sys.exit(2)
+
+    end = time.perf_counter() - start
+
     v = os.path.getsize(name+args.val_ext)
     vcsize = getsize_multipart(name,args.b,args.mext) 
     csize = getsize_multipart(name,args.b,args.mext+".C") 
@@ -181,7 +194,7 @@ def test_compress(args, logfile, drv=False):
     rsizeiv = getsize_multipart(name,args.b,args.mext+".R.iv") 
     ans_csize = getsize_multipart(name,args.b,args.mext+".C.ansf.1")
     tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
-                    v+ans_csize+rsizeiv))
+                    v+ans_csize+rsizeiv, end))
     # tests for current file completed
     table.append(makerow_mz(args,f, tablerow))
   # all files processed
@@ -276,13 +289,12 @@ def makerow_mgzip(args,f, a):
 
 
 def makerow_mz(args,f, a):
-  s = "{name:10.9}& {col:<5}".format(name=f,col=Sizes[f][0])
+  s = "{name:10.15} & {col:<6}".format(name=f,col=Sizes[f][0])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
-    s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
+      s += "& {:>12} & {:12} & {:>12} & {:>12} & {:6.2f} & {:.2f}".format(p[0],p[1],p[2],p[3],p[3]/d, p[4])
   s += "\\\\\n"
   return s
-
 
 
 def show_command_line(f):
@@ -354,6 +366,7 @@ def main():
 
   # run the task   
   s1 = time.time()
+  #Logfile_name = "errors."+str(args.b)+".log"
   print("Sending logging messages to file:", Logfile_name)  
   with open(Logfile_name,"a", 1) as logfile: # 1 for line buffering: keeps the logs ordered
     if args.op=='mm':    # matrix multiplication (supported only for f64)

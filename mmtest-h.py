@@ -15,11 +15,15 @@ the options --i32, --f32, and --f64 signal that the input is in binary
 format with entries respectively of type int32, float32 and float64.
 """
 
-Files = ['susy.csv','higgs.csv','airline78.csv','covtype.csv', 'census.csv', 'optical.csv', 'mnist2m.csv', 'imagenet.csv', 'glove.q64.csv', 'glove.q256.csv', 'glove.q1k.csv', 'glove.q4k.csv', 'glove.q64k.csv', 'glove.csv', 'pgsf.csv']
+#Files = ['covtype.csv']
+Files = ['airline78.csv', 'census.csv', 'covtype.csv', 'glove.csv', 'glove.q1k.csv', 'glove.q256.csv', 'glove.q4k.csv', 'glove.q64.csv', 'glove.q64k.csv', 'higgs.csv', 'imagenet.csv', 'mnist2m.csv', 'optical.csv', 'pgsf.csv', 'susy.csv']
+#Files = ['glove.csv', 'glove.q1k.csv', 'glove.q256.csv', 'glove.q4k.csv', 'glove.q64.csv', 'glove.q64k.csv']
+#Files = ['airline78.csv', 'census.csv', 'covtype.csv', 'glove.csv', 'higgs.csv', 'imagenet.csv', 'mnist2m.csv', 'optical.csv', 'pgsf.csv', 'susy.csv']
+#Files = ['glove.q4k.csv', 'glove.q64k.csv', 'glove.csv', 'pgsf.csv']
 
 
 Data_dir = 'data/'
-Logfile_name = "errors2.log"
+Logfile_name = "errors-h.log"
 Time_exe = "/usr/bin/time"
 
 Sizes = {'covtype.csv':(581012, 54), 'census.csv':(2458285, 68), 'optical.csv':(325834, 174),
@@ -150,7 +154,7 @@ def test_compress(args, logfile, drv=False):
     args.mext_B = ".B.vc"
   # init latex table containing the results
   table = [f"### {args.name} + repair +iv/ans size; {args.b} row-blocks\n", 
-           f"file     & rows &        {args.name} &        re32 &        reiv &       reans & reans%\\\\\n"]  
+           f"file     & rows &        {args.name} &        re32 &        reiv &       reans & reans% & time\\\\\n"]  
 
   print(table[0], end="")
   print(table[1], end="")
@@ -160,6 +164,7 @@ def test_compress(args, logfile, drv=False):
     exe_name = os.path.join(args.main_dir,"matrepair-h")
     rows,cols = Sizes[f]
     tablerow = []  # row of the results table
+    start = time.perf_counter()
     command = f"{exe_name} -r -b {args.b} -p {args.p} {args.extra} {args.bin} {name} {rows} {cols} --hybrid"
     try:
       ris = subprocess.run(command.split(),stdout=logfile,
@@ -181,6 +186,10 @@ def test_compress(args, logfile, drv=False):
       print("Command:", command)
       print(" Test failed:", str(ex))
       sys.exit(2)
+    
+    end = time.perf_counter() - start
+    #print(f"{f}: compression time = {end:.2f} seconds")
+
     v = os.path.getsize(name+args.val_ext)
 
     vcsize = getsize_multipart(name,args.b,args.mext_A) 
@@ -194,11 +203,11 @@ def test_compress(args, logfile, drv=False):
     ans_wcode = os.path.getsize(name+".wcode.ansf.1")
 
     vcsize += getsize_multipart(name,args.b,args.mext_B) 
-    ans_csize += getsize_multipart(name,args.b,args.mext_B+".ansf.1")
+    ans_bsize = getsize_multipart(name,args.b,args.mext_B+".ansf.1")
     #ans_wcode += getsize_multipart(name,args.b,".B.wcode.ansf.1")
 
-    tablerow.append((v+vcsize,v+csize+rsize,v+csizeiv+rsizeiv,
-                    v+ans_csize+rsizeiv+ans_wcode))
+    tablerow.append((v+vcsize,0,0,
+                    v+ans_csize+rsizeiv+ans_wcode+ans_bsize, end))
     # tests for current file completed
     table.append(makerow_mz(args,f, tablerow))
     print(table[-1], end="")
@@ -346,10 +355,10 @@ def makerow_mgzip(args,f, a):
 
 
 def makerow_mz(args,f, a):
-  s = "{name:10.9} & {col:<5}".format(name=f,col=Sizes[f][0])
+  s = "{name:10.15} & {col:<6}".format(name=f,col=Sizes[f][0])
   d = args.entry_size*Sizes[f][0]*Sizes[f][1]/100
   for p in a:
-    s += "&{:>12} &{:12} &{:>12} &{:>12} &{:6.2f}".format(p[0],p[1],p[2],p[3],p[3]/d)
+      s += "& {:>12} & {:12} & {:>12} & {:>12} & {:6.2f} & {:.2f}".format(p[0],p[1],p[2],p[3],p[3]/d, p[4])
   s += "\\\\\n"
   return s
 
@@ -424,6 +433,7 @@ def main():
 
   # run the task   
   s1 = time.time()
+  #Logfile_name = "errors2."+str(args.b)+".log"
   print("Sending logging messages to file:", Logfile_name)  
   with open(Logfile_name,"a", 1) as logfile: # 1 for line buffering: keeps the logs ordered
     if args.op=='mm':    # matrix multiplication (supported only for f64)
