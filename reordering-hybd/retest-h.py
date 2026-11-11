@@ -13,7 +13,8 @@ Currently supported algorithms:
   
 """
 
-#Files = ['census', 'covtype']
+#Files = ['covtype']
+#Files = ['glove', 'susy']
 Files = ['airline78', 'census', 'covtype', 'glove', 'higgs', 'optical', 'susy']
 #Files = ['glove']
 #Files = ['higgs', 'imagenet', 'pgsf']
@@ -154,6 +155,8 @@ def main():
     print("Sending logging messages to file:", logfile.name)
     for f in Files:
       print("Processing file:", f)
+      s1 = time.time()
+      
       name  = os.path.join(args.d, f)
       rows,cols = Sizes[f]
       tablerow = []  # row of the results table
@@ -167,8 +170,8 @@ def main():
         sys.exit(4)
         
       # --- conversion vc/val (CSRV) to CSV format      
-      command = "./{exe} {name} {r} {c}".format(
-                  exe = "vc2csv.py",  name=name, r=rows, c=cols)
+      command = "./{exe} {name} {r} {c} -b {blocks}".format(
+                  exe = "vc2csv.py",  name=name, r=rows, c=cols, blocks = args.b)
       if(not execute_command(command,logfile)):
         print("vc2csv (1) failed")
         print("Check log file: " + logfile.name)
@@ -185,8 +188,8 @@ def main():
         sys.exit(5)
 
       # --- create wcode      
-      command = "./{exe} {name}".format(
-                  exe = "mkwcode.py",  name=name, r=rows, c=cols)
+      command = "./{exe} {name} -b {blocks}".format(
+                  exe = "mkwcode.py",  name=name, r=rows, c=cols, blocks = args.b)
       if(not execute_command(command,logfile)):
         print("mkwcode (1) failed")
         print("Check log file: " + logfile.name)
@@ -199,6 +202,9 @@ def main():
         print("matrepair (2) failed")
         print("Check log file: " + logfile.name)
         sys.exit(6)
+  
+      e1 = time.time()
+      print("Elapsed time: %.3f\n" % (e1-s1))
         
       # --- get size of compressed files   
       v = os.path.getsize(name+".val")
